@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { body, param } from "express-validator";
 import { handleInputErrors } from "../middleware/handleInputErrors";
+import { AuthController } from "../controllers/AuthController";
 
 const router = Router();
 
@@ -17,7 +18,8 @@ router.post("/create-account",
         }
         return true;
     } ),
-    handleInputErrors
+    handleInputErrors,
+    AuthController.createAccount
 
 );
 
