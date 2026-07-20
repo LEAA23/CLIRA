@@ -5,6 +5,7 @@ import dotenv from "dotenv"
 //Habilitamos el uso de las variables de entorno
 dotenv.config();
 
+//Instanciamos Sequelize, lo cual nos permite establecer una conexion a una base de datos
 const db = new Sequelize("clira", process.env.USER_DB!, process.env.PASSWORD_DB!, {
     host: process.env.HOST_DB!,
     port: +process.env.PORT_DB!,
@@ -20,9 +21,11 @@ const db = new Sequelize("clira", process.env.USER_DB!, process.env.PASSWORD_DB!
     }
 });
 
+//Verficamos que la conexion se haya realizado de forma correcta
 export const authenticateConection = async() => {
     try {
         await db.authenticate();
+        //Creamos las tablas en la base de datos si es que no existen
         await db.sync();
         console.log( colors.bgGreen("La conexion a la base de datos ha sido exitosa") );
     } catch (error) {
