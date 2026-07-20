@@ -10,6 +10,9 @@ export class User extends Model< InferAttributes<User>, InferCreationAttributes<
     declare phoneNumber: string;
     declare email: string;
     declare password: string;
+    declare token: string | null;
+    declare tokenExpiresAt: Date | null;
+    declare confirm: boolean;
 }
 
 //Definimos el tipo de los atributos asi como sus caracteristicas especiales
@@ -42,6 +45,20 @@ User.init(
         },    
         password: {
             type: DataTypes.STRING,
+            allowNull: false
+        },
+        token: {
+            type: DataTypes.STRING,
+            allowNull: true
+        },
+        tokenExpiresAt: {
+            type: DataTypes.DATE,
+            defaultValue: null,
+            allowNull: true
+        },
+        confirm: {
+            type: DataTypes.BOOLEAN,
+            defaultValue: false,
             allowNull: false
         }
     },

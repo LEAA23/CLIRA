@@ -5,8 +5,6 @@ import {authenticateConection} from "./config/db";
 
 const app = express();
 
-
-
 //Validamos la coneccion a la base de datos
 authenticateConection();
 
