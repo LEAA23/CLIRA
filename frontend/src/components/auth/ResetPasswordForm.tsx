@@ -3,19 +3,22 @@ import { updatePassword } from "../../api/authApi";
 import type { UserNewPasswordForm, UserUpdatePassword } from "../../types";
 import ErrorMessage from "../ErrorMessage";
 import { useForm } from "react-hook-form";
+import { useNavigate } from "react-router-dom";
 
 type ResetPasswordFormProps = {
     token: string;
 }
 
 const ResetPasswordForm = ({token} : ResetPasswordFormProps) => {
+
+    const navigate = useNavigate();
     
     const initialValues : UserNewPasswordForm = {
         password: "",
         repeatPassword: ""
     }
 
-    const { register, handleSubmit, watch, formState: { errors } } = useForm<UserNewPasswordForm>({ defaultValues: initialValues });
+    const { register, handleSubmit, watch,reset, formState: { errors } } = useForm<UserNewPasswordForm>({ defaultValues: initialValues });
     const password = watch("password");
 
     const handleUpdatePassword = async( formData : UserNewPasswordForm ) => {
@@ -27,6 +30,10 @@ const ResetPasswordForm = ({token} : ResetPasswordFormProps) => {
             }
             const message = await updatePassword( data );
             toast.success(message);
+            reset();
+            setTimeout(() => {
+                navigate("/auth/login");
+            }, 4000);
         } catch (error) {
             if( error instanceof Error ) {
                 toast.error(error.message);

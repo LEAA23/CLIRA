@@ -2,7 +2,7 @@
 const Footer = () => {
   const currentYear = new Date().getFullYear();
   return (
-    <footer className="bg-blue-700 p-10 mt-14">
+    <footer className="bg-blue-700 p-7 mt-14">
       <div className="space-y-10">
         <a href="/">
           <h3 className="text-white font-bold text-3xl text-center uppercase">Clira</h3>
