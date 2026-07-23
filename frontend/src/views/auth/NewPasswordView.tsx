@@ -6,21 +6,27 @@ import { useEffect, useState } from "react";
 import ResetPasswordForm from "../../components/auth/ResetPasswordForm";
 
 const NewPasswordView = () => {
+    //Extraemos la funcip de nuestro appStore para evaluar si el token es valido para cambiar el password
     const validateTokenAccount = useAppStore( (state) => state.validateTokenAccount ); 
+    //UseNavigate nos permite redireccionar al usuario a una pagina en especifico
     const navigate = useNavigate();
 
+    //Extraemos el token de la url mediante useParams()
     const { token } = useParams<{token : string}>();
+    //Creamos un state local para validar si el token es valido
     const [isValidToken, setIsValidToken] = useState<boolean>(false);
 
-
+    //Cada vez que el token cambie de valor se va a ejecutar esta funcion
     useEffect(() => {
         async function validateToken(token : UserValidateToken["token"]) {
             try {
                 const message = await validateTokenAccount( token );
+                //Cambiamos el valor del state local a true si el token es valido
                 setIsValidToken(true);
                 toast.success(message);
             } catch (error) {
                 if( error instanceof Error ) {
+                    //Redireccionamos al usuario al login si el token es invalido
                     toast.error(error.message);
                     setTimeout(() => {
                         navigate("/auth/login");

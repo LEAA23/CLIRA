@@ -174,6 +174,7 @@ export class AuthController {
         }
     }
 
+    //Mediante este metodo evaluamos que el token para recuperar el password sea correcto
     static validateToken = async( req: Request, res: Response ) => {
         const { token } = req.params;
 

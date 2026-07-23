@@ -9,6 +9,7 @@ const LoginView = () => {
   //Extraemos la funcion desde el authStore que le permite al usuario hacer el login
   const loginAccount = useAppStore( (state) => state.login );
 
+  //Variable con los valores iniciales de los campos del formulario
   const initialValues : UserLoginForm = {
     email: "",
     password: ""

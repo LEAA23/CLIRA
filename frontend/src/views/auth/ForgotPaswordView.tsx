@@ -8,7 +8,11 @@ import { toast } from "react-toastify";
 const ForgotPaswordView = () => {
     //Extaremos la funcion para mandar al email del usuario las indicaciones para reestablecer su password
     const forgotPassword = useAppStore( (state) => state.forgotPassword );
-    const { register, handleSubmit, reset, formState: { errors } } = useForm<UserForgotPasswordForm>();
+
+    const initialValues: UserForgotPasswordForm = {
+        email: ""
+    }
+    const { register, handleSubmit, reset, formState: { errors } } = useForm<UserForgotPasswordForm>( { defaultValues: initialValues } );
 
     const handleForgotPassword = async ( email : UserForgotPasswordForm ) => {
         try {
