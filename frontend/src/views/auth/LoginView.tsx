@@ -1,13 +1,31 @@
 import { Link } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import ErrorMessage from "../../components/ErrorMessage";
+import type { UserLoginForm } from "../../types";
+import { useAppStore } from "../../stores/useAppStore";
+import { toast } from "react-toastify";
 
-const Login = () => {
+const LoginView = () => {
+  //Extraemos la funcion desde el authStore que le permite al usuario hacer el login
+  const loginAccount = useAppStore( (state) => state.login );
 
-  const { register, handleSubmit, formState: {errors} } = useForm();
+  const initialValues : UserLoginForm = {
+    email: "",
+    password: ""
+  }
 
-  const handleLogin = (formData) => {
-    console.log(formData);
+  const { register, handleSubmit, formState: {errors} } = useForm<UserLoginForm>( { defaultValues: initialValues } );
+
+  //Una vez que el usuario mande el form se ejecuta esta funcion que le va a permitir o no el inicio de sesion
+  const handleLogin = async ( formData : UserLoginForm ) => {
+    try {
+      const message = await loginAccount( formData );
+      toast.success(message);
+    } catch (error) {
+      if( error instanceof Error ) {
+        toast.error(error.message);
+      }
+    }
   }
 
   return (
@@ -20,6 +38,7 @@ const Login = () => {
       <div className="bg-white mx-auto max-w-5xl md:grid md:grid-cols-2 rounded-2xl overflow-hidden shadow md:h-102.5">
         <form 
           className="space-y-2 p-5 overflow-y-scroll"
+          noValidate
           onSubmit={handleSubmit(handleLogin)}
         >
           <legend className="text-center font-bold text-2xl">Llena todos los campos</legend>
@@ -30,12 +49,16 @@ const Login = () => {
               className="text-gray-600 text-2xl font-bold"
             >Email</label>
             <input 
-              type="text" 
+              type="email" 
               id="email"
               placeholder="Escribe tu email aqu&iacute;" 
               className="border border-gray-400 p-2 my-3 w-full rounded-lg"
               {...register("email", {
-                required: "El email es obligatorio"
+                required: "El email es obligatorio",
+                pattern: {
+                  value:  /\S+@\S+\.\S+/,
+                  message: "E-mail no valido"
+                }
               })}
             />
           </div>
@@ -66,8 +89,8 @@ const Login = () => {
           )}
 
           <div className="flex justify-between items-center space-y-5 flex-col md:items-start md:flex-row">
-            <Link to="/register" className="text-blue-500 hover:text-blue-800"> &iquest;A&uacute;n no tienes una cuenta?</Link>
-            <Link to="/forgot-password" className="text-blue-500 hover:text-blue-800"> &iquest;Olvidaste tu contrase&ntilde;a?</Link>
+            <Link to="/auth/register" className="text-blue-500 hover:text-blue-800"> &iquest;A&uacute;n no tienes una cuenta?</Link>
+            <Link to="/auth/forgot-password" className="text-blue-500 hover:text-blue-800"> &iquest;Olvidaste tu contrase&ntilde;a?</Link>
           </div>
 
           <input 
@@ -84,4 +107,4 @@ const Login = () => {
   )
 }
 
-export default Login
+export default LoginView;
