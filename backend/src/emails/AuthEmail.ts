@@ -37,9 +37,7 @@ export class AuthEmail {
             html: `
                 <p>Hola ${name}, has mandado una solicitud para reestablecer tu acceso a CLIRA</p>
                 <p>Visita el siguiente enlace:</p>
-                <a href="${process.env.FRONTEND_URL}/auth/new-password">Reestablecer Contraseña</a>
-                <p>E ingresa el siguiente token para reestablecer tu cuenta: <b>${token}</b> </p>
-                <p>El token expira en 10 minutos.</p>
+                <a href="${process.env.FRONTEND_URL}/auth/new-password/${token}">Reestablecer Contraseña</a>
             `
         });
     }

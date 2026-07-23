@@ -41,10 +41,16 @@ router.post("/forgot-password",
     AuthController.forgotPassword
 );
 
+router.post("/validate-token/:token",
+    param("token").notEmpty().withMessage("El token es obligatorio"),
+    handleInputErrors,
+    AuthController.validateToken
+)
+
 router.post("/update-password/:token",
     param("token").notEmpty().withMessage("El token es obligatorio"),
     body("password").isLength({min: 8}).withMessage("El nuevo password debe tener minimo 8 caracteres"),
-    body("password-confirmation").custom(( value, {req} ) => {
+    body("repeatPassword").custom(( value, {req} ) => {
         if( value !== req.body.password ) {
             throw new Error("Las contraseñas son diferentes")
         }

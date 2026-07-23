@@ -56,27 +56,20 @@ export class AuthController {
 
                 //Si no existe un token o ya expiro entonces limpiamos el campo de token, la fecha de expiracion y guardamos en la bd
                 if( !tokenExpiresAt || tokenExpiresAt < new Date() ) {
-                    // user.token = null;
-                    // user.tokenExpiresAt = null;
-                    // await user.save();
-                    await cleanTokenFields( user );
 
+                    await cleanTokenFields( user );
                     const error = new Error("El token ha expirado");
                     return res.status(400).json( { error: error.message } );
                 }
 
                 //Si existe, entonces limpiamos ambos campos y confirmamos la cuenta del usuario y guardamos en la bd
-                // user.token = null;
-                // user.tokenExpiresAt = null;
-                // user.confirm = true;
-                // await user.save();
                 await confirmUser( user );
                 return res.send("El usuario ha sido confirmado correctamente");
                 
             }
 
             //El usuario con ese token no ha sido encontrado o ya expiro
-            return res.status(400).json( { error: "El token invalido o ha expirado" } );
+            return res.status(400).json( { error: "El token es invalido o ha expirado" } );
             
         } catch (error) {
             res.status(500).json({error: "Error interno del servidor"});
@@ -111,7 +104,7 @@ export class AuthController {
                     token: userExists.token
                 });
 
-                const error = new Error("El usuario no esta confirmado aun, se ha enviado un correo con instrucciones");
+                const error = new Error("Usuario no confirmado, se ha enviado un correo con instrucciones");
                 return res.status(409).json( { error : error.message } );
             }
 
@@ -135,8 +128,8 @@ export class AuthController {
         try {
             const userExists = await User.findOne( { where: { email } } );
 
-            if(!userExists) {
-                const error = new Error("El usuario no existe");
+            if(!userExists || !userExists.confirm) {
+                const error = new Error("El usuario no existe o no esta confirmado");
                 return res.status(409).json( { error: error.message } );
             }
 
@@ -173,15 +166,27 @@ export class AuthController {
             }
 
             //Si el token existe entonces reescribimos el password con el valor enviado y lo guardamos en la bd
-            // isUserExistsWithToken.password = await hashPassword( password );
-            // isUserExistsWithToken.token = null;
-            // isUserExistsWithToken.tokenExpiresAt = null;
-            // await isUserExistsWithToken.save();
             await saveNewPassword( isUserExistsWithToken, password );
             
             res.send("La contraseña ha sido actualizada correctamente");
         } catch (error) {
             return res.status(500).json( { error: "Error interno del servidor" } );
+        }
+    }
+
+    static validateToken = async( req: Request, res: Response ) => {
+        const { token } = req.params;
+
+        try {
+            const tokenBelongsToUser = await User.findOne( { where: { token } } );
+            if(!tokenBelongsToUser || tokenBelongsToUser.tokenExpiresAt! < new Date() || !tokenBelongsToUser.confirm) {
+                const error = new Error("Token invalido o usuario no confirmado");
+                return res.status(409).json( { error: error.message } );
+            }
+
+            res.status(200).send("Token valido, puedes restablecer tu contraseña");
+        } catch (error) {
+            return res.status(500).json( { error: "Error interno del servidor" } )
         }
     }
 }
