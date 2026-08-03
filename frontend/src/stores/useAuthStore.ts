@@ -13,7 +13,6 @@ export type AuthSliceType = {
 
 //StateCreator nos ayuda a tipar de mejor forma nuestros slides ademas de tipar a set y get
 export const createAuthSlice : StateCreator<AuthSliceType> = () => ({
-
     createAccount: async( formData : UserRegistrationForm ) => {
         const message = await createAccount(formData);
         return message;
