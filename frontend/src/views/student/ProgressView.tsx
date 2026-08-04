@@ -2,7 +2,7 @@ import CaseCard from "../../components/cases/CaseCard"
 import PreviewCaseModal from "../../components/cases/PreviewCaseModal"
 import SearchBar from "../../components/SearchBar"
 
-const PendingCases = () => {
+const ProgressView = () => {
   return (
     <>
       <h1 className="text-blue-500 text-center font-bold text-4xl my-10">Mi Progreso</h1>
@@ -38,4 +38,4 @@ const PendingCases = () => {
   )
 }
 
-export default PendingCases
+export default ProgressView;
