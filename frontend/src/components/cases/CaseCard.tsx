@@ -43,11 +43,6 @@ const CaseCard = ( {started} : CaseCardProps ) => {
         </div>
 
         <div className="flex flex-col space-y-3">
-            <div className="flex justify-start items-end gap-x-2">
-                <div className="bg-green-400 rounded-lg w-8 p-1 aspect-square text-white font-bold"><ChartBarIcon/></div>
-                <p className="font-semibold">Dificultad fac&iacute;l</p>
-            </div>
-
             {started && (
                 <>
                     <div className="flex justify-start items-end gap-x-2">
@@ -64,6 +59,11 @@ const CaseCard = ( {started} : CaseCardProps ) => {
                     </div>    
                 </>
             )}
+
+            <div className="flex justify-start items-end gap-x-2">
+                <div className="bg-green-400 rounded-lg w-8 p-1 aspect-square text-white font-bold"><ChartBarIcon/></div>
+                <p className="font-semibold">Dificultad fac&iacute;l</p>
+            </div>
 
             <div className="flex justify-start items-end gap-x-2">
                 <div className="bg-gray-300 rounded-4xl w-8 p-1 text-white font-bold"><CursorArrowRaysIcon/></div>

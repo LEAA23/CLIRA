@@ -17,8 +17,11 @@ const NewPasswordPage = lazy( () => import("./views/auth/NewPasswordView") );
  */
 const DashBoardPage = lazy( () => import("./views/student/DashBoardView") );
 const CasesPage = lazy( () => import("./views/student/CasesView") );
-const ProgressPage = lazy( () =>  import("./views/student/Progress") );
+const ProgressPage = lazy( () =>  import("./views/student/ProgressView") );
 const SimulationPage = lazy( () => import("./views/student/SimulationView") );
+const GroupPage = lazy( () => import("./views/student/GroupView") );
+const RankingPage = lazy( () => import("./views/student/RankingView") );
+const SettingsPage = lazy( () => import("./views/student/SettingsView") );
 
 /*
 El Router contiene todas las rutas que se utilizan en el frontend, dependiendo de la ruta renderiza la vista asignada
@@ -41,6 +44,9 @@ const Router = () => {
                     <Route path="clinical-cases" element={ <Suspense fallback="cargando..." > <CasesPage/> </Suspense> } />
                     <Route path="simulation/:id" element={ <Suspense fallback="cargando..."> <SimulationPage/> </Suspense> }/>
                     <Route path="progress" element={ <Suspense fallback="cargando..."> <ProgressPage/> </Suspense> }/>
+                    <Route path="group" element={ <Suspense fallback="cargando..."> <GroupPage/> </Suspense> }/>
+                    <Route path="ranking" element={ <Suspense fallback={"cargando"}> <RankingPage/> </Suspense> }/>
+                    <Route path="settings" element={ <Suspense fallback="cargando"> <SettingsPage/> </Suspense> }/>
                 </Route>
             </Routes>
         </BrowserRouter>

@@ -7,7 +7,7 @@ const AuthLayout = () => {
   return (
     <>
       <Header/>
-      <main className="container mx-auto">
+      <main className="container mx-auto p-5">
           <Outlet/>
       </main>
       <Footer/>

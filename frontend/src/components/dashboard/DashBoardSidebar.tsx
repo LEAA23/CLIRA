@@ -1,4 +1,4 @@
-import { PresentationChartLineIcon, Cog6ToothIcon, ChevronDoubleLeftIcon, ChevronDoubleRightIcon, HeartIcon, RocketLaunchIcon } from "@heroicons/react/16/solid";
+import { PresentationChartLineIcon, Cog6ToothIcon, ChevronDoubleLeftIcon, ChevronDoubleRightIcon, HeartIcon, RocketLaunchIcon, RectangleGroupIcon, TrophyIcon } from "@heroicons/react/16/solid";
 import SideBarLink from "./SideBarLink";
 import { useState } from "react";
 
@@ -45,17 +45,17 @@ const DashBoardSidebar = () => {
             icon={RocketLaunchIcon}
           />
           <SideBarLink
-            url="/x"
-            text="DashBoard"
-            icon={PresentationChartLineIcon}
+            url="/group"
+            text="Grupo"
+            icon={RectangleGroupIcon}
           />
           <SideBarLink
-            url="/x"
-            text="DashBoard"
-            icon={PresentationChartLineIcon}
+            url="/ranking"
+            text="Ranking"
+            icon={TrophyIcon}
           />
           <SideBarLink
-            url="/configuration"
+            url="/settings"
             text="Configuración"
             icon={Cog6ToothIcon}
           />
