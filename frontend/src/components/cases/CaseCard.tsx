@@ -20,8 +20,13 @@ const CaseCard = ( {started} : CaseCardProps ) => {
         <h3 className="text-center text-gray-500 font-bold text-2xl">{"Titulo Caso 1"}</h3>
 
         <div className="relative w-full aspect-square overflow-hidden rounded-lg">
-        <img loading="lazy" src="/patientExample.png" alt="Imagen simulacion numero x" className="w-full aspect-square" />
-        <div className="absolute bottom-0 left-0 w-full h-20 bg-linear-to-t from-white to-transparent"></div>
+            <img 
+                loading="lazy" 
+                src="/patientExample.png" 
+                alt="Imagen simulacion numero x" 
+                className="w-full aspect-square" 
+            />
+            <div className="absolute bottom-0 left-0 w-full h-20 bg-linear-to-t from-white to-transparent"></div>
         </div>
 
         <div>

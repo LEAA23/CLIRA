@@ -45,8 +45,8 @@ const DashBoardSidebar = () => {
             icon={RocketLaunchIcon}
           />
           <SideBarLink
-            url="/group"
-            text="Grupo"
+            url="/groups"
+            text="Mis Grupos"
             icon={RectangleGroupIcon}
           />
           <SideBarLink

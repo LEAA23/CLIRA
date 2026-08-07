@@ -11,7 +11,7 @@ const DashBoardView = () => {
 
   return (
     <>
-      <h1 className="text-center font-bold text-4xl my-10 text-blue-500">Dashboard</h1>
+      <h1 className="text-center font-bold text-5xl my-10 text-blue-500">Dashboard</h1>
 
       <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-x-5 mb-5">
         <div className="bg-white p-5 max-w-full rounded-2xl shadow mt-5">

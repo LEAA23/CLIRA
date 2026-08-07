@@ -6,13 +6,13 @@ const CasesView = () => {
   
   return (
     <>
-      <h1 className="text-center font-bold text-4xl my-10 text-blue-500">Casos Clinicos</h1>
+      <h1 className="text-center font-bold text-5xl my-10 text-blue-500">Casos Clinicos</h1>
 
       <SearchBar
         pendingCases={false}
       />
 
-      <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+      <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-5">
         <CaseCard
           started={false}
         />

@@ -4,7 +4,7 @@ import { ArrowUpRightIcon } from "@heroicons/react/16/solid";
 const SimulationView = () => {
   return (
     <>
-        <h1 className="text-4xl text-center font-bold  my-10 text-blue-500">Titulo del Caso Medico</h1>
+        <h1 className="text-5xl text-center font-bold  my-10 text-blue-500">Titulo del Caso Medico</h1>
         
         <div className="grid grid-cols-2 gap-x-5 mb-5">
             <div className="bg-blue-200 relative">
