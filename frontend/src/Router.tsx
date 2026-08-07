@@ -33,7 +33,7 @@ const Router = () => {
             <Routes>
                 
                 <Route path="/auth" element={ <AuthLayout/> }>
-                    <Route path="login" element={ <Suspense fallback="carando..."> <LoginPage/> </Suspense> }/>
+                    <Route path="login" element={ <Suspense fallback="cargando..."> <LoginPage/> </Suspense> }/>
                     <Route path="register" element={ <Suspense fallback="cargando..."> <RegisterPage/> </Suspense> }/>
                     <Route path="confirm-account" element={ <Suspense fallback="cargando..."> <ConfirmAccountPage/> </Suspense> }/>
                     <Route path="forgot-password" element={ <Suspense fallback="cargando..."> <ForgotPasswordPage/> </Suspense> }/>

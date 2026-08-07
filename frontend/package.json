@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@chakra-ui/pin-input": "^2.1.0",
+    "@fancyapps/ui": "^6.1.14",
     "@headlessui/react": "^2.2.10",
     "@heroicons/react": "^2.2.0",
     "@tailwindcss/vite": "^4.3.2",
