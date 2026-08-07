@@ -19,6 +19,7 @@ const DashBoardPage = lazy( () => import("./views/student/DashBoardView") );
 const CasesPage = lazy( () => import("./views/student/CasesView") );
 const ProgressPage = lazy( () =>  import("./views/student/ProgressView") );
 const SimulationPage = lazy( () => import("./views/student/SimulationView") );
+const GroupsPage = lazy( () => import("./views/student/GroupsView") );
 const GroupPage = lazy( () => import("./views/student/GroupView") );
 const RankingPage = lazy( () => import("./views/student/RankingView") );
 const SettingsPage = lazy( () => import("./views/student/SettingsView") );
@@ -44,7 +45,8 @@ const Router = () => {
                     <Route path="clinical-cases" element={ <Suspense fallback="cargando..." > <CasesPage/> </Suspense> } />
                     <Route path="simulation/:id" element={ <Suspense fallback="cargando..."> <SimulationPage/> </Suspense> }/>
                     <Route path="progress" element={ <Suspense fallback="cargando..."> <ProgressPage/> </Suspense> }/>
-                    <Route path="group" element={ <Suspense fallback="cargando..."> <GroupPage/> </Suspense> }/>
+                    <Route path="groups" element={ <Suspense fallback="cargando..."> <GroupsPage/> </Suspense> }/>
+                    <Route path="groups/:id" element={ <Suspense fallback="cargando..."> <GroupPage/> </Suspense> }/>
                     <Route path="ranking" element={ <Suspense fallback={"cargando"}> <RankingPage/> </Suspense> }/>
                     <Route path="settings" element={ <Suspense fallback="cargando"> <SettingsPage/> </Suspense> }/>
                 </Route>
