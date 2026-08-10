@@ -13,7 +13,7 @@ const ConfirmAccountPage = lazy( () => import("./views/auth/ConfirmAccountView")
 const NewPasswordPage = lazy( () => import("./views/auth/NewPasswordView") );
 
 /**
- * Student PAGES
+ * STUDENT PAGES
  */
 const DashBoardPage = lazy( () => import("./views/student/DashBoardView") );
 const CasesPage = lazy( () => import("./views/student/CasesView") );
