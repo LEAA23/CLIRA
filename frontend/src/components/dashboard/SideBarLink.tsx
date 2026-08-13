@@ -4,9 +4,9 @@ type SideBarLinkProps = {
     url: string;
     text: string;
     icon: React.ForwardRefExoticComponent<Omit<React.SVGProps<SVGSVGElement>, "ref"> & {
-                title?: string;
-                titleId?: string;
-            } & React.RefAttributes<SVGSVGElement>>
+        title?: string;
+        titleId?: string;
+    } & React.RefAttributes<SVGSVGElement>>
 }
 
 const SideBarLink = ( { url, text, icon : Icon } : SideBarLinkProps ) => {

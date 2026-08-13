@@ -4,9 +4,10 @@ import FilterOptions from "./FilterOptions";
 
 type SearchBarProps = {
   pendingCases: boolean;
+  filters: boolean
 }
 
-const SearchBar = ({pendingCases} : SearchBarProps) => {
+const SearchBar = ({pendingCases, filters} : SearchBarProps) => {
     //state local para identificar cuanod el usuario esta escribiendo en el input de buscar
     const [isWriting, setIsWriting] = useState(false);
     //State local para identificar cuando el filter esta activo y asi poder desplegarlo
@@ -17,15 +18,17 @@ const SearchBar = ({pendingCases} : SearchBarProps) => {
   return (
       
     <div className="flex flex-col md:flex-row justify-center items-center md:items-stretch md:justify-start gap-x-3">
-        <div className="bg-white rounded-lg shadow mb-5 md:mb-10 w-12 md:w-auto aspect-square flex justify-center items-center cursor-pointer">
-          <button
-            onClick={handleClick}
-          >
-            <AdjustmentsHorizontalIcon
-              className="text-gray-400 w-8 hover:text-blue-500 cursor-pointer"
-            />
-          </button>
-        </div>
+        {filters && (
+          <div className="bg-white rounded-lg shadow mb-5 md:mb-10 w-12 md:w-auto aspect-square flex justify-center items-center cursor-pointer">
+            <button
+              onClick={handleClick}
+            >
+              <AdjustmentsHorizontalIcon
+                className="text-gray-400 w-8 hover:text-blue-500 cursor-pointer"
+              />
+            </button>
+          </div>
+        )}
         {isFiltersActive && (
           <div className="bg-white rounded-lg shadow mb-10 p-5">
             <FilterOptions
@@ -34,7 +37,7 @@ const SearchBar = ({pendingCases} : SearchBarProps) => {
           </div>
         )}
 
-        <div className="bg-white w-full md:max-w-1/4 rounded-lg shadow mb-10">
+        <div className={`bg-white ${filters? "md:max-w-1/4" : "w-full"} rounded-lg shadow mb-10`}>
           <form
             className="flex justify-between items-center"
           >

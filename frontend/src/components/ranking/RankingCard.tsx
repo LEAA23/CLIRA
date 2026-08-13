@@ -7,12 +7,8 @@ const RankingCard = () => {
           <img src="normalMedal.png" alt="normal medal" className="h-10 aspect-square" />
           <p className="font-bold">4th</p>
         </div>
-
-        <div className="mt-10">
-          
         <ProfileTagName/>
-        </div>
-        <p className="font-bold">100 pts.</p>
+        <p className="font-bold ml-5">100 pts.</p>
     </div>
   )
 }

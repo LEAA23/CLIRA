@@ -10,6 +10,7 @@ const CasesView = () => {
 
       <SearchBar
         pendingCases={false}
+        filters={true}
       />
 
       <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-5">
