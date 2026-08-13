@@ -20,8 +20,7 @@ const LoginView = () => {
   //Una vez que el usuario mande el form se ejecuta esta funcion que le va a permitir o no el inicio de sesion
   const handleLogin = async ( formData : UserLoginForm ) => {
     try {
-      const message = await loginAccount( formData );
-      toast.success(message);
+      await loginAccount( formData );
     } catch (error) {
       if( error instanceof Error ) {
         toast.error(error.message);

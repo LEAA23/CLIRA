@@ -3,6 +3,7 @@ import { User } from "../models/User";
 import { checkPassword, cleanTokenFields, confirmUser, hashPassword, saveNewPassword } from "../utils/auth";
 import { generateToken } from "../utils/token";
 import { AuthEmail } from "../emails/AuthEmail";
+import generateJsonWebToken from "../utils/jwt";
 
 export class AuthController {
 
@@ -116,6 +117,9 @@ export class AuthController {
             }
 
             //Generear un token de autenticacion con JWT
+            const token = generateJsonWebToken( String(userExists.id) );
+            res.status(200).send(token);
+
         } catch (error) {
             res.status(500).json({error: "Error interno del servidor"});
         }
