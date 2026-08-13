@@ -15,14 +15,14 @@ const NewPasswordPage = lazy( () => import("./views/auth/NewPasswordView") );
 /**
  * STUDENT PAGES
  */
-const DashBoardPage = lazy( () => import("./views/student/DashBoardView") );
-const CasesPage = lazy( () => import("./views/student/CasesView") );
-const ProgressPage = lazy( () =>  import("./views/student/ProgressView") );
-const SimulationPage = lazy( () => import("./views/student/SimulationView") );
-const GroupsPage = lazy( () => import("./views/student/GroupsView") );
-const GroupPage = lazy( () => import("./views/student/GroupView") );
-const RankingPage = lazy( () => import("./views/student/RankingView") );
-const SettingsPage = lazy( () => import("./views/student/SettingsView") );
+const DashBoardPage = lazy( () => import("./views/Dashboard/DashBoardView") );
+const CasesPage = lazy( () => import("./views/Cases/CasesView") );
+const ProgressPage = lazy( () =>  import("./views/Progress/ProgressView") );
+const SimulationPage = lazy( () => import("./views/Cases/SimulationView") );
+const GroupsPage = lazy( () => import("./views/Group/GroupsView") );
+const GroupPage = lazy( () => import("./views/Group/GroupView") );
+const RankingPage = lazy( () => import("./views/ranking/RankingView") );
+const SettingsPage = lazy( () => import("./views/Settings/SettingsView") );
 
 /*
 El Router contiene todas las rutas que se utilizan en el frontend, dependiendo de la ruta renderiza la vista asignada

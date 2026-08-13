@@ -32,6 +32,8 @@ export const confirmAccount = async( token: ConfirmToken) => {
 export const loginAccount = async( formData : UserLoginForm ) => {
     try {
         const { data } = await api.post<string>("/auth/login", formData);
+        //Guardamos en LocalStorage el token para arrancar la sesion
+        localStorage.setItem("AUTH_TOKEN", data);
         return data;
     } catch (error) {
         if( isAxiosError(error) && error.response ) {
