@@ -16,10 +16,12 @@ const PostCard = () => {
         
         <Carousel/>
 
-        <ProfileTagName/>
+        <div className="-mt-8 ml-5">
+            <ProfileTagName/>
+        </div>
 
         <div className="p-5">
-            <p className="mt-5 ml-5">
+            <p className="mb-5 ml-5">
                 Lorem ipsum, dolor sit amet consectetur adipisicing elit. Fugiat voluptates aspernatur impedit adipisci, 
                 cupiditate fuga, expedita quidem qui libero porro suscipit.
             </p>

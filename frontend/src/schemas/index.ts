@@ -13,3 +13,11 @@ export const AuthSchema = z.object({
     repeatPassword: z.string(),
     token: z.string()
 });
+
+/**
+ *  CHART CONTAINER SCHEMA
+ */
+export const ChartOptionSchema = z.object({
+    id: z.string(),
+    label: z.string()
+});
