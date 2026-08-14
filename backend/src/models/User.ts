@@ -37,11 +37,16 @@ User.init(
         },    
         phoneNumber: {
             type: DataTypes.STRING,
+            unique: true,
             allowNull: false
         },    
         email: {
             type: DataTypes.STRING,
-            allowNull: false
+            unique: true,
+            allowNull: false,
+            validate: {
+                isEmail: true
+            }
         },    
         password: {
             type: DataTypes.STRING,
