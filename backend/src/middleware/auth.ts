@@ -8,7 +8,7 @@ import { User } from "../models/User";
 declare global {
     namespace Express {
         interface Request {
-            user: User["dataValues"]
+            user: User
         }
     }
 }
@@ -41,7 +41,7 @@ const authenticate = async ( req: Request, res: Response, next: NextFunction ) =
             //Verificamos is el usuario exite en la BD
             if(user) {
                 //Si existe reescribimos la interaz de req con la instancia del user para poder tener acceso en los controladores
-                req.user = user.dataValues
+                req.user = user;
             } else {
                 return res.status(500).json({ error: "Token no valido" })
             }

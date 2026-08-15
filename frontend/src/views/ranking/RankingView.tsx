@@ -53,7 +53,10 @@ const RankingView = () => {
 
         <div className="flex flex-col md:flex-row justify-center items-end gap-15 sha">
 
-          <div className="flex flex-col bg-linear-to-t from-gray-50 via-25% via-blue-500 to-blue-500 h-full p-5 rounded-t-4xl max-w-min"> 
+          <div 
+            className="flex flex-col bg-linear-to-t from-gray-50 via-25% via-blue-500 to-blue-500 h-full p-5 
+            rounded-t-4xl max-w-min"
+          > 
             <div 
               className="bg-white h-40 rounded-full p-1 cursor-pointer"
             >

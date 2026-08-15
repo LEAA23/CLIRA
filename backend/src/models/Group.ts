@@ -5,6 +5,7 @@ import db from "../config/db";
 export class Group extends Model< InferAttributes<Group>, InferCreationAttributes<Group> > {
     declare id: CreationOptional<number>;
     declare name: string;
+    declare bgImage: string;
     declare teacher: number;
 }
 
@@ -16,6 +17,10 @@ Group.init({
         primaryKey: true
     },
     name: {
+        type: DataTypes.STRING,
+        allowNull: false
+    },
+    bgImage: {
         type: DataTypes.STRING,
         allowNull: false
     },
