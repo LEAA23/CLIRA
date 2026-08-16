@@ -27,7 +27,7 @@ export class GroupsControlller {
             const teacher = req.user.id;
 
             //Econtramos todos los grupos que pertencen al maetsro mediante el id del mismo
-            const groups = await Group.findAll( { where: { teacher} } );
+            const groups = await Group.findAll( { where: { teacher } } );
             return res.status(200).json({ groups });
         } catch (error) {
             return res.status(500).json( { error: "Error interno del servidor" } );
