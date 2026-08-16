@@ -15,6 +15,17 @@ export const AuthSchema = z.object({
 });
 
 /**
+ * USER SCHEMA
+ */
+export const UserSchema = AuthSchema.pick({
+    name: true,
+    email: true,
+    rol: true
+}).extend({
+    id: z.number().or( z.null() )
+})
+
+/**
  *  CHART CONTAINER SCHEMA
  */
 export const ChartOptionSchema = z.object({
