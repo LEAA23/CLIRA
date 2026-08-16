@@ -1,6 +1,7 @@
 import { isAxiosError } from "axios"
 import api from "../lib/axios";
 import type { ConfirmToken, UserForgotPasswordForm, UserLoginForm, UserRegistrationForm, UserUpdatePassword, UserValidateToken } from "../types";
+import { UserSchema } from "../schemas";
 
 
 export const createAccount = async( formData : UserRegistrationForm ) => {
@@ -80,5 +81,21 @@ export const updatePassword = async( {token, password, repeatPassword} : UserUpd
         }
 
         throw error;
+    }
+}
+
+export const getUserAuth = async() => {
+    try {
+        //Extraemos los datos del usuario del objeto de Axios
+        const {data: { user }} = await api.get("/auth/user");
+        //Validamos que los datos tengan la misma estructura que el Schema
+        const response = UserSchema.safeParse(user);
+        if(response.data) {
+            return response.data;
+        }
+    } catch (error) {
+        if( isAxiosError(error) && error.response ) {
+            throw new Error( error.response.data.error );
+        }
     }
 }

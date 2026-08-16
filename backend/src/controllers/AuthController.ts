@@ -194,4 +194,13 @@ export class AuthController {
             return res.status(500).json( { error: "Error interno del servidor" } )
         }
     }
+    
+    //Metodo para obtener el usuario que actualemnte esta logeado
+    static getUser = async( req: Request, res: Response ) => {
+        try {
+            return res.status(200).json( { user : req.user } );
+        } catch (error) {
+            return res.status(500).json( { error: "Error interno del servidor" } );
+        }
+    }
 }

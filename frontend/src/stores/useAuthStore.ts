@@ -1,18 +1,26 @@
 import { type StateCreator } from "zustand";
-import { confirmAccount, createAccount, forgotPasswordAccount, loginAccount, updatePassword, validateToken } from "../api/authApi";
-import type { ConfirmToken, UserForgotPasswordForm, UserLoginForm, UserRegistrationForm, UserUpdatePassword, UserValidateToken } from "../types";
+import { confirmAccount, createAccount, forgotPasswordAccount, getUserAuth, loginAccount, updatePassword, validateToken } from "../api/authApi";
+import type { ConfirmToken, UserAuthenticate, UserForgotPasswordForm, UserLoginForm, UserRegistrationForm, UserUpdatePassword, UserValidateToken } from "../types";
 
 export type AuthSliceType = {
+    user: UserAuthenticate;
     createAccount: ( formData : UserRegistrationForm ) => Promise<string>;
     confirmAccount: ( token : ConfirmToken["token"] ) => Promise<string>;
     login: ( formData : UserLoginForm ) => Promise<string>;
     forgotPassword: ( formData : UserForgotPasswordForm ) => Promise<string>;
     updatePasswordAccount: ( data : UserUpdatePassword ) => Promise<string>;
     validateTokenAccount: ( token: UserValidateToken["token"] ) => Promise<string>;
+    fetchUserAuth: () => Promise<void>;
 }
 
 //StateCreator nos ayuda a tipar de mejor forma nuestros slides ademas de tipar a set y get
-export const createAuthSlice : StateCreator<AuthSliceType> = () => ({
+export const createAuthSlice : StateCreator<AuthSliceType> = ( set ) => ({
+    user: {
+        name: "",
+        email: "",
+        id: null,
+        rol: ""
+    },
     createAccount: async( formData : UserRegistrationForm ) => {
         const message = await createAccount(formData);
         return message;
@@ -36,5 +44,11 @@ export const createAuthSlice : StateCreator<AuthSliceType> = () => ({
     validateTokenAccount: async( token : UserValidateToken["token"] ) => {
         const message = await validateToken( {token} );
         return message;
+    },
+    fetchUserAuth: async() => {
+        const user = await getUserAuth();
+        set(() => ({
+            user
+        }));
     }
 });

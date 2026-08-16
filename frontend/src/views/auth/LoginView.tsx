@@ -17,7 +17,7 @@ const LoginView = () => {
 
   const { register, handleSubmit, formState: {errors} } = useForm<UserLoginForm>( { defaultValues: initialValues } );
 
-  //Una vez que el usuario mande el form se ejecuta esta funcion que le va a permitir o no el inicio de sesion
+  //Una vez que el usuario mande el form se ejecutaue esta funcion q le va a permitir o no el inicio de sesion
   const handleLogin = async ( formData : UserLoginForm ) => {
     try {
       await loginAccount( formData );

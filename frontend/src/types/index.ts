@@ -1,5 +1,5 @@
 import z from "zod"
-import type { AuthSchema, ChartOptionSchema } from "../schemas"
+import type { AuthSchema, ChartOptionSchema, UserSchema } from "../schemas"
 
 /**
  * AUTH TYPES
@@ -12,6 +12,7 @@ export type UserForgotPasswordForm = Pick<AuthSchema, "email">;
 export type UserNewPasswordForm = Pick<AuthSchema, "password" | "repeatPassword">;
 export type UserUpdatePassword = Pick<AuthSchema, "password" | "repeatPassword" | "token">;
 export type UserValidateToken = Pick<AuthSchema, "token">;
+export type UserAuthenticate = z.infer< typeof UserSchema >;
 
 /**
  * CHART OPTION TYPE
