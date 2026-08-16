@@ -26,6 +26,19 @@ export const UserSchema = AuthSchema.pick({
 })
 
 /**
+ * Groups SCHEMAS'
+ */
+export const GroupShcema = z.object({
+    id: z.number(),
+    name: z.string(),
+    bgImage: z.string()
+});
+
+export const GroupsSchema = z.array(
+    GroupShcema
+);
+
+/**
  *  CHART CONTAINER SCHEMA
  */
 export const ChartOptionSchema = z.object({
