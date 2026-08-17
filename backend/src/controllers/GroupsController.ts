@@ -1,6 +1,9 @@
 import { Request, Response } from "express";
 import { Group } from "../models/Group";
 
+import "../models/associations";
+import { User } from "../models/User";
+
 export class GroupsControlller {
     static createGroup = async (req: Request, res: Response) => {
         //Extraemos el nombre del grupo que escribio el usuario
@@ -26,8 +29,11 @@ export class GroupsControlller {
             //Extraemos el id del maestro
             const teacher = req.user.id;
 
-            //Econtramos todos los grupos que pertencen al maetsro mediante el id del mismo
-            const groups = await Group.findAll( { where: { teacher } } );
+            //Econtramos todos los grupos que pertencen al maetsro mediante el id del mismo, ademas mediante la asociacion teahcerUser obtenemos el nombre del maestro
+            const groups = await Group.findAll( { 
+                where: { teacher }, 
+                include: [ { model: User, as: "teacherUser", attributes: ["id", "name"] } ]
+            } );
             return res.status(200).json({ groups });
         } catch (error) {
             return res.status(500).json( { error: "Error interno del servidor" } );

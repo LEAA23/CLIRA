@@ -6,7 +6,6 @@ export const getGroups = async() => {
     try {
         const { data: { groups } } = await api("/groups");
         const response = GroupsSchema.safeParse(groups);
-        console.log(response)
         if(response.data) {
             return response.data;
         }
