@@ -33,7 +33,7 @@ const GroupsView = () => {
     <>
         <h1 className="text-blue-500 text-5xl my-10 text-center font-bold">Mis Grupos</h1>
 
-        {user.rol == "teacher" && (
+        {user.rol === "teacher" && (
           <div className="flex justify-end items-center mb-5">
             <button
               type="button"
@@ -47,11 +47,15 @@ const GroupsView = () => {
         )}
 
         <div className="grid grid-cols-1 items-center justify-center md:grid-cols-2 lg:grid-cols-4 gap-x-5">
-          <GroupCard/>
-          <GroupCard/>
-          <GroupCard/>
-          <GroupCard/>
-          <GroupCard/>
+          {groups.map( group => (
+            <GroupCard
+              key={group.id}
+              id={group.id}
+              name={group.name}
+              bgImage={group.bgImage}
+              teacher={group.teacherUser.name}
+            />
+          ))}
         </div>
     </>
   )

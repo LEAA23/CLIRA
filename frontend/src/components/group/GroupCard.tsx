@@ -1,26 +1,38 @@
 import { AcademicCapIcon, BriefcaseIcon } from "@heroicons/react/16/solid";
 import GroupCardOptions from "./GroupCardOptions";
+import { useAppStore } from "../../stores/useAppStore";
 
-const GroupCard = () => {
+type GroupCardProps = {
+    id: number;
+    name: string;
+    bgImage: string;
+    teacher: string;
+}
+
+const GroupCard = ( { id, name, bgImage, teacher } : GroupCardProps ) => {
+    const user = useAppStore( state => state.user );
+    console.log(user)
   return (
     <div className="bg-white shadow rounded-lg mb-5 border-l-4 border-l-amber-200">
         <div className="p-5 space-y-5">
             <div className="flex justify-between items-center text-gray-500">
                 <a 
-                    href={`/groups/${"23"}`}
+                    href={`/groups/${id}`}
                 >
-                    <h3 className="text-xl font-bold text-left hover:text-blue-500 cursor-pointer">Anatomia</h3>
+                    <h3 className="text-xl font-bold text-left hover:text-blue-500 cursor-pointer">{name}</h3>
                 </a>   
                 <GroupCardOptions/>
             </div>
 
-            <div className="text-gray-400 flex justify-start items-center">
-                <BriefcaseIcon className="h-6 aspect-square"/>
+            {user.rol !== "teacher" && (
+                <div className="text-gray-400 flex justify-start items-center">
+                    <BriefcaseIcon className="h-6 aspect-square"/>
 
-                <p className="font-bold">Maestro: {""}
-                    <span className="text-black font-normal">Luis Ernesto</span> 
-                </p>
-            </div>
+                    <p className="font-bold">Maestro: {""}
+                        <span className="text-black font-normal">{teacher}</span> 
+                    </p>
+                </div>
+            )}
 
             <div className="text-gray-400 flex justify-start items-center">
                 <AcademicCapIcon className="h-6 aspect-square"/>
