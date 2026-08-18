@@ -5,11 +5,10 @@ import { useAppStore } from "../../stores/useAppStore";
 type GroupCardProps = {
     id: number;
     name: string;
-    bgImage: string;
     teacher: string;
 }
 
-const GroupCard = ( { id, name, bgImage, teacher } : GroupCardProps ) => {
+const GroupCard = ( { id, name, teacher } : GroupCardProps ) => {
     const user = useAppStore( state => state.user );
     console.log(user)
   return (

@@ -18,7 +18,7 @@ export type UserAuthenticate = z.infer< typeof UserSchema >;
  * GROUP TYPES
  */
 export type Group = z.infer< typeof GroupShcema >;
-export type Groups = Group[]; 
+export type Groups = Group[];
 
 /**
  * CHART OPTION TYPE
