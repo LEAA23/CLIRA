@@ -3,8 +3,11 @@ import GroupCard from "../../components/group/GroupCard"
 import { useAppStore } from "../../stores/useAppStore";
 import { toast } from "react-toastify";
 import { PlusIcon } from "@heroicons/react/16/solid";
+import { useNavigate } from "react-router-dom";
+import CreateGroupModal from "../../components/group/CreateGroupModal";
 
 const GroupsView = () => {
+  const navigate = useNavigate();
 
   //Extraemos la funcion para consultar el usuario que esta autenticado actualmente
   const fetchUserAuth = useAppStore( state => state.fetchUserAuth );
@@ -37,6 +40,7 @@ const GroupsView = () => {
           <div className="flex justify-end items-center mb-5">
             <button
               type="button"
+              onClick={() => navigate( location.pathname + "?createGroup=true" ) }
               className="bg-purple-500 py-2 px-6 text-white font-bold rounded-lg mt-10 md:mt-5 hover:cursor-pointer 
               hover:transition-colors hover:bg-purple-600 w-full md:w-fit flex justify-start items-center gap-x-2"
             >
@@ -52,11 +56,12 @@ const GroupsView = () => {
               key={group.id}
               id={group.id}
               name={group.name}
-              bgImage={group.bgImage}
               teacher={group.teacherUser.name}
             />
           ))}
         </div>
+        
+        <CreateGroupModal/>
     </>
   )
 }

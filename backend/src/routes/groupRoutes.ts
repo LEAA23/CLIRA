@@ -4,13 +4,14 @@ import { body, param } from "express-validator";
 import { handleInputErrors } from "../middleware/handleInputErrors";
 import authenticate from "../middleware/auth";
 import groupAuthorization from "../middleware/groupAuthorization";
+import { uploadFile } from "../middleware/uploadFile";
 
 const router = Router();
 
 router.post("/",
     authenticate,
+    uploadFile.single("bgImage"),
     body("name").notEmpty().withMessage("El nombre del grupo es obligatorio"),
-    body("bgImage").notEmpty().withMessage("La imagen de fondo es obligatoria"),
     handleInputErrors,
     GroupsControlller.createGroup
 );
