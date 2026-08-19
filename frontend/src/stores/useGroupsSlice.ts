@@ -6,7 +6,7 @@ import { createGroup, getGroups } from "../api/groupsApi";
 export type GroupsSliceType = {
     groups: Groups;
     fetchGroups: () => Promise<void>;
-    createGroup: (formData: FormData) => Promise<void>
+    createGroup: (formData: FormData) => Promise<string>
 }
 
 export const createGroupsSlice : StateCreator<GroupsSliceType> = ( set ) => ({
@@ -18,6 +18,7 @@ export const createGroupsSlice : StateCreator<GroupsSliceType> = ( set ) => ({
         }));
     },
     createGroup: async(formData: FormData) => {
-        await createGroup(formData);
+        const message = await createGroup(formData);
+        return message;
     }
 })

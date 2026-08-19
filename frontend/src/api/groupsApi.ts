@@ -24,5 +24,6 @@ export const createGroup = async( formData: FormData ) => {
         if( isAxiosError(error) && error.response ) {
             throw new Error( error.response.data.error );
         }
+        throw error;
     }
 }

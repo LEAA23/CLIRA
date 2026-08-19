@@ -19,7 +19,7 @@ const GroupsView = () => {
   const groups = useAppStore( state => state.groups );
 
   useEffect(() => {
-    const getUser = async() => {
+    const getData = async() => {
       try {
         await fetchUserAuth();
         await fetchGroups();
@@ -29,7 +29,7 @@ const GroupsView = () => {
         }
       }
     }
-    getUser();
+    getData();
   }, []);
   
    return (
