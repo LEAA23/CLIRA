@@ -18,6 +18,7 @@ const CreateGroupModal = () => {
 
     //Extraemos la funcion para crear el grupo de nuestro slice
     const createGroup = useAppStore( state => state.createGroup );
+    const fetchGroups = useAppStore( state => state.fetchGroups );
 
     //Tipamos los valores inciales del formulario
     const initialValues : GroupRegistrationForm = {
@@ -41,8 +42,11 @@ const CreateGroupModal = () => {
         data.append("bgImage", formData.bgImage[0]);
 
         try {
-            await createGroup(data);
+            const message = await createGroup(data);
+            await fetchGroups();
+            toast.success( message );
             reset();
+            navigate( location.pathname, { replace: true } );
         } catch (error) {
             if( error instanceof Error ) {
                 toast.error(error.message);

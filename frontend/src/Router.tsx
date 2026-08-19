@@ -51,9 +51,7 @@ const Router = () => {
                     <Route path="settings" element={ <Suspense fallback="cargando"> <SettingsPage/> </Suspense> }/>
                 </Route>
 
-                <Route path="/admin" element={ <StudentLayout/> }>
-
-                </Route>
+                
             </Routes>
         </BrowserRouter>
     )

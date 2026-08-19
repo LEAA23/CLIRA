@@ -2,6 +2,7 @@ import { Outlet } from "react-router-dom";
 import DashBoardHeader from "../components/dashboard/DashBoardHeader";
 import DashBoardFooter from "../components/dashboard/DashBoardFooter";
 import DashBoardSidebar from "../components/dashboard/DashBoardSidebar";
+import { ToastContainer } from "react-toastify";
 
 const StudentLayout = () => {
   return (
@@ -14,6 +15,11 @@ const StudentLayout = () => {
         </section>
       </main>
       <DashBoardFooter/>
+
+      <ToastContainer
+        pauseOnFocusLoss={false}
+        pauseOnHover={false}
+      />
     </>
   )
 }
