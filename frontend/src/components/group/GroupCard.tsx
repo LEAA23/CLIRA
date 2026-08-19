@@ -10,7 +10,6 @@ type GroupCardProps = {
 
 const GroupCard = ( { id, name, teacher } : GroupCardProps ) => {
     const user = useAppStore( state => state.user );
-    console.log(user)
   return (
     <div className="bg-white shadow rounded-lg mb-5 border-l-4 border-l-amber-200">
         <div className="p-5 space-y-5">

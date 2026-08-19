@@ -6,10 +6,20 @@ export const getGroups = async() => {
     try {
         const { data: { groups } } = await api("/groups");
         const response = GroupsSchema.safeParse(groups);
-        console.log(response)
         if(response.data) {
             return response.data;
         }
+    } catch (error) {
+        if( isAxiosError(error) && error.response ) {
+            throw new Error( error.response.data.error );
+        }
+    }
+}
+
+export const createGroup = async( formData: FormData ) => {
+    try {
+        const { data } = await api.post<string>("/groups", formData);
+        return data;
     } catch (error) {
         if( isAxiosError(error) && error.response ) {
             throw new Error( error.response.data.error );
