@@ -1,5 +1,5 @@
 import z from "zod"
-import type { AuthSchema, ChartOptionSchema, GroupShcema, UserSchema } from "../schemas"
+import type { AuthSchema, ChartOptionSchema, GroupShcema, GroupsSchema, UserSchema } from "../schemas"
 
 /**
  * AUTH TYPES
@@ -18,7 +18,8 @@ export type UserAuthenticate = z.infer< typeof UserSchema >;
  * GROUP TYPES
  */
 export type Group = z.infer< typeof GroupShcema >;
-export type Groups = Group[];
+export type Groups = z.infer<typeof GroupsSchema  >;
+export type GroupRegistrationForm = Pick<Group, "name" | "bgImage">;
 
 /**
  * CHART OPTION TYPE

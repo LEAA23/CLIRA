@@ -31,7 +31,7 @@ export const UserSchema = AuthSchema.pick({
 export const GroupShcema = z.object({
     id: z.number(),
     name: z.string(),
-    bgImage: z.string(),
+    bgImage: z.array( z.file() ),
     teacher: z.number(),
     teacherUser: z.object({
         name: z.string()
@@ -39,7 +39,10 @@ export const GroupShcema = z.object({
 });
 
 export const GroupsSchema = z.array(
-    GroupShcema
+    GroupShcema.omit({
+        bgImage: true,
+        teacher: true
+    })
 );
 
 /**

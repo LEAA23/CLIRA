@@ -4,24 +4,49 @@ import { useForm } from "react-hook-form";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Fragment } from "react/jsx-runtime";
 import ErrorMessage from "../ErrorMessage";
+import type { GroupRegistrationForm } from "../../types";
+import { toast } from "react-toastify";
+import { useAppStore } from "../../stores/useAppStore";
 
 const CreateGroupModal = () => {
     const navigate = useNavigate();
     //Obtenemos la locacion actual para poder extraer el query param
     const location = useLocation();
     const queryParams = new URLSearchParams( location.search );
-    const createGroup = queryParams.get("createGroup");
-    const showModal = createGroup? true: false;
+    const createGroupParam = queryParams.get("createGroup");
+    const showModal = createGroupParam? true: false;
 
-    const { register, handleSubmit, formState: { errors }, watch } = useForm();
+    //Extraemos la funcion para crear el grupo de nuestro slice
+    const createGroup = useAppStore( state => state.createGroup );
 
+    //Tipamos los valores inciales del formulario
+    const initialValues : GroupRegistrationForm = {
+        name: "",
+        bgImage: []
+    }
+
+    const { register, reset, handleSubmit, formState: { errors }, watch } = useForm<GroupRegistrationForm>( { defaultValues: initialValues } );
+
+    //Miramos por cambios en el cmapo de bgImage con el fin de renderizar la imagen del grupo una vez seleccionada
     const bgImage = watch("bgImage");
     const file = bgImage?.[0];
+    //Mediante URL.createObjectURL() creamos una URL temporal para poder renderizar la imagen
     const imageURL = file? URL.createObjectURL(file) : null;
 
-    const handleSubmitGroup = ( formData ) => {
-        const data = {
-            name: formData.name,
+    const handleSubmitGroup = async ( formData : GroupRegistrationForm ) => {
+
+        //Creamos un objeto de FormData() para poder mandar archvivos en un formulario
+        const data = new FormData();
+        data.append("name", formData.name);
+        data.append("bgImage", formData.bgImage[0]);
+
+        try {
+            await createGroup(data);
+            reset();
+        } catch (error) {
+            if( error instanceof Error ) {
+                toast.error(error.message);
+            }
         }
     }
 
