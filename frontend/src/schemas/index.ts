@@ -31,12 +31,21 @@ export const UserSchema = AuthSchema.pick({
 export const GroupShcema = z.object({
     id: z.number(),
     name: z.string(),
-    bgImage: z.array( z.file() ).or( z.string() ),
+    bgImage: z.array( z.file() ),
     teacher: z.number(),
     teacherUser: z.object({
         name: z.string()
     })
 });
+
+export const GroupResponse = GroupShcema.pick({
+    id: true,
+    name: true,
+    teacher: true,
+    teacherUser: true
+}).extend({
+    bgImage: z.string()
+})
 
 export const GroupsSchema = z.array(
     GroupShcema.omit({
