@@ -25,7 +25,8 @@
     "nodemailer": "^8.0.10",
     "pg": "^8.22.0",
     "pg-hstore": "^2.3.4",
-    "sequelize": "^6.37.8"
+    "sequelize": "^6.37.8",
+    "sharp": "^0.35.3"
   },
   "devDependencies": {
     "@types/bcrypt": "^6.0.0",

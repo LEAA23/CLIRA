@@ -5,6 +5,7 @@ import { User } from "../models/User";
 import { s3Client } from "../config/services/s3";
 import { GetObjectCommand, PutObjectCommand } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
+import { compressImage } from "../utils/compressImage";
 
 
 export class GroupsControlller {
@@ -13,16 +14,20 @@ export class GroupsControlller {
         const {name} = req.body;
         const bgImage = req.file;
         try {
+            //Comprimimos la imagen con esta funcion
+            const compresedImage = await compressImage( bgImage!.buffer );
+
             //Creamos una llave unica en la carpeta de groups para cada imagen de fondo que suban los usuarios
-            const key = `groups/${ Date.now() }-${ bgImage!.originalname }`;
+            const key = `groups/${ Date.now() }-${bgImage!.originalname.split(".")[0]}.webp`;
+            
             //Ejecutamos una operacion como cliente mediante el metodo de .send() de AWS
             await s3Client.send(
                 //Decimos que queremos ejecutar una instruccion de poner un objeto en el bucket seleccionado, con la llave definida y el contenido de la misma
                 new PutObjectCommand({
                     Bucket: process.env.AWS_BUCKET,
                     Key: key,
-                    Body: bgImage!.buffer,
-                    ContentType: bgImage!.mimetype
+                    Body: compresedImage,
+                    ContentType: "image/webp"
                 })
             );
 
@@ -109,14 +114,12 @@ export class GroupsControlller {
                 Bucket: process.env.AWS_BUCKET,
                 Key: groupExists!.bgImage
             });
-
+            //Creamos la url para poder acceder a la imagen de forma segura sin exponer el bucket de AWS
             const url = await getSignedUrl( s3Client, command, { expiresIn: 60 * 60 *24 } );
             groupExists.bgImage = url;
             
-
             //FALTA VERIFICAR QUE EL USUARIO QUE ENTRA ESTE EN DICHO GRUPO
             return res.status(200).json( { group: groupExists } );
-
 
         } catch (error) {
             return res.status(500).json( { error: "Error interno del servidor" } );
