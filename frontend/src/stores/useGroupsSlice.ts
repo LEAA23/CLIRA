@@ -34,7 +34,6 @@ export const createGroupsSlice : StateCreator<GroupsSliceType> = ( set ) => ({
     },
     fetchGroup: async( id : Group["id"] ) => {
         const group = await getGroup( id );
-        
         set(() => ({
             group
         }))
