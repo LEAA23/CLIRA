@@ -34,10 +34,17 @@ router.patch("/:groupId",
 router.delete("/:groupId",
     authenticate,
     groupAuthorization,
-    param("groupId").notEmpty().withMessage("El ud del grupo es obligatorio"),
+    param("groupId").notEmpty().withMessage("El id del grupo es obligatorio"),
     handleInputErrors,
     GroupsControlller.deleteGroup
 );
+
+router.get("/:groupId", 
+    authenticate,
+    param("groupId").notEmpty().withMessage("El id del grupo es obligatorio"),
+    handleInputErrors,
+    GroupsControlller.getGroup
+)
 
 
 export default router;
