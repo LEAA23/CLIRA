@@ -5,6 +5,7 @@ import { toast } from "react-toastify";
 import { PlusIcon } from "@heroicons/react/16/solid";
 import { useNavigate } from "react-router-dom";
 import CreateGroupModal from "../../components/group/CreateGroupModal";
+import EditGroupModal from "../../components/group/EditGroupModal";
 
 const GroupsView = () => {
   const navigate = useNavigate();
@@ -62,6 +63,7 @@ const GroupsView = () => {
         </div>
         
         <CreateGroupModal/>
+        <EditGroupModal/>
     </>
   )
 }

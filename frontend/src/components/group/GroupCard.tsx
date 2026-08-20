@@ -10,6 +10,7 @@ type GroupCardProps = {
 
 const GroupCard = ( { id, name, teacher } : GroupCardProps ) => {
     const user = useAppStore( state => state.user );
+
   return (
     <div className="bg-white shadow rounded-lg mb-5 border-l-4 border-l-amber-200">
         <div className="p-5 space-y-5">
@@ -18,8 +19,11 @@ const GroupCard = ( { id, name, teacher } : GroupCardProps ) => {
                     href={`/groups/${id}`}
                 >
                     <h3 className="text-xl font-bold text-left hover:text-blue-500 cursor-pointer">{name}</h3>
-                </a>   
-                <GroupCardOptions/>
+                </a>
+                   
+                <GroupCardOptions
+                    id={id}
+                />
             </div>
 
             {user.rol !== "teacher" && (

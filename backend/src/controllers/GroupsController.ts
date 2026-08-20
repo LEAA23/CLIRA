@@ -3,7 +3,7 @@ import { Group } from "../models/Group";
 import "../models/associations";
 import { User } from "../models/User";
 import { s3Client } from "../config/services/s3";
-import { GetObjectCommand, PutObjectCommand } from "@aws-sdk/client-s3";
+import { DeleteObjectCommand, GetObjectCommand, PutObjectCommand } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { compressImage } from "../utils/compressImage";
 
@@ -63,14 +63,41 @@ export class GroupsControlller {
     }
 
     static updateGroup = async( req: Request, res: Response ) => {
-        const { name, bgImage } = req.body;
+        const { name } = req.body;
+        const bgImage = req.file;
 
         try {
             const groupExists = req.group;
+            //Almacenamos la key antigua para eliminar el recurso de AWS
+            const oldKey = groupExists.bgImage;
+
+            //Comprimimos la imagen
+            const compresedImage = await compressImage( bgImage!.buffer );
+
+            //Creamos una nueva llave unica que identifique a la imagen
+            const key = `groups/${ Date.now() }-${bgImage!.originalname.split(".")[0]}.webp`;
 
             //El grupo existe y ademas lo esta modificando el usuario con permisos
             groupExists.name = name;
-            groupExists.bgImage = bgImage;
+            groupExists.bgImage = key;
+
+            //Guardamos la nueva imagen en AWS mediante nuestro cliente de s3
+            s3Client.send(
+                new PutObjectCommand({
+                    Bucket: process.env.AWS_BUCKET,
+                    Key: key,
+                    Body: compresedImage,
+                    ContentType: "image/webp"
+                })
+            )
+
+            //Eliminamos la antigua imagen en AWS medinate el comando de DeleteObjectCommand
+            s3Client.send(
+                new DeleteObjectCommand({
+                    Bucket: process.env.AWS_BUCKET,
+                    Key: oldKey
+                })
+            )
 
             //Guardamos los cambios en la BD
             await groupExists.save();

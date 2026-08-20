@@ -1,7 +1,8 @@
 import { Dialog, Transition } from '@headlessui/react';
 import { ChartBarIcon, StarIcon, CursorArrowRaysIcon, CalendarDaysIcon, ClockIcon, CheckCircleIcon } from '@heroicons/react/16/solid';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { Fragment } from 'react/jsx-runtime';
+import { useShowModal } from '../../hooks/useShowModal';
 
 type PreviewCaseModalProps = {
     started: boolean;
@@ -10,10 +11,7 @@ type PreviewCaseModalProps = {
 const PreviewCaseModal = ({started} : PreviewCaseModalProps) => {
     const navigate = useNavigate();
 
-    const location = useLocation();
-    const queryParams = new URLSearchParams(location.search);
-    const previewCase = queryParams.get("previewCase");
-    const showModal = previewCase? true : false;
+    const showModal = useShowModal("previewCase");
   return (
     <>
         <Transition appear show={showModal} as={Fragment}>
