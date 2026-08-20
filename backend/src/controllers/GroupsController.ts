@@ -3,7 +3,9 @@ import { Group } from "../models/Group";
 import "../models/associations";
 import { User } from "../models/User";
 import { s3Client } from "../config/services/s3";
-import { PutObjectCommand } from "@aws-sdk/client-s3";
+import { GetObjectCommand, PutObjectCommand } from "@aws-sdk/client-s3";
+import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
+
 
 export class GroupsControlller {
     static createGroup = async (req: Request, res: Response) => {
@@ -81,6 +83,40 @@ export class GroupsControlller {
             //El usuario tiene permisos y el grupo si existe
             await groupExists.destroy();
             return res.status(200).send("Grupo eliminado correctamente");
+
+        } catch (error) {
+            return res.status(500).json( { error: "Error interno del servidor" } );
+        }
+    }
+
+    static getGroup = async( req: Request, res: Response ) => {
+        const { groupId } = req.params;
+
+        try {
+            //Verificamos si realmente existe un grupo con el id que se esta mandando
+            const groupExists = await Group.findOne( { 
+                where: { id: groupId },
+                include: [ { model: User, as: "teacherUser", attributes: ["id", "name"] } ]  
+            } );
+            
+            if(!groupExists) {
+                const error = new Error("El grupo no existe");
+                return res.status(404).json( { error: error.message } );
+            }
+
+            //obtener la imagen de fondo desde AWS y reescribir bgImage
+            const command = new GetObjectCommand({
+                Bucket: process.env.AWS_BUCKET,
+                Key: groupExists!.bgImage
+            });
+
+            const url = await getSignedUrl( s3Client, command, { expiresIn: 60 * 60 *24 } );
+            const group = groupExists;
+            group.bgImage = url;
+
+            //FALTA VERIFICAR QUE EL USUARIO QUE ENTRA ESTE EN DICHO GRUPO
+            return res.status(200).json( { group: groupExists } );
+
 
         } catch (error) {
             return res.status(500).json( { error: "Error interno del servidor" } );

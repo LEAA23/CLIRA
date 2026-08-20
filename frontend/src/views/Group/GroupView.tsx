@@ -1,12 +1,25 @@
 import { AcademicCapIcon, BriefcaseIcon, ChevronDoubleLeftIcon, PlusIcon } from "@heroicons/react/16/solid";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import PostModal from "../../components/posts/PostModal";
 import PostCard from "../../components/posts/PostCard";
 import CommentsModal from "../../components/posts/CommentsModal";
+import { useAppStore } from "../../stores/useAppStore";
+import { useEffect } from "react";
 
 const GroupView = () => {
     const navigate = useNavigate();
 
+    const { id } = useParams();
+
+    const fetchGroup = useAppStore( state => state.fetchGroup );
+    const group = useAppStore( state => state.group );
+
+    useEffect(() => {
+        if(id) {
+            fetchGroup( Number(id) );
+        }
+    }, [id, fetchGroup]);
+    
   return (
     <>
         <div className="flex flex-col md:flex-row justify-between items-center">
@@ -38,11 +51,12 @@ const GroupView = () => {
         <div className="bg-white shadow rounded-2xl my-5 max-w-full">
             <div className="relative h-75 overflow-hidden rounded-2xl">
                 <img 
-                    src="/anatomy.png" 
+                    src={ String(group.bgImage) } 
                     alt="sdfsdf"
                     className="rounded-2xl brightness-75 w-full h-full object-cover" 
                 />
-                <h1 className="absolute text-5xl top-20 left-10 text-white font-bold">Anatomia</h1>
+                <h1 className="absolute text-5xl top-20 left-10 text-white font-bold">{ group.name }</h1>
+                
                 <div 
                     className="absolute inset-0 left-10 top-30 flex justify-start items-start flex-col py-5 space-y-2"
                 >

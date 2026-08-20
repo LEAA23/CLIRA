@@ -1,15 +1,26 @@
 import type { StateCreator } from "zustand"
-import type { Groups } from "../types";
-import { createGroup, getGroups } from "../api/groupsApi";
+import type { Group, Groups } from "../types";
+import { createGroup, getGroup, getGroups } from "../api/groupsApi";
 
 
 export type GroupsSliceType = {
     groups: Groups;
+    group: Group;
     fetchGroups: () => Promise<void>;
-    createGroup: (formData: FormData) => Promise<string>
+    createGroup: (formData: FormData) => Promise<string>;
+    fetchGroup: (id: number) => Promise<void>;
 }
 
 export const createGroupsSlice : StateCreator<GroupsSliceType> = ( set ) => ({
+    group: {
+        id: 0,
+        name: "",
+        bgImage: [],
+        teacher: 0,
+        teacherUser: {
+            name: ""
+        }
+    },
     groups: [],
     fetchGroups: async () => {
         const groups = await getGroups();
@@ -20,5 +31,12 @@ export const createGroupsSlice : StateCreator<GroupsSliceType> = ( set ) => ({
     createGroup: async(formData: FormData) => {
         const message = await createGroup(formData);
         return message;
+    },
+    fetchGroup: async( id : Group["id"] ) => {
+        const group = await getGroup( id );
+        
+        set(() => ({
+            group
+        }))
     }
 })
