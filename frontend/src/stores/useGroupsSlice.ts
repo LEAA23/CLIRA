@@ -1,6 +1,6 @@
 import type { StateCreator } from "zustand"
 import type { CurrentGroup, Group, Groups } from "../types";
-import { createGroup, getGroup, getGroups } from "../api/groupsApi";
+import { createGroup, getGroup, getGroups, updateGroup } from "../api/groupsApi";
 
 
 export type GroupsSliceType = {
@@ -9,6 +9,7 @@ export type GroupsSliceType = {
     fetchGroups: () => Promise<void>;
     createGroup: (formData: FormData) => Promise<string>;
     fetchGroup: (id: number) => Promise<void>;
+    updateGroup: ( { groupId, formData } : {groupId:number; formData: FormData}  ) => Promise<string>;
 }
 
 export const createGroupsSlice : StateCreator<GroupsSliceType> = ( set ) => ({
@@ -37,5 +38,9 @@ export const createGroupsSlice : StateCreator<GroupsSliceType> = ( set ) => ({
         set(() => ({
             group
         }))
+    },
+    updateGroup: async( { groupId, formData } : { groupId:Group["id"]; formData: FormData } ) => {
+        const message = await updateGroup( {groupId, formData} );
+        return message;
     }
 })

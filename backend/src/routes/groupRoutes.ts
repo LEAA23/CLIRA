@@ -24,9 +24,9 @@ router.get("/",
 router.patch("/:groupId",
     authenticate,
     groupAuthorization,
+    uploadFile.single("bgImage"),
     param("groupId").notEmpty().withMessage("El id del grupo es obligatorio"),
     body("name").notEmpty().withMessage("El nombre del grupo es obligatorio"),
-    body("bgImage").notEmpty().withMessage("La Imagen de fondo es obligatoria"),
     handleInputErrors,
     GroupsControlller.updateGroup
 );

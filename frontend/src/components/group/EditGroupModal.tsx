@@ -1,7 +1,7 @@
 import { Transition, Dialog } from "@headlessui/react";
 import { ArrowRightStartOnRectangleIcon, ArrowUpTrayIcon, PlusIcon } from "@heroicons/react/16/solid";
 import { useForm } from "react-hook-form";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { Fragment } from "react/jsx-runtime";
 import ErrorMessage from "../ErrorMessage";
 import type { GroupRegistrationForm } from "../../types";
@@ -9,13 +9,17 @@ import { toast } from "react-toastify";
 import { useAppStore } from "../../stores/useAppStore";
 import { useShowModal } from "../../hooks/useShowModal";
 
-const CreateGroupModal = () => {
+const EditGroupModal = () => {
     const navigate = useNavigate();
     //Extraemos si mostramos el modal o no
-    const showModal = useShowModal("createGroup");
+    const showModal = useShowModal("EditGroupModal");
+
+    const location = useLocation();
+    const queryParams = new URLSearchParams( location.search );
+    const groupId = queryParams.get("Group");
 
     //Extraemos la funcion para crear el grupo de nuestro slice
-    const createGroup = useAppStore( state => state.createGroup );
+    const updateGroup = useAppStore( state => state.updateGroup );
     const fetchGroups = useAppStore( state => state.fetchGroups );
 
     //Tipamos los valores inciales del formulario
@@ -40,7 +44,7 @@ const CreateGroupModal = () => {
         data.append("bgImage", formData.bgImage[0]);
 
         try {
-            const message = await createGroup(data);
+            const message = await updateGroup( {groupId : Number(groupId), formData : data });
             await fetchGroups();
             toast.success( message );
             reset();
@@ -185,4 +189,4 @@ const CreateGroupModal = () => {
   )
 }
 
-export default CreateGroupModal
+export default EditGroupModal;
