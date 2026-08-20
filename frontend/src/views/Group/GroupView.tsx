@@ -65,7 +65,7 @@ const GroupView = () => {
                 >
                     <div className="text-white flex justify-start items-center">
                         <BriefcaseIcon className="h-6 aspect-square"/>
-                        
+
                         <p className="font-bold">Maestro: {""}
                             <span className="text-white font-normal">{ group.teacherUser.name }</span> 
                         </p>
