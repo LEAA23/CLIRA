@@ -9,11 +9,14 @@ import { useEffect } from "react";
 const GroupView = () => {
     const navigate = useNavigate();
 
+    //Extraemos el id del grupo
     const { id } = useParams();
 
+    //Extraemos tanto la funcion para consultar el grupo como el state global de group
     const fetchGroup = useAppStore( state => state.fetchGroup );
     const group = useAppStore( state => state.group );
 
+    //Se ejecuta cada vez que hay cambios en el id del grupo
     useEffect(() => {
         if(id) {
             fetchGroup( Number(id) );
