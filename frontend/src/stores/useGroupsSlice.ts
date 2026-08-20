@@ -1,11 +1,11 @@
 import type { StateCreator } from "zustand"
-import type { Group, Groups } from "../types";
+import type { CurrentGroup, Group, Groups } from "../types";
 import { createGroup, getGroup, getGroups } from "../api/groupsApi";
 
 
 export type GroupsSliceType = {
     groups: Groups;
-    group: Group;
+    group: CurrentGroup;
     fetchGroups: () => Promise<void>;
     createGroup: (formData: FormData) => Promise<string>;
     fetchGroup: (id: number) => Promise<void>;
@@ -15,7 +15,7 @@ export const createGroupsSlice : StateCreator<GroupsSliceType> = ( set ) => ({
     group: {
         id: 0,
         name: "",
-        bgImage: [],
+        bgImage: "",
         teacher: 0,
         teacherUser: {
             name: ""

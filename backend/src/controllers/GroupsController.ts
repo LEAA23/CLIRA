@@ -111,8 +111,7 @@ export class GroupsControlller {
             });
 
             const url = await getSignedUrl( s3Client, command, { expiresIn: 60 * 60 *24 } );
-            const group = groupExists;
-            group.bgImage = url;
+            groupExists.bgImage = url;
 
             //FALTA VERIFICAR QUE EL USUARIO QUE ENTRA ESTE EN DICHO GRUPO
             return res.status(200).json( { group: groupExists } );

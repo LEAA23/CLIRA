@@ -1,6 +1,6 @@
 import { isAxiosError } from "axios"
 import api from "../lib/axios";
-import { GroupShcema, GroupsSchema } from "../schemas";
+import { GroupResponse, GroupsSchema } from "../schemas";
 import type { Group } from "../types";
 
 export const getGroups = async() => {
@@ -20,7 +20,7 @@ export const getGroups = async() => {
 export const getGroup = async( id: Group["id"] ) => {
     try {
         const { data: { group } } = await api(`/groups/${id}`);
-        const response = GroupShcema.safeParse(group);
+        const response = GroupResponse.safeParse(group);
         if(response.data) {
             return response.data;
         }

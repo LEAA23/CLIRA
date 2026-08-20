@@ -50,11 +50,14 @@ const GroupView = () => {
 
         <div className="bg-white shadow rounded-2xl my-5 max-w-full">
             <div className="relative h-75 overflow-hidden rounded-2xl">
-                <img 
-                    src={ String(group.bgImage) } 
-                    alt="sdfsdf"
-                    className="rounded-2xl brightness-75 w-full h-full object-cover" 
-                />
+                {group.bgImage && (
+                    <img 
+                        src={ group.bgImage } 
+                        alt="sdfsdf"
+                        className="rounded-2xl brightness-75 w-full h-full object-cover" 
+                    />
+                )}
+
                 <h1 className="absolute text-5xl top-20 left-10 text-white font-bold">{ group.name }</h1>
                 
                 <div 
@@ -64,7 +67,7 @@ const GroupView = () => {
                         <BriefcaseIcon className="h-6 aspect-square"/>
 
                         <p className="font-bold">Maestro: {""}
-                            <span className="text-white font-normal">Luis Ernesto</span> 
+                            <span className="text-white font-normal">{ group.teacherUser.name }</span> 
                         </p>
                     </div>
                     
