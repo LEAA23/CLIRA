@@ -1,5 +1,5 @@
 import { Transition, Dialog } from "@headlessui/react";
-import { ArrowRightStartOnRectangleIcon, ArrowUpTrayIcon, PlusIcon } from "@heroicons/react/16/solid";
+import { ArrowUpTrayIcon, PencilIcon, XMarkIcon } from "@heroicons/react/16/solid";
 import { useForm } from "react-hook-form";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Fragment } from "react/jsx-runtime";
@@ -8,12 +8,13 @@ import type { GroupRegistrationForm } from "../../types";
 import { toast } from "react-toastify";
 import { useAppStore } from "../../stores/useAppStore";
 import { useShowModal } from "../../hooks/useShowModal";
+import { useEffect } from "react";
 
 const EditGroupModal = () => {
     const navigate = useNavigate();
     //Extraemos si mostramos el modal o no
     const showModal = useShowModal("EditGroupModal");
-
+    
     const location = useLocation();
     const queryParams = new URLSearchParams( location.search );
     const groupId = queryParams.get("Group");
@@ -21,6 +22,23 @@ const EditGroupModal = () => {
     //Extraemos la funcion para crear el grupo de nuestro slice
     const updateGroup = useAppStore( state => state.updateGroup );
     const fetchGroups = useAppStore( state => state.fetchGroups );
+    
+    //Extraemos fetchGroup para llenar el form con los datos del id del grupo y el state de group para mostrarlos
+    const fetchGroup = useAppStore( state => state.fetchGroup );
+    const group = useAppStore( state => state.group );
+    //Extraemos la funcion para limpiar el state de grupo una vez que el usaurio cierre el modal
+    const clearGroup = useAppStore( state => state.clearGroup );
+    
+    //Si hay un id de un grupo consultamos el grupo para traernos los datos
+    useEffect(() => {
+        const getGroup = async () => {
+            if (groupId) {
+                await fetchGroup(Number(groupId));
+            }
+        };
+
+        getGroup();
+    }, [groupId, fetchGroup]);
 
     //Tipamos los valores inciales del formulario
     const initialValues : GroupRegistrationForm = {
@@ -30,6 +48,16 @@ const EditGroupModal = () => {
 
     const { register, reset, handleSubmit, formState: { errors }, watch } = useForm<GroupRegistrationForm>( { defaultValues: initialValues } );
 
+    //Si hay un grupo reseteamos el formulario con los valoes del grupo del estado, el cual esta llenado por datos de la BD
+    useEffect(() => {
+        if (group) {
+            reset({
+                name: group.name,
+                bgImage: []
+            });
+        }
+    }, [group, reset]);
+    
     //Miramos por cambios en el cmapo de bgImage con el fin de renderizar la imagen del grupo una vez seleccionada
     const bgImage = watch("bgImage");
     const file = bgImage?.[0];
@@ -56,10 +84,16 @@ const EditGroupModal = () => {
         }
     }
 
+
   return (
     <>
         <Transition appear show={showModal} as={Fragment}>
-            <Dialog as="div" className="relative z-10" onClose={() => navigate(location.pathname, { replace: true })}>
+            <Dialog as="div" className="relative z-10" 
+                onClose={() => {
+                navigate(location.pathname, { replace: true })
+                clearGroup();
+                }}
+            >
                 <Transition.Child
                     as={Fragment}
                     enter="ease-out duration-300"
@@ -83,16 +117,16 @@ const EditGroupModal = () => {
                             leaveFrom="opacity-100 scale-100"
                             leaveTo="opacity-0 scale-95"
                         >
-                            <Dialog.Panel className="w-5/6 max-w-5xl transform overflow-hidden rounded-2xl bg-white text-left align-middle shadow-xl transition-all p-16">
+                            <Dialog.Panel className="w-5/6 max-w-5xl transform overflow-hidden rounded-2xl bg-white text-left align-middle shadow-xl transition-all p-10">
                                 <Dialog.Title
                                     as="h3"
                                     className="font-black text-4xl my-2 text-center"
                                 >
-                                    Crear Nuevo Grupo
+                                    Editar el Grupo
                                 </Dialog.Title>
 
 
-                                <div className="p-5 max-w-full my-5">
+                                <div className="p-5 max-w-full mt-5">
                                     <form
                                         onSubmit={ handleSubmit(handleSubmitGroup) }
                                     >
@@ -142,38 +176,53 @@ const EditGroupModal = () => {
                                             {errors.bgImage && (
                                                 <ErrorMessage>{ String(errors.bgImage.message) }</ErrorMessage>
                                             )}
-                                            {imageURL && (
+
+                                            <div className="grid grid-cols-1 md:grid-cols-2 space-x-5 w-full mb-5">
                                                 <div className="mt-5">
-                                                    <p className="text-sm text-gray-600 font-semibold mb-5">Imagen seleccionada:</p>
+                                                    <p className="text-sm text-gray-600 font-semibold mb-5">Imagen actual:</p>
                                                     <img 
-                                                        src={ imageURL } 
+                                                        src={ group.bgImage } 
                                                         alt="Vista previa de imagen de fondo"
-                                                        className="w-1/2 h-full" 
+                                                        className="w-full" 
                                                     />
                                                 </div>
-                                            )}
-                                            
+
+                                                {imageURL && (
+                                                    <div className="mt-5">
+                                                        <p className="text-sm text-gray-600 font-semibold mb-5">Imagen nueva:</p>
+                                                        <img 
+                                                            src={ imageURL } 
+                                                            alt="Vista previa de imagen de fondo"
+                                                            className="w-full" 
+                                                        />
+                                                    </div>
+                                                )}
+                                            </div>
+
                                         </div>
 
                                         <div className='flex flex-col md:flex-row justify-center gap-x-10'>
                                     
                                             <button
                                                 type="button"
-                                                onClick={() => navigate(location.pathname, { replace: true })}
-                                                className="bg-red-400 py-2 px-6 w-full mt-10 text-white font-bold rounded-lg hover:cursor-pointer 
+                                                onClick={() => {
+                                                    navigate(location.pathname, { replace: true });
+                                                    clearGroup();
+                                                }}
+                                                className="bg-red-400 py-2 px-6 w-full mt-5 text-white font-bold rounded-lg hover:cursor-pointer 
                                                 hover:transition-colors hover:bg-red-500 md:w-auto flex justify-start items-center gap-x-2"
                                             >
-                                                <ArrowRightStartOnRectangleIcon className="h-6"/>
-                                                Salir
+                                                <XMarkIcon className="h-6"/>
+                                                Cancelar
                                             </button> 
 
                                             <button
                                                 type="submit"
-                                                className="bg-blue-500 py-2 px-6 w-full mt-10 text-white font-bold rounded-lg hover:cursor-pointer 
+                                                className="bg-blue-500 py-2 px-6 w-full mt-5 text-white font-bold rounded-lg hover:cursor-pointer 
                                                 hover:transition-colors hover:bg-blue-600 md:w-auto flex justify-start items-center gap-x-2"
                                             >
-                                                <PlusIcon className="h-6"/>
-                                                Crear grupo
+                                                <PencilIcon className="h-6"/>
+                                                Editar grupo
                                             </button>  
                                         </div>
                                     </form>
