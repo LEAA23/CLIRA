@@ -19,15 +19,14 @@ const EditGroupModal = () => {
     const queryParams = new URLSearchParams( location.search );
     const groupId = queryParams.get("Group");
 
-    //Extraemos la funcion para crear el grupo de nuestro slice
+    //Extraemos la funcion para editar el grupo de nuestro slice
     const updateGroup = useAppStore( state => state.updateGroup );
-    const fetchGroups = useAppStore( state => state.fetchGroups );
     
     //Extraemos fetchGroup para llenar el form con los datos del id del grupo y el state de group para mostrarlos
     const fetchGroup = useAppStore( state => state.fetchGroup );
     const group = useAppStore( state => state.group );
     //Extraemos la funcion para limpiar el state de grupo una vez que el usaurio cierre el modal
-    const clearGroup = useAppStore( state => state.clearGroup );
+    const cleanGroup = useAppStore( state => state.cleanGroup );
     
     //Si hay un id de un grupo consultamos el grupo para traernos los datos
     useEffect(() => {
@@ -63,19 +62,21 @@ const EditGroupModal = () => {
     const file = bgImage?.[0];
     //Mediante URL.createObjectURL() creamos una URL temporal para poder renderizar la imagen
     const imageURL = file? URL.createObjectURL(file) : null;
-
+    
     const handleSubmitGroup = async ( formData : GroupRegistrationForm ) => {
 
         //Creamos un objeto de FormData() para poder mandar archvivos en un formulario
         const data = new FormData();
         data.append("name", formData.name);
-        data.append("bgImage", formData.bgImage[0]);
+        //Si el usuario quiere cambiar el fondo del grupo entonces agregamos la imagen a formData
+        if( formData.bgImage.length ) {
+            data.append("bgImage", formData.bgImage[0]);
+        }
 
         try {
             const message = await updateGroup( {groupId : Number(groupId), formData : data });
-            await fetchGroups();
             toast.success( message );
-            reset();
+            cleanGroup();
             navigate( location.pathname, { replace: true } );
         } catch (error) {
             if( error instanceof Error ) {
@@ -91,7 +92,7 @@ const EditGroupModal = () => {
             <Dialog as="div" className="relative z-10" 
                 onClose={() => {
                 navigate(location.pathname, { replace: true })
-                clearGroup();
+                cleanGroup();
                 }}
             >
                 <Transition.Child
@@ -160,9 +161,7 @@ const EditGroupModal = () => {
                                                 type="file"
                                                 accept="image/*"
                                                 className="hidden"
-                                                {...register("bgImage", {
-                                                    required: "La imagen de fondo es obligatoria"
-                                                })}
+                                                {...register("bgImage")}
                                             />
                                             <label 
                                                 htmlFor="bgImage"
@@ -173,9 +172,6 @@ const EditGroupModal = () => {
                                                 <ArrowUpTrayIcon className="h-6"/>
                                                 Seleccionar imagen
                                             </label>
-                                            {errors.bgImage && (
-                                                <ErrorMessage>{ String(errors.bgImage.message) }</ErrorMessage>
-                                            )}
 
                                             <div className="grid grid-cols-1 md:grid-cols-2 space-x-5 w-full mb-5">
                                                 <div className="mt-5">
@@ -207,7 +203,7 @@ const EditGroupModal = () => {
                                                 type="button"
                                                 onClick={() => {
                                                     navigate(location.pathname, { replace: true });
-                                                    clearGroup();
+                                                    cleanGroup();
                                                 }}
                                                 className="bg-red-400 py-2 px-6 w-full mt-5 text-white font-bold rounded-lg hover:cursor-pointer 
                                                 hover:transition-colors hover:bg-red-500 md:w-auto flex justify-start items-center gap-x-2"

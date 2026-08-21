@@ -25,7 +25,7 @@ const GroupCardOptions = ( { id } : GroupCardOptionsProps ) => {
                         <MenuItem>
                             <div 
                                 className='flex justify-start gap-x-2 hover:text-blue-400 cursor-pointer'
-                                onClick={ () => navigate( location.pathname + "?EditGroupModal=true" + `&Group=${id}` ) }
+                                onClick={ () => navigate( location.pathname + "?EditGroupModal=true" + `&Group=${ id }` ) }
                             >
                                 <PencilIcon className='h-6'/>
                                 <button 
@@ -37,11 +37,17 @@ const GroupCardOptions = ( { id } : GroupCardOptionsProps ) => {
                             </div>
                         </MenuItem>  
                         <MenuItem>
-                            <div className='flex justify-start gap-x-2 hover:text-red-400 cursor-pointer'>
+                            <div 
+                                className='flex justify-start gap-x-2 hover:text-red-400 cursor-pointer'
+                                onClick={ () => navigate( location.pathname + "?DeleteGroupModal=true" + `&Group=${ id }` ) }
+                            >
                                 <TrashIcon className='h-6'/>
-                                <a className="block " href="/settings">
+                                <button 
+                                    type='button'
+                                    className="block"
+                                >
                                     Eliminar el grupo
-                                </a>
+                                </button>
                             </div>
                         </MenuItem>         
                     </>

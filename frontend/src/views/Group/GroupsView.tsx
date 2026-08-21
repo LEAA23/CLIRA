@@ -6,6 +6,7 @@ import { PlusIcon } from "@heroicons/react/16/solid";
 import { useNavigate } from "react-router-dom";
 import CreateGroupModal from "../../components/group/CreateGroupModal";
 import EditGroupModal from "../../components/group/EditGroupModal";
+import DeleteGroupModal from "../../components/group/DeleteGroupModal";
 
 const GroupsView = () => {
   const navigate = useNavigate();
@@ -51,19 +52,32 @@ const GroupsView = () => {
           </div>
         )}
 
-        <div className="grid grid-cols-1 items-center justify-center md:grid-cols-2 lg:grid-cols-4 gap-x-5">
-          {groups.map( group => (
-            <GroupCard
-              key={group.id}
-              id={group.id}
-              name={group.name}
-              teacher={group.teacherUser.name}
-            />
-          ))}
-        </div>
+        {
+          groups.length? (
+            <div className="grid grid-cols-1 items-center justify-center md:grid-cols-2 lg:grid-cols-4 gap-x-5">
+              {
+                groups.map( group => (
+                  <GroupCard
+                    key={group.id}
+                    id={group.id}
+                    name={group.name}
+                    teacher={group.teacherUser.name}
+                  />
+                ))
+              }
+            </div>
+          ) : (
+            user.rol === "teacher"? (
+              <p className="text-xl text-center font-bold text-gray-500">No tienes grupos por el momento, comienza creando uno.</p>
+            ) : (
+              <p  className="text-xl text-center font-bold text-gray-500">No estas en ningun grupo por el momento.</p>
+            )
+          )
+        }
         
         <CreateGroupModal/>
         <EditGroupModal/>
+        <DeleteGroupModal/>
     </>
   )
 }

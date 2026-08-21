@@ -65,39 +65,43 @@ export class GroupsControlller {
     static updateGroup = async( req: Request, res: Response ) => {
         const { name } = req.body;
         const bgImage = req.file;
-
         try {
             const groupExists = req.group;
-            //Almacenamos la key antigua para eliminar el recurso de AWS
-            const oldKey = groupExists.bgImage;
-
-            //Comprimimos la imagen
-            const compresedImage = await compressImage( bgImage!.buffer );
-
-            //Creamos una nueva llave unica que identifique a la imagen
-            const key = `groups/${ Date.now() }-${bgImage!.originalname.split(".")[0]}.webp`;
-
-            //El grupo existe y ademas lo esta modificando el usuario con permisos
+            //Actualizamos el nombre por el que mando el usuario
             groupExists.name = name;
-            groupExists.bgImage = key;
 
-            //Guardamos la nueva imagen en AWS mediante nuestro cliente de s3
-            s3Client.send(
-                new PutObjectCommand({
-                    Bucket: process.env.AWS_BUCKET,
-                    Key: key,
-                    Body: compresedImage,
-                    ContentType: "image/webp"
-                })
-            )
+            //Si el usuario decidio cambiar la imagen entonces realizamos el cambio
+            if(bgImage) {
+                //Almacenamos la key antigua para eliminar el recurso de AWS
+                const oldKey = groupExists.bgImage;
 
-            //Eliminamos la antigua imagen en AWS medinate el comando de DeleteObjectCommand
-            s3Client.send(
-                new DeleteObjectCommand({
-                    Bucket: process.env.AWS_BUCKET,
-                    Key: oldKey
-                })
-            )
+                //Comprimimos la imagen
+                const compresedImage = await compressImage( bgImage!.buffer );
+
+                //Creamos una nueva llave unica que identifique a la imagen
+                const key = `groups/${ Date.now() }-${bgImage!.originalname.split(".")[0]}.webp`;
+
+                //El grupo existe y ademas lo esta modificando el usuario con permisos
+                groupExists.bgImage = key;
+
+                //Guardamos la nueva imagen en AWS mediante nuestro cliente de s3
+                await s3Client.send(
+                    new PutObjectCommand({
+                        Bucket: process.env.AWS_BUCKET,
+                        Key: key,
+                        Body: compresedImage,
+                        ContentType: "image/webp"
+                    })
+                )
+
+                //Eliminamos la antigua imagen en AWS medinate el comando de DeleteObjectCommand
+                await s3Client.send(
+                    new DeleteObjectCommand({
+                        Bucket: process.env.AWS_BUCKET,
+                        Key: oldKey
+                    })
+                );
+        }
 
             //Guardamos los cambios en la BD
             await groupExists.save();
@@ -111,6 +115,15 @@ export class GroupsControlller {
     static deleteGroup = async( req: Request, res: Response ) => {
         try {
             const groupExists = req.group;
+            const { bgImage } = groupExists;
+
+            //Eliminanos la imagen almacenada en AWS mediante el cliente s3
+            await s3Client.send(
+                new DeleteObjectCommand({
+                    Bucket: process.env.AWS_BUCKET,
+                    Key: bgImage
+                })
+            );
 
             //El usuario tiene permisos y el grupo si existe
             await groupExists.destroy();
