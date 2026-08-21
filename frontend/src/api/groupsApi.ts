@@ -46,6 +46,18 @@ export const createGroup = async( formData: FormData ) => {
 export const updateGroup = async( { groupId, formData } : { groupId: number ; formData: FormData } ) => {
     try {
         const { data } = await api.patch<string>(`/groups/${groupId}`, formData );
+        return data;
+    } catch (error) {
+        if( isAxiosError(error) && error.response ) {
+            throw new Error( error.response.data.error );
+        }
+        throw error;
+    }
+}
+
+export const deleteGroup = async( id : Group["id"] ) => {
+    try {
+        const { data } = await api.delete<string>(`/groups/${ id }`);
         console.log(data)
         return data;
     } catch (error) {
