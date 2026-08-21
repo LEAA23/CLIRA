@@ -10,6 +10,7 @@ export type GroupsSliceType = {
     createGroup: (formData: FormData) => Promise<string>;
     fetchGroup: (id: number) => Promise<void>;
     updateGroup: ( { groupId, formData } : {groupId:number; formData: FormData}  ) => Promise<string>;
+    clearGroup: () => void;
 }
 
 export const createGroupsSlice : StateCreator<GroupsSliceType> = ( set ) => ({
@@ -42,5 +43,18 @@ export const createGroupsSlice : StateCreator<GroupsSliceType> = ( set ) => ({
     updateGroup: async( { groupId, formData } : { groupId:Group["id"]; formData: FormData } ) => {
         const message = await updateGroup( {groupId, formData} );
         return message;
+    },
+    clearGroup: () => {
+        set(() => ({
+            group: {
+                id: 0,
+                name: "",
+                bgImage: "",
+                teacher: 0,
+                teacherUser: {
+                    name: ""
+                }
+            }
+        }));
     }
 })
