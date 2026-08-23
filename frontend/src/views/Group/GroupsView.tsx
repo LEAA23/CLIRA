@@ -23,8 +23,8 @@ const GroupsView = () => {
   useEffect(() => {
     const getData = async() => {
       try {
-        await fetchUserAuth();
-        await fetchGroups();
+        //De esta forma hacemos los llamados asincronos al mismo tiempo y no hasta que uno termine
+        await Promise.allSettled([ fetchUserAuth(), fetchGroups() ]);
       } catch (error) {
         if(error instanceof Error) {
           toast.error(error.message);

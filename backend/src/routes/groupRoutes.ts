@@ -44,6 +44,13 @@ router.get("/:groupId",
     param("groupId").notEmpty().withMessage("El id del grupo es obligatorio"),
     handleInputErrors,
     GroupsControlller.getGroup
+);
+
+router.get("/:groupId/members",
+    authenticate,
+    param("groupId").notEmpty().withMessage("El id del grupo es obligatorio"),
+    handleInputErrors,
+    GroupsControlller.getGroupMembers
 )
 
 

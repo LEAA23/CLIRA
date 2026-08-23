@@ -165,4 +165,22 @@ export class GroupsControlller {
             return res.status(500).json( { error: "Error interno del servidor" } );
         }
     }
+
+    static getGroupMembers = async( req: Request, res: Response ) => {
+        const { groupId } = req.params;
+        try {
+
+            const groupExists = await Group.findOne( { where: { id: groupId } } );
+
+            if(!groupExists) {
+                const error = new Error("El grupo no existe");
+                return res.status(404).json( { error: error.message } );
+            }
+
+            
+            
+        } catch (error) {
+            return res.status(500).json( { error: "Error interno del servidor" } );
+        }
+    }
 }

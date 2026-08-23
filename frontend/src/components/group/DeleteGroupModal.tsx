@@ -22,7 +22,6 @@ const DeleteGroupModal = () => {
     useEffect(() => {
         const getGroup = async() => {
             if(groupId) {
-
                 await fetchGroup( Number( groupId ) );
             }
         }
