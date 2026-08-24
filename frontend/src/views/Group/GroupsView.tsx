@@ -7,6 +7,7 @@ import { useNavigate } from "react-router-dom";
 import CreateGroupModal from "../../components/group/CreateGroupModal";
 import EditGroupModal from "../../components/group/EditGroupModal";
 import DeleteGroupModal from "../../components/group/DeleteGroupModal";
+import MembersModal from "../../components/group/MembersModal";
 
 const GroupsView = () => {
   const navigate = useNavigate();
@@ -78,6 +79,7 @@ const GroupsView = () => {
         <CreateGroupModal/>
         <EditGroupModal/>
         <DeleteGroupModal/>
+        <MembersModal/>
     </>
   )
 }

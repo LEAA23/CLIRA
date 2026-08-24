@@ -1,5 +1,5 @@
 import { Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/react';
-import { ArrowRightStartOnRectangleIcon, EllipsisVerticalIcon, PencilIcon, TrashIcon } from '@heroicons/react/16/solid';
+import { ArrowRightStartOnRectangleIcon, EllipsisVerticalIcon, PencilIcon, TrashIcon, UserGroupIcon } from '@heroicons/react/16/solid';
 import { useAppStore } from '../../stores/useAppStore';
 import { useNavigate } from 'react-router-dom';
 
@@ -36,6 +36,20 @@ const GroupCardOptions = ( { id } : GroupCardOptionsProps ) => {
                                 </button>
                             </div>
                         </MenuItem>  
+                        <MenuItem>
+                            <div 
+                                className='flex justify-start gap-x-2 hover:text-purple-400 cursor-pointer'
+                                onClick={ () => navigate( location.pathname + "?MembersModal=true" + `&Group=${ id }` ) }
+                            >
+                                <UserGroupIcon className='h-6'/>
+                                <button 
+                                    type='button'
+                                    className="block"
+                                >
+                                    Miembros del grupo
+                                </button>
+                            </div>
+                        </MenuItem> 
                         <MenuItem>
                             <div 
                                 className='flex justify-start gap-x-2 hover:text-red-400 cursor-pointer'
