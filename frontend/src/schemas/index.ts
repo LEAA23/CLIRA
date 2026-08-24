@@ -61,3 +61,11 @@ export const ChartOptionSchema = z.object({
     id: z.string(),
     label: z.string()
 });
+
+/**
+ * MEMBERS CONTAINER SCHEMA
+ */
+export const MembersOptionSchema = z.object({
+    id: z.string(),
+    label: z.string()
+});

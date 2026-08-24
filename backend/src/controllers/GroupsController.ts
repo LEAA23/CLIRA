@@ -6,6 +6,7 @@ import { s3Client } from "../config/services/s3";
 import { DeleteObjectCommand, GetObjectCommand, PutObjectCommand } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { compressImage } from "../utils/compressImage";
+import { UserGroup } from "../models/UserGroup";
 
 
 export class GroupsControlller {
@@ -162,6 +163,43 @@ export class GroupsControlller {
             return res.status(200).json( { group: groupExists } );
 
         } catch (error) {
+            return res.status(500).json( { error: "Error interno del servidor" } );
+        }
+    }
+
+    static setMembertoGroup = async( req: Request, res: Response ) => {
+        const { groupId } = req.params;
+        const { email } = req.body;
+        try {
+            const groupExists = await Group.findOne( { where: { id: groupId } } );
+            const user = await User.findOne( { where: { email } } );
+
+            if(!groupExists) {
+                const error = new Error("El grupo no existe");
+                return res.status(404).json( { error: error.message } );
+            }
+            //Si el usuario que mando el admin no existe en la base de datos mandamos un error
+            if(!user) {
+                const error = new Error("El usuario no existe");
+                return res.status(404).json( { error: error.message } );
+            }
+
+            //Buscamos si el usuario ya esta registrado en ese grupo.
+            const alreadyExists = await UserGroup.findOne( { where: { user_id: user.id, group_id: groupId }  } );
+            if(alreadyExists) {
+                const error = new Error("El usuario ya es miembro del grupo");
+                return res.status(409).json( { error: error.message } );
+            }
+
+            //Si el usuario no existe en ese grupo entonces lo agregamos
+            await UserGroup.create({
+                user_id: user.id,
+                group_id: Number( groupId )
+            });
+            return res.status(200).send("El usuario fue agregado correctamente");
+
+        } catch (error) {
+            console.log(error)
             return res.status(500).json( { error: "Error interno del servidor" } );
         }
     }

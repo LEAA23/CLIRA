@@ -4,10 +4,12 @@ import FilterOptions from "./FilterOptions";
 
 type SearchBarProps = {
   pendingCases: boolean;
-  filters: boolean
+  filters: boolean;
+  inputType: string;
+  placeholder: string;
 }
 
-const SearchBar = ({pendingCases, filters} : SearchBarProps) => {
+const SearchBar = ({pendingCases, filters, inputType, placeholder} : SearchBarProps) => {
     //state local para identificar cuanod el usuario esta escribiendo en el input de buscar
     const [isWriting, setIsWriting] = useState(false);
     //State local para identificar cuando el filter esta activo y asi poder desplegarlo
@@ -42,9 +44,9 @@ const SearchBar = ({pendingCases, filters} : SearchBarProps) => {
             className="flex justify-between items-center"
           >
             <input 
-              type="text"
+              type={ inputType }
               onChange={handleChange}
-              placeholder="Buscar simulacion clinica" 
+              placeholder={ placeholder }
               className="focus:outline-none p-5 w-full"
             />
             <button

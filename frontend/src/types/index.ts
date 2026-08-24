@@ -1,5 +1,5 @@
 import z from "zod"
-import type { AuthSchema, ChartOptionSchema, GroupResponse, GroupShcema, GroupsSchema, UserSchema } from "../schemas"
+import type { AuthSchema, ChartOptionSchema, GroupResponse, GroupShcema, GroupsSchema, MembersOptionSchema, UserSchema } from "../schemas"
 
 /**
  * AUTH TYPES
@@ -26,3 +26,8 @@ export type CurrentGroup = z.infer<typeof GroupResponse>;
  * CHART OPTION TYPE
  */
 export type ChartOption = z.infer<typeof ChartOptionSchema>;
+
+/**
+ * MEMBER OPTION TYPE
+ */
+export type MemberOptionType = z.infer<typeof MembersOptionSchema>;
