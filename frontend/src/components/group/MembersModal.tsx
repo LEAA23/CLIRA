@@ -4,8 +4,10 @@ import { useShowModal } from "../../hooks/useShowModal";
 import { useLocation, useNavigate } from "react-router-dom";
 import { MinusIcon, PlusIcon } from "@heroicons/react/16/solid";
 import { useState } from "react";
-import type { MemberOptionType } from "../../types";
+import type { AddMemberForm, MemberOptionType } from "../../types";
 import SearchBar from "../SearchBar";
+import { toast } from "react-toastify";
+import { useAppStore } from "../../stores/useAppStore";
 
 const MembersModal = () => {
     const navigate = useNavigate();
@@ -13,14 +15,29 @@ const MembersModal = () => {
 
     const location = useLocation();
     const queryParams = new URLSearchParams( location.search );
-    const groupId = queryParams.get("Group");
+    const groupId = Number( queryParams.get("Group") );
+
+    const addMembertoGroup = useAppStore( state => state.addMembertoGroup );
+    
+    const [ selected, setSelected ] = useState<string>( "addMember" );
 
     const actions : MemberOptionType[] = [
         { id: "addMember", label: "Agregar miembro" },
         { id: "removeMemer", label: "Remover miembro" }
     ];
 
-    const [ selected, setSelected ] = useState<string>( "addMember" );
+    const handleAddMember = async( formData : AddMemberForm ) => {
+        
+        try {
+            const message = await addMembertoGroup( { groupId , email: formData.email } );
+            toast.success( message );
+        } catch (error) {
+            if( error instanceof Error ) {
+                toast.error( error.message );
+            }
+        }
+    }
+
 
   return (
     <>
@@ -60,6 +77,7 @@ const MembersModal = () => {
                                 <div className="flex justify-start items-center gap-5 mt-5 p-5 pb-0 max-w-full">
                                     {actions.map( action => (
                                         <button
+                                            key={action.id}
                                             id={action.id}
                                             onClick={ () => setSelected( action.id ) }
                                             className={`${ selected === action.id? 
@@ -83,7 +101,9 @@ const MembersModal = () => {
                                         pendingCases={false}
                                         filters={false}
                                         inputType="email"
+                                        inputName="email"
                                         placeholder="Busca el usuario escribiendo su correo electronico"
+                                        fn={ handleAddMember }
                                     />
 
                                     <div>

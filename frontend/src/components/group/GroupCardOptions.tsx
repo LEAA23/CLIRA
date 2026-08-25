@@ -10,6 +10,7 @@ type GroupCardOptionsProps = {
 const GroupCardOptions = ( { id } : GroupCardOptionsProps ) => {
     const navigate = useNavigate();
     const user = useAppStore( state => state.user );
+    
   return (
     <>
         <Menu>
