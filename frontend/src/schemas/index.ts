@@ -44,7 +44,16 @@ export const GroupResponse = GroupShcema.pick({
     teacher: true,
     teacherUser: true
 }).extend({
-    bgImage: z.string()
+    bgImage: z.string(),
+    users: z.array(
+        AuthSchema.pick({
+            name: true,
+            lastName: true,
+            email: true
+        }).extend({
+            id: z.number()
+        })
+    )
 })
 
 export const GroupsSchema = z.array(

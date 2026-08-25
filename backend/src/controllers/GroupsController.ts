@@ -142,7 +142,20 @@ export class GroupsControlller {
             //Verificamos si realmente existe un grupo con el id que se esta mandando
             const groupExists = await Group.findOne( { 
                 where: { id: groupId },
-                include: [ { model: User, as: "teacherUser", attributes: ["id", "name"] } ]  
+                include: [ 
+                    //Hacemos un join con la tabla de User y nos traemos el id del usuario que en este caso es un teacher
+                    { model: User, 
+                        as: "teacherUser", 
+                        attributes: ["id", "name"]
+                    },
+                    //Hacemos otro join y nos taremos los miembros de ese grupo 
+                    { 
+                        model: User, 
+                        as: "users", 
+                        attributes: ["id", "name", "lastName", "email"], 
+                        through: { attributes: [] } 
+                    } 
+                ]  
             } );
             
             if(!groupExists) {
@@ -163,6 +176,7 @@ export class GroupsControlller {
             return res.status(200).json( { group: groupExists } );
 
         } catch (error) {
+            console.log(error)
             return res.status(500).json( { error: "Error interno del servidor" } );
         }
     }

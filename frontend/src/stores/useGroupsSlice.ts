@@ -23,7 +23,8 @@ export const createGroupsSlice : StateCreator<GroupsSliceType> = ( set, get ) =>
         teacher: 0,
         teacherUser: {
             name: ""
-        }
+        },
+        users: []
     },
     groups: [],
     fetchGroups: async () => {
@@ -73,7 +74,8 @@ export const createGroupsSlice : StateCreator<GroupsSliceType> = ( set, get ) =>
                 teacher: 0,
                 teacherUser: {
                     name: ""
-                }
+                },
+                users: []
             }
         }));
     },
