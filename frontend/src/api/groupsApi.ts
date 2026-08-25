@@ -21,6 +21,7 @@ export const getGroup = async( id: Group["id"] ) => {
     try {
         const { data: { group } } = await api(`/groups/${id}`);
         const response = GroupResponse.safeParse(group);
+        console.log(response)
         if(response.data) {
             return response.data;
         }

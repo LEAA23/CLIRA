@@ -8,6 +8,7 @@ import type { AddMemberForm, MemberOptionType } from "../../types";
 import SearchBar from "../SearchBar";
 import { toast } from "react-toastify";
 import { useAppStore } from "../../stores/useAppStore";
+import ProfileTagName from "../posts/ProfileTagName";
 
 const MembersModal = () => {
     const navigate = useNavigate();
@@ -17,6 +18,7 @@ const MembersModal = () => {
     const queryParams = new URLSearchParams( location.search );
     const groupId = Number( queryParams.get("Group") );
 
+    const group = useAppStore( state => state.group )
     const addMembertoGroup = useAppStore( state => state.addMembertoGroup );
     
     const [ selected, setSelected ] = useState<string>( "addMember" );
@@ -95,7 +97,7 @@ const MembersModal = () => {
                                         </button>
                                     ) )}
                                 </div>
-
+                                
                                 <div className="p-5 max-w-full">
                                     <SearchBar
                                         pendingCases={false}
@@ -108,6 +110,15 @@ const MembersModal = () => {
 
                                     <div>
                                         <p className="text-gray-600 font-bold text-xl">Miembros actuales:</p>
+                                        <div className="mt-5 flex justify-start space-x-5 space-y-5 flex-wrap">
+                                            {group.users.map( user => (
+                                                <ProfileTagName
+                                                    key={user.id}
+                                                    name={user.name}
+                                                    lastName = {user.lastName}
+                                                />
+                                            ) )}
+                                        </div>
                                     </div>
 
                                 </div>

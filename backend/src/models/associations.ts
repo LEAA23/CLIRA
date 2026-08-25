@@ -31,7 +31,7 @@ User.belongsToMany(Group, {
 
 Group.belongsToMany(User, {
     through: UserGroup,
-    foreignKey: "user_id",
-    otherKey: "group_id",
+    foreignKey: "group_id",
+    otherKey: "user_id",
     as: "users"
 });
