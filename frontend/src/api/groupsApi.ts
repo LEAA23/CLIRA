@@ -1,7 +1,7 @@
 import { isAxiosError } from "axios"
 import api from "../lib/axios";
 import { GroupResponse, GroupsSchema } from "../schemas";
-import type { Group } from "../types";
+import type { AddMemberForm, Group } from "../types";
 
 export const getGroups = async() => {
     try {
@@ -59,6 +59,21 @@ export const deleteGroup = async( id : Group["id"] ) => {
     try {
         const { data } = await api.delete<string>(`/groups/${ id }`);
         console.log(data)
+        return data;
+    } catch (error) {
+        if( isAxiosError(error) && error.response ) {
+            throw new Error( error.response.data.error );
+        }
+        throw error;
+    }
+}
+
+/**
+ * MEMBERS
+ */
+export const addMembertoGroup = async(  { groupId, email } : { groupId : Group["id"] ; email: AddMemberForm["email"] } ) => {
+    try {
+        const { data } = await api.post<string>(`/groups/${groupId}/members`, {email});
         return data;
     } catch (error) {
         if( isAxiosError(error) && error.response ) {

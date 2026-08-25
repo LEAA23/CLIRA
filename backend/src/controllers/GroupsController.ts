@@ -183,6 +183,10 @@ export class GroupsControlller {
                 const error = new Error("El usuario no existe");
                 return res.status(404).json( { error: error.message } );
             }
+            if(user.id === req.user.id) {
+                const error = new Error("Eres el dueño del grupo");
+                return res.status(404).json( { error: error.message } );
+            }
 
             //Buscamos si el usuario ya esta registrado en ese grupo.
             const alreadyExists = await UserGroup.findOne( { where: { user_id: user.id, group_id: groupId }  } );
