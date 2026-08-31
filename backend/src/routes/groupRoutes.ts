@@ -49,7 +49,6 @@ router.get("/:groupId",
 /**
  * MEMBERS' ENDPOINTS
 */
-
 router.post("/:groupId/members", 
     authenticate,
     groupAuthorization,
@@ -58,6 +57,15 @@ router.post("/:groupId/members",
     handleInputErrors, 
     GroupsControlller.setMembertoGroup
 );
+
+router.delete("/:groupId/members",
+    authenticate,
+    groupAuthorization,
+    param("groupId").isInt( { min: 1 } ).withMessage("El id del grupo es obligatorio"),
+    query("email").notEmpty().withMessage("El email del miembro es obligatorio"),
+    handleInputErrors,
+    GroupsControlller.removeMemberFromGroup
+)
 
 
 
