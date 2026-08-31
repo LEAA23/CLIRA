@@ -19,7 +19,7 @@ const SearchBar = ({pendingCases, filters, inputType, inputName, placeholder, fn
 
     const handleClick = () => setIsFiltersActive( prevValue => !prevValue );
 
-    const { register, reset, formState: { errors }, handleSubmit } = useForm();
+    const { register, formState: { errors }, handleSubmit } = useForm();
 
   return (
       

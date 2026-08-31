@@ -23,7 +23,7 @@ export const UserSchema = AuthSchema.pick({
     email: true,
     rol: true
 }).extend({
-    id: z.number().or( z.null() )
+    id: z.number()
 })
 
 export const UserSearchSchema = UserSchema.pick({
