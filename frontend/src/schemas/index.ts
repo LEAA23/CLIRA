@@ -30,6 +30,7 @@ export const UserSearchSchema = UserSchema.pick({
     id: true,
     name: true,
     lastName: true,
+    email: true
 });
 
 /**
