@@ -1,5 +1,5 @@
 import type { StateCreator } from "zustand"
-import type { AddMemberForm, CurrentGroup, Group, Groups, UserSearched, UserSearchForm } from "../types";
+import type { CurrentGroup, Group, Groups, UserSearched, UserSearchForm } from "../types";
 import { addMembertoGroup, createGroup, deleteGroup, getGroup, getGroups, searchUser, updateGroup } from "../api/groupsApi";
 
 
@@ -13,9 +13,9 @@ export type GroupsSliceType = {
     updateGroup: ( { groupId, formData } : {groupId:number; formData: FormData}  ) => Promise<string>;
     deleteGroup: (id: number) => Promise<string>
     cleanGroup: () => void;
-    
-    fetchUser: (email: string) => Promise<void>
-    addMembertoGroup: ( { groupId, email } : { groupId : Group["id"] ; email : AddMemberForm["email"] } ) => Promise<string>;
+    cleanUserSearched: () => void;
+    fetchUser: (email: string) => Promise<void>;
+    addMembertoGroup: ( { groupId, user } : { groupId : Group["id"] ; user : UserSearched } ) => Promise<string>;
 }
 
 export const createGroupsSlice : StateCreator<GroupsSliceType> = ( set, get ) => ({
@@ -88,7 +88,16 @@ export const createGroupsSlice : StateCreator<GroupsSliceType> = ( set, get ) =>
             }
         }));
     },
-
+    cleanUserSearched: () => {
+        set(() => ({
+            userSearched: {
+                id: 0,
+                name: "",
+                lastName: "",
+                email: ""
+            }
+        }))
+    },
 
     fetchUser: async( email : UserSearchForm["email"] ) => {
         const userSearched = await searchUser( email );
@@ -96,8 +105,18 @@ export const createGroupsSlice : StateCreator<GroupsSliceType> = ( set, get ) =>
             userSearched
         }));
     },
-    addMembertoGroup: async( { groupId, email } : { groupId : Group["id"] ; email : AddMemberForm["email"] } ) => {
-        const message = await addMembertoGroup( { groupId, email } );
+    addMembertoGroup: async( { groupId, user } : { groupId : Group["id"] ; user : UserSearched } ) => {
+        const message = await addMembertoGroup( { groupId, email: user.email } );
+        if( message === "El usuario fue agregado correctamente" ) {
+            set((state) => ({
+                group: {
+                    ...state.group,
+                    users: [...state.group.users, user]
+                }
+            }));
+
+            get().cleanUserSearched();
+        }
         return message;
     }
 })

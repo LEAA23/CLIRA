@@ -4,12 +4,11 @@ import { useShowModal } from "../../hooks/useShowModal";
 import { useLocation, useNavigate } from "react-router-dom";
 import { MinusIcon, PlusIcon } from "@heroicons/react/16/solid";
 import { useState } from "react";
-import type { AddMemberForm, MemberOptionType, UserSearchForm } from "../../types";
+import type { MemberOptionType, UserSearchForm } from "../../types";
 import SearchBar from "../SearchBar";
 import { toast } from "react-toastify";
 import { useAppStore } from "../../stores/useAppStore";
 import ProfileTagName from "../posts/ProfileTagName";
-import { isAxiosError } from "axios";
 
 const MembersModal = () => {
     const navigate = useNavigate();
@@ -24,6 +23,7 @@ const MembersModal = () => {
     const userSearched = useAppStore( state => state.userSearched );
 
     const addMembertoGroup = useAppStore( state => state.addMembertoGroup );
+    const cleanGroup = useAppStore( state => state.cleanGroup );
     
     const [ selected, setSelected ] = useState<string>( "addMember" );
 
@@ -31,18 +31,6 @@ const MembersModal = () => {
         { id: "addMember", label: "Agregar miembro" },
         { id: "removeMemer", label: "Remover miembro" }
     ];
-
-    // const handleAddMember = async( formData : AddMemberForm ) => {
-        
-    //     try {
-    //         const message = await addMembertoGroup( { groupId , email: formData.email } );
-    //         toast.success( message );
-    //     } catch (error) {
-    //         if( error instanceof Error ) {
-    //             toast.error( error.message );
-    //         }
-    //     }
-    // }
 
     const handleSearch = async( data: UserSearchForm ) => {
         try {
@@ -57,9 +45,10 @@ const MembersModal = () => {
 
     const handleClick = async() => {
         try {
-            
+            const message = await addMembertoGroup( { groupId, user: userSearched } );
+            toast.success( message );
         } catch (error) {
-            if( isAxiosError( error ) && error.response ) {
+            if( error instanceof Error ) {
                 toast.error( error.message );
             }
         }
@@ -69,7 +58,10 @@ const MembersModal = () => {
   return (
     <>
         <Transition appear show={showModal} as={Fragment}>
-            <Dialog as="div" className="relative z-10" onClose={() => navigate(location.pathname, { replace: true })}>
+            <Dialog as="div" className="relative z-10" onClose={() => {
+                navigate(location.pathname, { replace: true })
+                cleanGroup();
+            }}>
                 <Transition.Child
                     as={Fragment}
                     enter="ease-out duration-300"
@@ -146,7 +138,6 @@ const MembersModal = () => {
                                                 <div 
                                                     className="rounded-full bg-blue-400 hover:bg-blue-500 transition-all 
                                                     duration-200 ease-in-out h-8 aspect-square text-center cursor-pointer"
-
                                                     onClick={ handleClick }
                                                 >
                                                     <p className="text-white font-bold text-xl">+</p>
