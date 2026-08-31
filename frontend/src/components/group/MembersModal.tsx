@@ -9,6 +9,7 @@ import SearchBar from "../SearchBar";
 import { toast } from "react-toastify";
 import { useAppStore } from "../../stores/useAppStore";
 import ProfileTagName from "../posts/ProfileTagName";
+import { isAxiosError } from "axios";
 
 const MembersModal = () => {
     const navigate = useNavigate();
@@ -49,6 +50,16 @@ const MembersModal = () => {
             await fetchUser( email );
         } catch (error) {
             if( error instanceof Error ) {
+                toast.error( error.message );
+            }
+        }
+    }
+
+    const handleClick = async() => {
+        try {
+            
+        } catch (error) {
+            if( isAxiosError( error ) && error.response ) {
                 toast.error( error.message );
             }
         }
@@ -122,9 +133,9 @@ const MembersModal = () => {
                                         fn={ handleSearch }
                                     />
 
-                                    <div className="mb-5">
-                                        {userSearched.name !== "" && (
-                                            <>
+                                    
+                                    {userSearched.name !== "" && (
+                                        <div className="mb-5">
                                             <p className="mb-5 text-gray-600 font-bold ">Resultados de la busqueda:</p>
                                             <div className="flex justify-start items-center gap-x-3">
                                                 <ProfileTagName
@@ -132,13 +143,18 @@ const MembersModal = () => {
                                                     lastName={userSearched.lastName}
                                                 />
 
-                                                <div className="rounded-full bg-blue-400 hover:bg-blue-500 transition-all duration-200 ease-in-out h-8 aspect-square text-center cursor-pointer">
+                                                <div 
+                                                    className="rounded-full bg-blue-400 hover:bg-blue-500 transition-all 
+                                                    duration-200 ease-in-out h-8 aspect-square text-center cursor-pointer"
+
+                                                    onClick={ handleClick }
+                                                >
                                                     <p className="text-white font-bold text-xl">+</p>
                                                 </div>
                                             </div>
-                                            </>
-                                        )}
-                                    </div>
+                                        </div>
+                                    )}
+                                
 
                                     <div>
                                         <p className="text-gray-600 font-bold text-xl">Miembros actuales:</p>

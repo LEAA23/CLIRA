@@ -33,7 +33,8 @@ export const createGroupsSlice : StateCreator<GroupsSliceType> = ( set, get ) =>
     userSearched: {
         id: 0,
         name: "",
-        lastName: ""
+        lastName: "",
+        email: ""
     },
     fetchGroups: async () => {
         const groups = await getGroups();

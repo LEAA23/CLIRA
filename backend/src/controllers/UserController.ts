@@ -14,7 +14,7 @@ export class UserController {
             
             const userExists = await User.findOne({ 
                 where: { email },
-                attributes: ["id", "name", "lastName", "confirm"]
+                attributes: ["id", "name", "lastName", "email" , "confirm"]
             });
 
             if( !userExists || !userExists.confirm ) {
