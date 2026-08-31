@@ -3,6 +3,7 @@ import cors from "cors";
 import morgan from "morgan";
 import authRoutes from "./routes/authRoutes";
 import groupsRoutes from "./routes/groupRoutes";
+import userRoutes from "./routes/userRoutes";
 import {authenticateConection} from "./config/db";
 import { corsOptions } from "./config/cors";
 
@@ -22,5 +23,6 @@ app.use( express.json() );
 
 app.use("/api/auth", authRoutes);
 app.use("/api/groups", groupsRoutes);
+app.use("/api/users", userRoutes);
 
 export default app;

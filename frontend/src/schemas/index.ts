@@ -19,11 +19,18 @@ export const AuthSchema = z.object({
  */
 export const UserSchema = AuthSchema.pick({
     name: true,
+    lastName: true,
     email: true,
     rol: true
 }).extend({
     id: z.number().or( z.null() )
 })
+
+export const UserSearchSchema = UserSchema.pick({
+    id: true,
+    name: true,
+    lastName: true,
+});
 
 /**
  * Groups SCHEMAS'
@@ -54,7 +61,7 @@ export const GroupResponse = GroupShcema.pick({
             id: z.number()
         })
     )
-})
+});
 
 export const GroupsSchema = z.array(
     GroupShcema.omit({

@@ -22,6 +22,8 @@ export type Group = z.infer< typeof GroupShcema >;
 export type Groups = z.infer<typeof GroupsSchema  >;
 export type GroupRegistrationForm = Pick<Group, "name" | "bgImage">;
 export type CurrentGroup = z.infer<typeof GroupResponse>;
+export type UserSearchForm = Pick<UserAuthenticate, "email">;
+export type UserSearched = Pick<UserAuthenticate, "id" | "name" | "lastName">;
 
 /**
  * CHART OPTION TYPE
