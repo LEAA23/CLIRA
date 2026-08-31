@@ -43,10 +43,20 @@ const MembersModal = () => {
         }
     }
 
-    const handleClick = async() => {
+    const handleClickAddMember = async() => {
         try {
             const message = await addMembertoGroup( { groupId, user: userSearched } );
             toast.success( message );
+        } catch (error) {
+            if( error instanceof Error ) {
+                toast.error( error.message );
+            }
+        }
+    }
+
+    const handleClickRemoveMember = async() => {
+        try {
+            
         } catch (error) {
             if( error instanceof Error ) {
                 toast.error( error.message );
@@ -127,6 +137,7 @@ const MembersModal = () => {
 
                                     
                                     {userSearched.name !== "" && (
+
                                         <div className="mb-5">
                                             <p className="mb-5 text-gray-600 font-bold ">Resultados de la busqueda:</p>
                                             <div className="flex justify-start items-center gap-x-3">
@@ -135,13 +146,24 @@ const MembersModal = () => {
                                                     lastName={userSearched.lastName}
                                                 />
 
-                                                <div 
-                                                    className="rounded-full bg-blue-400 hover:bg-blue-500 transition-all 
-                                                    duration-200 ease-in-out h-8 aspect-square text-center cursor-pointer"
-                                                    onClick={ handleClick }
-                                                >
-                                                    <p className="text-white font-bold text-xl">+</p>
-                                                </div>
+                                                {selected === "addMember"? (
+                                                    <div 
+                                                        className="rounded-full bg-blue-400 hover:bg-blue-500 transition-all 
+                                                        duration-200 ease-in-out h-8 aspect-square text-center cursor-pointer"
+                                                        onClick={ handleClickAddMember }
+                                                    >
+                                                        <p className="text-white font-bold text-xl">+</p>
+                                                    </div>
+
+                                                ) : (
+                                                    <div 
+                                                        className="rounded-full bg-red-400 hover:bg-red-500 transition-all 
+                                                        duration-200 ease-in-out h-8 aspect-square text-center cursor-pointer"
+                                                        onClick={ handleClickRemoveMember }
+                                                    >
+                                                        <p className="text-white font-bold text-xl">x</p>
+                                                    </div>
+                                                )}
                                             </div>
                                         </div>
                                     )}
@@ -149,7 +171,7 @@ const MembersModal = () => {
 
                                     <div>
                                         <p className="text-gray-600 font-bold text-xl">Miembros actuales:</p>
-                                        <div className="mt-5 flex justify-start space-x-5 space-y-5 flex-wrap">
+                                        <div className="mt-5 flex justify-start items-center gap-5 flex-wrap">
                                             {group.users.map( user => (
                                                 <ProfileTagName
                                                     key={user.id}

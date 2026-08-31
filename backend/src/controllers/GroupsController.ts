@@ -222,6 +222,37 @@ export class GroupsControlller {
         }
     }
 
+    static removeMemberFromGroup = async( req: Request, res: Response ) => {
+        const {groupId} = req.params;
+        const { email } = req.query;
+        try {
+
+            if( typeof email !== "string" ) {
+                const error = new Error("El correo es obliatorio");
+                return res.status(400).json( { error: error.message } );
+            }
+            
+            const userExists = await User.findOne( { where: { email } } );
+
+            if(!userExists || !userExists.confirm) {
+                const error = new Error("El usuario no existe o no esta confirmado");
+                return res.status(400).json( { error: error.message } );
+            }
+
+            const userIsMember = await UserGroup.findOne( { where: { user_id: userExists.id, group_id: groupId } } );
+            if(!userIsMember) {
+                const error = new Error("El usuario no es miembro de este grupo");
+                return res.status(400).json( { error: error.message } );
+            }
+
+            await UserGroup.destroy( { where: { user_id: userIsMember.user_id, group_id: userIsMember.group_id } } );
+            return res.status(200).send(`El usuario ${userExists.name} fue eliminado del grupo correctamente`);
+            
+        } catch (error) {
+            return res.status(500).json( { error: "Error interno del servidor" } );
+        }
+    }
+
     static getUser = async( req: Request, res: Response ) => {
         const { email } = req.query;
         try {

@@ -118,5 +118,8 @@ export const createGroupsSlice : StateCreator<GroupsSliceType> = ( set, get ) =>
             get().cleanUserSearched();
         }
         return message;
-    }
+    },
+    // removeMemberFromGroup: async( { groupId, user } : { groupId: Group["id"] ; user: UserSearched } ) => {
+    //     const message = await 
+    // }
 })
