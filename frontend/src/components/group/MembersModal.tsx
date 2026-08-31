@@ -4,7 +4,7 @@ import { useShowModal } from "../../hooks/useShowModal";
 import { useLocation, useNavigate } from "react-router-dom";
 import { MinusIcon, PlusIcon } from "@heroicons/react/16/solid";
 import { useState } from "react";
-import type { AddMemberForm, MemberOptionType } from "../../types";
+import type { AddMemberForm, MemberOptionType, UserSearchForm } from "../../types";
 import SearchBar from "../SearchBar";
 import { toast } from "react-toastify";
 import { useAppStore } from "../../stores/useAppStore";
@@ -18,7 +18,10 @@ const MembersModal = () => {
     const queryParams = new URLSearchParams( location.search );
     const groupId = Number( queryParams.get("Group") );
 
-    const group = useAppStore( state => state.group )
+    const group = useAppStore( state => state.group );
+    const fetchUser = useAppStore( state => state.fetchUser );
+    const userSearched = useAppStore( state => state.userSearched );
+
     const addMembertoGroup = useAppStore( state => state.addMembertoGroup );
     
     const [ selected, setSelected ] = useState<string>( "addMember" );
@@ -28,11 +31,22 @@ const MembersModal = () => {
         { id: "removeMemer", label: "Remover miembro" }
     ];
 
-    const handleAddMember = async( formData : AddMemberForm ) => {
+    // const handleAddMember = async( formData : AddMemberForm ) => {
         
+    //     try {
+    //         const message = await addMembertoGroup( { groupId , email: formData.email } );
+    //         toast.success( message );
+    //     } catch (error) {
+    //         if( error instanceof Error ) {
+    //             toast.error( error.message );
+    //         }
+    //     }
+    // }
+
+    const handleSearch = async( data: UserSearchForm ) => {
         try {
-            const message = await addMembertoGroup( { groupId , email: formData.email } );
-            toast.success( message );
+            const { email } = data;
+            await fetchUser( email );
         } catch (error) {
             if( error instanceof Error ) {
                 toast.error( error.message );
@@ -105,8 +119,26 @@ const MembersModal = () => {
                                         inputType="email"
                                         inputName="email"
                                         placeholder="Busca el usuario escribiendo su correo electronico"
-                                        fn={ handleAddMember }
+                                        fn={ handleSearch }
                                     />
+
+                                    <div className="mb-5">
+                                        {userSearched.name !== "" && (
+                                            <>
+                                            <p className="mb-5 text-gray-600 font-bold ">Resultados de la busqueda:</p>
+                                            <div className="flex justify-start items-center gap-x-3">
+                                                <ProfileTagName
+                                                    name={userSearched.name}
+                                                    lastName={userSearched.lastName}
+                                                />
+
+                                                <div className="rounded-full bg-blue-400 hover:bg-blue-500 transition-all duration-200 ease-in-out h-8 aspect-square text-center cursor-pointer">
+                                                    <p className="text-white font-bold text-xl">+</p>
+                                                </div>
+                                            </div>
+                                            </>
+                                        )}
+                                    </div>
 
                                     <div>
                                         <p className="text-gray-600 font-bold text-xl">Miembros actuales:</p>

@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { GroupsControlller } from "../controllers/GroupsController";
-import { body, param } from "express-validator";
+import { body, param, query } from "express-validator";
 import { handleInputErrors } from "../middleware/handleInputErrors";
 import authenticate from "../middleware/auth";
 import groupAuthorization from "../middleware/groupAuthorization";
@@ -46,6 +46,10 @@ router.get("/:groupId",
     GroupsControlller.getGroup
 );
 
+/**
+ * MEMBERS' ENDPOINTS
+*/
+
 router.post("/:groupId/members", 
     authenticate,
     groupAuthorization,
@@ -55,12 +59,6 @@ router.post("/:groupId/members",
     GroupsControlller.setMembertoGroup
 );
 
-router.get("/:groupId/members",
-    authenticate,
-    param("groupId").notEmpty().withMessage("El id del grupo es obligatorio"),
-    handleInputErrors,
-    GroupsControlller.getGroupMembers
-)
 
 
 export default router;

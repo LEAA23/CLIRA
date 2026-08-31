@@ -1,17 +1,20 @@
 import type { StateCreator } from "zustand"
-import type { AddMemberForm, CurrentGroup, Group, Groups } from "../types";
-import { addMembertoGroup, createGroup, deleteGroup, getGroup, getGroups, updateGroup } from "../api/groupsApi";
+import type { AddMemberForm, CurrentGroup, Group, Groups, UserSearched, UserSearchForm } from "../types";
+import { addMembertoGroup, createGroup, deleteGroup, getGroup, getGroups, searchUser, updateGroup } from "../api/groupsApi";
 
 
 export type GroupsSliceType = {
     groups: Groups;
     group: CurrentGroup;
+    userSearched: UserSearched;
     fetchGroups: () => Promise<void>;
     createGroup: (formData: FormData) => Promise<string>;
     fetchGroup: (id: number) => Promise<void>;
     updateGroup: ( { groupId, formData } : {groupId:number; formData: FormData}  ) => Promise<string>;
     deleteGroup: (id: number) => Promise<string>
     cleanGroup: () => void;
+    
+    fetchUser: (email: string) => Promise<void>
     addMembertoGroup: ( { groupId, email } : { groupId : Group["id"] ; email : AddMemberForm["email"] } ) => Promise<string>;
 }
 
@@ -27,6 +30,11 @@ export const createGroupsSlice : StateCreator<GroupsSliceType> = ( set, get ) =>
         users: []
     },
     groups: [],
+    userSearched: {
+        id: 0,
+        name: "",
+        lastName: ""
+    },
     fetchGroups: async () => {
         const groups = await getGroups();
         set(() => ({
@@ -77,6 +85,14 @@ export const createGroupsSlice : StateCreator<GroupsSliceType> = ( set, get ) =>
                 },
                 users: []
             }
+        }));
+    },
+
+
+    fetchUser: async( email : UserSearchForm["email"] ) => {
+        const userSearched = await searchUser( email );
+        set(() => ({
+            userSearched
         }));
     },
     addMembertoGroup: async( { groupId, email } : { groupId : Group["id"] ; email : AddMemberForm["email"] } ) => {
