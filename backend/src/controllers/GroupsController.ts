@@ -222,6 +222,34 @@ export class GroupsControlller {
         }
     }
 
+    static searchMemberInGroup = async( req: Request, res: Response ) => {
+        const { groupId } = req.params;
+        const { email } = req.query;
+
+        try {
+            if( typeof email !== "string" ) {
+                const error = new Error("El correo es obligatorio");
+                return res.status(400).json( { error: error.message } );
+            }  
+            
+            const group = await Group.findOne({
+                where: {id: groupId},
+                include: [ {model: User, as: "users", where: {email} ,attributes: ["id", "name", "lastName", "email"]} ]
+            });
+            const usersInGroup = group?.users;
+            const userExistsInGroup = usersInGroup?.find( user => user.email === email );
+            if(!userExistsInGroup) {
+                const error = new Error("El usuario no es miembro del grupo");
+                return res.status(404).json( { error: error.message } );
+            }
+             
+            return res.status(200).json({ user: userExistsInGroup });
+
+        } catch (error) {
+            return res.status(500).json( { error: "Error interno del servidor" } );
+        }
+    }
+
     static removeMemberFromGroup = async( req: Request, res: Response ) => {
         const {groupId} = req.params;
         const { email } = req.query;
@@ -246,7 +274,7 @@ export class GroupsControlller {
             }
 
             await UserGroup.destroy( { where: { user_id: userIsMember.user_id, group_id: userIsMember.group_id } } );
-            return res.status(200).send(`El usuario ${userExists.name} fue eliminado del grupo correctamente`);
+            return res.status(200).send(`${userExists.name} fue eliminado del grupo correctamente`);
             
         } catch (error) {
             return res.status(500).json( { error: "Error interno del servidor" } );

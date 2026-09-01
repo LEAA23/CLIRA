@@ -1,5 +1,6 @@
 import { CreationOptional, DataTypes, InferAttributes, InferCreationAttributes, Model } from "sequelize";
 import db from "../config/db";
+import { User } from "./User";
 
 //Creamos el modelo de Group el cual va a tener la estructura de la tabla en la base de datos
 export class Group extends Model< InferAttributes<Group>, InferCreationAttributes<Group> > {
@@ -7,6 +8,7 @@ export class Group extends Model< InferAttributes<Group>, InferCreationAttribute
     declare name: string;
     declare bgImage: string;
     declare teacher: number;
+    declare users? : User[];
 }
 
 //Definimos las caracteristicas especiales de cada tributo
