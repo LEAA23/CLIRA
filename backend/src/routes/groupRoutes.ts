@@ -74,7 +74,21 @@ router.delete("/:groupId/members",
     query("email").notEmpty().withMessage("El email del miembro es obligatorio"),
     handleInputErrors,
     GroupsControlller.removeMemberFromGroup
-)
+);
+
+/**
+ * POST'S ENDPOINTS
+ */
+router.post("/:groupId/posts",
+    authenticate,
+    groupExists,
+    uploadFile.single("media"),
+    param("groupId").notEmpty().withMessage("El id del grupo es obligatorio"),
+    body("title").notEmpty().withMessage("El titulo es obligatorio"),
+    body("content").notEmpty().withMessage("El contenido es obligatorio"),
+    handleInputErrors,
+    GroupsControlller.createPost
+);
 
 
 
