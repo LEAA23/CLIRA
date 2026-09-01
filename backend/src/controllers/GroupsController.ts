@@ -7,6 +7,7 @@ import { DeleteObjectCommand, GetObjectCommand, PutObjectCommand } from "@aws-sd
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { compressImage } from "../utils/compressImage";
 import { UserGroup } from "../models/UserGroup";
+import { Post } from "../models/Post";
 
 
 export class GroupsControlller {
@@ -303,6 +304,44 @@ export class GroupsControlller {
             const { confirm, ...user } = userExists.toJSON();
 
             return res.status(200).json( { user } );
+            
+        } catch (error) {
+            return res.status(500).json( { error: "Error interno del servidor" } );
+        }
+    }
+
+    static createPost = async( req: Request, res: Response ) => {
+        const groupId = +req.params.groupId;
+        const { title, content } = req.body;
+        const media = req.file;
+
+        try {
+            //Comprimimos la imagen que mando el usuario
+            const compresedImage = await compressImage( media!.buffer );
+            //Creamos una llave unica para cada imagen
+            const key = `groups/posts/${ Date.now() }-${ media!.originalname.split(".")[0] }.webp`;
+
+            //Ejecutamos una instruccion con el cliente de S3
+            await s3Client.send(
+                //Ejecutamos un comando de poner un objeto en el bucket
+                new PutObjectCommand({
+                    Bucket: process.env.AWS_BUCKET,
+                    Key: key,
+                    Body: compresedImage,
+                    ContentType: "image/webp"
+                })
+            );
+
+            const post = await Post.create({
+                title,
+                content,
+                media: key,
+                likes: 0,
+                group_id: groupId,
+                user_id: req.user.id
+            });
+            
+            return res.status(200).send("Publicado correctamente");
             
         } catch (error) {
             return res.status(500).json( { error: "Error interno del servidor" } );
