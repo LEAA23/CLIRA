@@ -3,8 +3,8 @@ import { Fragment } from "react/jsx-runtime";
 import { useShowModal } from "../../hooks/useShowModal";
 import { useLocation, useNavigate } from "react-router-dom";
 import { MinusIcon, PlusIcon } from "@heroicons/react/16/solid";
-import { useState } from "react";
-import type { MemberOptionType, UserSearchForm } from "../../types";
+import { useEffect, useState } from "react";
+import type { MemberOptionType, UserSearched, UserSearchForm } from "../../types";
 import SearchBar from "../SearchBar";
 import { toast } from "react-toastify";
 import { useAppStore } from "../../stores/useAppStore";
@@ -20,18 +20,29 @@ const MembersModal = () => {
 
     const group = useAppStore( state => state.group );
     const fetchUser = useAppStore( state => state.fetchUser );
+    const fetchDeleteUser = useAppStore( state => state.fetchUserDelete );
     const userSearched = useAppStore( state => state.userSearched );
 
     const addMembertoGroup = useAppStore( state => state.addMembertoGroup );
+    const removeMemberFromGroup = useAppStore( state => state.removeMemberFromGroup );
     const cleanGroup = useAppStore( state => state.cleanGroup );
+    const cleanUserSearched = useAppStore(  state => state.cleanUserSearched );
     
+    //opciones para menu de agregar o eliminar miembro del grupo
     const [ selected, setSelected ] = useState<string>( "addMember" );
 
+    //Se limpia el state de userSearched cada vez que se selecciona una opcion diferente
+    useEffect(() => {
+        cleanUserSearched();
+    }, [selected]);
+
+    //Opciones dispoinbles
     const actions : MemberOptionType[] = [
         { id: "addMember", label: "Agregar miembro" },
         { id: "removeMemer", label: "Remover miembro" }
     ];
 
+    //Funcion para manejar una busqueda para agregar a los usuarios a un grupo
     const handleSearch = async( data: UserSearchForm ) => {
         try {
             const { email } = data;
@@ -43,6 +54,19 @@ const MembersModal = () => {
         }
     }
 
+    //Funcion de busqueda para buscar usuarios especificos de un grupo para eliminarlos
+    const handleDeleteSearch = async( data: UserSearchForm ) => {
+        try {
+            const { email } = data;
+            await fetchDeleteUser( { groupId, email } );
+        } catch (error) {
+            if( error instanceof Error ) {
+                toast.error( error.message )
+            }
+        }
+    }
+
+    //Funcion para agregar a un usuario cuando se de click en el boton de agregar
     const handleClickAddMember = async() => {
         try {
             const message = await addMembertoGroup( { groupId, user: userSearched } );
@@ -54,12 +78,27 @@ const MembersModal = () => {
         }
     }
 
+    //Funcion para remover un usuario cuando se de click en el boton de eliminar
     const handleClickRemoveMember = async() => {
         try {
-            
+            const message = await removeMemberFromGroup( { groupId, user: userSearched } );
+            toast.success( message );
+
         } catch (error) {
             if( error instanceof Error ) {
                 toast.error( error.message );
+            }
+        }
+    }
+
+    //Funcion para eliminar dinamicamente a los usuarios actuales de un grupo mediante un click en el boton de eliminar
+    const handleClickDynamicRemove = async( user : UserSearched ) => {
+        try {
+            const message = await removeMemberFromGroup( { groupId, user } );
+            toast.success( message );
+        } catch (error) {
+            if( error instanceof Error ) {
+                toast.error( error.message )
             }
         }
     }
@@ -126,14 +165,27 @@ const MembersModal = () => {
                                 </div>
                                 
                                 <div className="p-5 max-w-full">
-                                    <SearchBar
-                                        pendingCases={false}
-                                        filters={false}
-                                        inputType="email"
-                                        inputName="email"
-                                        placeholder="Busca el usuario escribiendo su correo electronico"
-                                        fn={ handleSearch }
-                                    />
+
+                                    {selected === "addMember"? (
+                                        <SearchBar
+                                            pendingCases={false}
+                                            filters={false}
+                                            inputType="email"
+                                            inputName="email"
+                                            placeholder="Busca al usuario escribiendo su correo electronico"
+                                            fn={ handleSearch }
+                                        />
+
+                                    ) : (
+                                        <SearchBar
+                                            pendingCases={false}
+                                            filters={false}
+                                            inputType="email"
+                                            inputName="email"
+                                            placeholder="Busca al usuario escribiendo su correo electronico"
+                                            fn={ handleDeleteSearch }
+                                        />
+                                    )}
 
                                     
                                     {userSearched.name !== "" && (
@@ -168,18 +220,44 @@ const MembersModal = () => {
                                         </div>
                                     )}
                                 
-
                                     <div>
-                                        <p className="text-gray-600 font-bold text-xl">Miembros actuales:</p>
-                                        <div className="mt-5 flex justify-start items-center gap-5 flex-wrap">
-                                            {group.users.map( user => (
-                                                <ProfileTagName
-                                                    key={user.id}
-                                                    name={user.name}
-                                                    lastName = {user.lastName}
-                                                />
-                                            ) )}
-                                        </div>
+                                        <p className="text-gray-600 font-bold text-xl">
+                                            Miembros actuales:
+                                        </p>
+
+                                        {selected === "addMember"? (
+                                            <div className="mt-5 flex justify-start items-center gap-5 flex-wrap">
+                                                {group.users.map( user => (
+                                                    <ProfileTagName
+                                                        key={user.id}
+                                                        name={user.name}
+                                                        lastName = {user.lastName}
+                                                    />
+                                                ) )}
+                                            </div>
+
+                                        ) : (
+                                            <div className="mt-5 flex justify-start items-center gap-5 flex-wrap">
+                                                {group.users.map( user => (
+                                                    <div key={user.id} className="flex justify-between items-center gap-x-3">
+                                                        <ProfileTagName
+                                                            key={user.id}
+                                                            name={user.name}
+                                                            lastName = {user.lastName}
+                                                        />
+
+                                                        <div 
+                                                            className="rounded-full bg-red-400 hover:bg-red-500 transition-all 
+                                                            duration-200 ease-in-out h-8 aspect-square text-center cursor-pointer"
+                                                            onClick={() => handleClickDynamicRemove(user) }
+                                                            
+                                                        >
+                                                            <p className="text-white font-bold text-xl">x</p>
+                                                        </div>
+                                                    </div>
+                                                ) )}
+                                            </div>
+                                        )}
                                     </div>
 
                                 </div>

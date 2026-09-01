@@ -14,6 +14,7 @@ export type UserUpdatePassword = Pick<AuthSchema, "password" | "repeatPassword" 
 export type UserValidateToken = Pick<AuthSchema, "token">;
 export type UserAuthenticate = z.infer< typeof UserSchema >;
 export type AddMemberForm = Pick<AuthSchema, "email">;
+export type RemoveMemberForm  = Pick<AuthSchema, "email">;
 
 /**
  * GROUP TYPES

@@ -1,7 +1,6 @@
 import type { StateCreator } from "zustand"
 import type { CurrentGroup, Group, Groups, UserSearched, UserSearchForm } from "../types";
-import { addMembertoGroup, createGroup, deleteGroup, getGroup, getGroups, searchUser, updateGroup } from "../api/groupsApi";
-
+import { addMembertoGroup, createGroup, deleteGroup, getGroup, getGroups, removeMemberFromGroup, searchDeleteUser, searchUser, updateGroup } from "../api/groupsApi";
 
 export type GroupsSliceType = {
     groups: Groups;
@@ -16,6 +15,8 @@ export type GroupsSliceType = {
     cleanUserSearched: () => void;
     fetchUser: (email: string) => Promise<void>;
     addMembertoGroup: ( { groupId, user } : { groupId : Group["id"] ; user : UserSearched } ) => Promise<string>;
+    fetchUserDelete: ({ groupId, email }: { groupId: number; email: string; }) => Promise<void>
+    removeMemberFromGroup: ({ groupId, user }: { groupId: number; user: UserSearched; }) => Promise<string>;
 }
 
 export const createGroupsSlice : StateCreator<GroupsSliceType> = ( set, get ) => ({
@@ -119,7 +120,24 @@ export const createGroupsSlice : StateCreator<GroupsSliceType> = ( set, get ) =>
         }
         return message;
     },
-    // removeMemberFromGroup: async( { groupId, user } : { groupId: Group["id"] ; user: UserSearched } ) => {
-    //     const message = await 
-    // }
+    fetchUserDelete: async( { groupId, email } : { groupId : Group["id"] ; email : UserSearched["email"] } ) => {
+        const userSearched = await searchDeleteUser( { groupId, email} );
+        set(() => ({
+            userSearched
+        }))
+    },
+    removeMemberFromGroup: async( { groupId, user } : { groupId: Group["id"] ; user: UserSearched } ) => {
+        const message = await removeMemberFromGroup( { groupId, email: user.email } );
+        if( message === `${user.name} fue eliminado del grupo correctamente` ) {
+            set((state) => ({
+                group: {
+                    ...state.group,
+                    users: state.group.users.filter( u => u.id !== user.id )
+                }
+            }))
+
+            get().cleanUserSearched();
+        }
+        return message;
+    }
 })

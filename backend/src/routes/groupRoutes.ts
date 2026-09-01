@@ -5,6 +5,7 @@ import { handleInputErrors } from "../middleware/handleInputErrors";
 import authenticate from "../middleware/auth";
 import groupAuthorization from "../middleware/groupAuthorization";
 import { uploadFile } from "../middleware/uploadFile";
+import { groupExists } from "../middleware/groupExists";
 
 const router = Router();
 
@@ -56,6 +57,14 @@ router.post("/:groupId/members",
     body("email").notEmpty().withMessage("El email del miembro es obligatorio"),
     handleInputErrors, 
     GroupsControlller.setMembertoGroup
+);
+
+router.get("/:groupId/members",
+    authenticate,
+    param("groupId").notEmpty().withMessage("El id del grupo es obligatorio"),
+    query("email").notEmpty().withMessage("El email del usuario es obligatorio"),
+    handleInputErrors,
+    GroupsControlller.searchMemberInGroup
 );
 
 router.delete("/:groupId/members",

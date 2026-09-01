@@ -1,7 +1,7 @@
 import { isAxiosError } from "axios"
 import api from "../lib/axios";
 import { GroupResponse, GroupsSchema, UserSearchSchema } from "../schemas";
-import type { AddMemberForm, Group, UserSearchForm } from "../types";
+import type { AddMemberForm, Group, RemoveMemberForm, UserSearchForm } from "../types";
 
 export const getGroups = async() => {
     try {
@@ -96,6 +96,38 @@ export const addMembertoGroup = async(  { groupId, email } : { groupId : Group["
         if( isAxiosError(error) && error.response ) {
             throw new Error( error.response.data.error );
         }
+        throw error;
+    }
+}
+
+export const searchDeleteUser = async( { groupId, email } : { groupId: Group["id"] ; email: RemoveMemberForm["email"] } ) => {
+    try {
+        const { data: user } = await api(`/groups/${groupId}/members?email=${email}`);
+        console.log(user)
+        const response = UserSearchSchema.safeParse( user.user );
+        console.log(response)
+        if(response.data) {
+            return response.data;
+        }
+
+    } catch (error) {
+        if( isAxiosError( error ) && error.response ) {
+            throw new Error( error.response.data.error );
+        }
+
+        throw error;
+    }
+}
+
+export const removeMemberFromGroup = async( { groupId, email } : { groupId: Group["id"] ; email: RemoveMemberForm["email"] } ) => {
+    try {
+        const { data } = await api.delete<string>(`/groups/${groupId}/members?email=${email}`);
+        return data;
+    } catch (error) {
+        if( isAxiosError(error) && error.response ) {
+            throw new Error( error.response.data.error );
+        }
+
         throw error;
     }
 }

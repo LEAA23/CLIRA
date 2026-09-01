@@ -3,7 +3,7 @@ import { User } from "../models/User";
 
 export class UserController {
 
-     static getUser = async( req: Request, res: Response ) => {
+    static getUser = async( req: Request, res: Response ) => {
         const { email } = req.query;
         try {
             
