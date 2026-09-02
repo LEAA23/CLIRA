@@ -1,7 +1,12 @@
 import { Transition, Dialog } from "@headlessui/react";
-import { EyeIcon, XMarkIcon } from "@heroicons/react/16/solid";
-import { useLocation, useNavigate } from "react-router-dom";
+import { ArrowUpTrayIcon, EyeIcon, XMarkIcon } from "@heroicons/react/16/solid";
+import { useForm } from "react-hook-form";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { Fragment } from "react/jsx-runtime";
+import ErrorMessage from "../ErrorMessage";
+import type { PostRegistationForm } from "../../types";
+import { toast } from "react-toastify";
+import { useAppStore } from "../../stores/useAppStore";
 
 const PostModal = () => {
     //useNavigate para redireccionar al usuario a la misma pagina pero sin los query params
@@ -11,6 +16,42 @@ const PostModal = () => {
     const queryParams = new URLSearchParams(location.search);
     const makePost = queryParams.get("makePost");
     const showModal = makePost? true: false;
+
+    const params = useParams();
+    const groupId = params.id!;
+
+    const createPost = useAppStore( state => state.createPost );
+
+    const initialValues : PostRegistationForm = {
+        title: "",
+        content: "",
+        media: []
+    }
+
+    const { register, formState: { errors }, reset, handleSubmit, watch } = useForm<PostRegistationForm>( {defaultValues: initialValues } );
+
+    //Construimos una URL temporal para poder renderizarla en el componnete cuando el usuario seleccione una imagen
+    const media = watch("media");
+    const file = media?.[0];
+    const mediaURL = file? URL.createObjectURL( file ) : null; 
+
+    const handleCreatePost = async( formData: PostRegistationForm ) => {
+        const data = new FormData();
+        data.append("title", formData.title);
+        data.append("content", formData.content);
+        data.append("media", formData.media[0]);
+
+        try {
+            const message = await createPost( { groupId: +groupId, formData: data } );
+            toast.success( message ),
+            reset();
+            navigate( location.pathname, { replace: true } );
+        } catch (error) {
+            if ( error instanceof Error ) {
+                toast.error( error.message );
+            }
+        }
+    }
 
   return (
     <>
@@ -50,6 +91,7 @@ const PostModal = () => {
                                             
                                 <form
                                     className="space-y-2 p-5"
+                                    onSubmit={ handleSubmit( handleCreatePost ) }
                                 >
                                     <div className="flex flex-col">
                                         <label 
@@ -61,8 +103,14 @@ const PostModal = () => {
                                             id="title"
                                             placeholder="Escribe el titulo de la publicacion aqui"
                                             className="border border-gray-400 p-2 my-3 w-full rounded-lg"
+                                            {...register("title", {
+                                                required: "El titulo es obligatorio"
+                                            })}
                                         />
                                     </div>
+                                    {errors.title && (
+                                        <ErrorMessage>{ String(errors.title.message) }</ErrorMessage>
+                                    )}
 
                                     <div className="flex flex-col">
                                         <label 
@@ -72,14 +120,48 @@ const PostModal = () => {
                                         <textarea 
                                             id="content"
                                             className="border border-gray-400 p-2 my-3 w-full rounded-lg h-30"
+                                            {...register("content", {
+                                                required: "El contenido es obligatorio"
+                                            })}
                                         ></textarea>
                                     </div>
+                                    {errors.content && (
+                                        <ErrorMessage>{ String( errors.content.message ) }</ErrorMessage>
+                                    )}
 
-                                    <div className="flex justify-between space-x-5">
+                                    <div className="flex flex-col justify-between space-x-5">
                                         <label 
-                                            htmlFor="resource"
+                                            htmlFor="media"
                                             className="text-gray-600 text-2xl font-bold"
-                                        >Recursos</label>
+                                        >Imagenes</label>
+
+                                        <input
+                                            id="media"
+                                            type="file"
+                                            accept="image/*"
+                                            className="hidden"
+                                            {...register("media")}
+                                        />
+                                        <label 
+                                            htmlFor="media"
+                                            className="bg-purple-500 py-2 px-6 text-white font-bold rounded-lg mt-10 md:mt-5 
+                                            hover:cursor-pointer hover:transition-colors hover:bg-purple-600 w-full flex 
+                                            justify-center items-center gap-x-2"
+                                        >
+                                            <ArrowUpTrayIcon className="h-6"/>
+                                            Seleccionar imagen
+                                        </label>
+
+                                        {mediaURL && (
+                                            <div className="mt-5">
+                                                <p className="text-sm text-gray-600 font-semibold mb-5">Imagen seleccionada:</p>
+                                                <img 
+                                                    src={ mediaURL } 
+                                                    alt="Vista previa de imagen de fondo"
+                                                    className="w-1/2 h-full" 
+                                                />
+                                            </div>
+                                        )}
 
                                     </div>
 

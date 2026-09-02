@@ -332,7 +332,7 @@ export class GroupsControlller {
                 })
             );
 
-            const post = await Post.create({
+            await Post.create({
                 title,
                 content,
                 media: key,
@@ -341,7 +341,7 @@ export class GroupsControlller {
                 user_id: req.user.id
             });
             
-            return res.status(200).send("Publicado correctamente");
+            return res.status(200).send("Publicacion realizada correctamente");
             
         } catch (error) {
             return res.status(500).json( { error: "Error interno del servidor" } );
