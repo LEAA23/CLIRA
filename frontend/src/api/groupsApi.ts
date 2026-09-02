@@ -131,3 +131,19 @@ export const removeMemberFromGroup = async( { groupId, email } : { groupId: Grou
         throw error;
     }
 }
+
+/**
+ * POSTS ENDPOINTS
+ */
+export const createPost = async( { groupId, formData } : { groupId: Group["id"] ; formData: FormData } ) => {
+    try {
+        const { data } = await api.post<string>(`/groups/${groupId}/posts`, formData);
+        return data;
+    } catch (error) {
+        if( isAxiosError( error ) && error.response ) {
+            throw new Error( error.response.data.error );
+        }
+
+        throw error;
+    }
+}

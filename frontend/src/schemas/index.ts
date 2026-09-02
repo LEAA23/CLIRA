@@ -72,6 +72,18 @@ export const GroupsSchema = z.array(
 );
 
 /**
+ * POST'S SQUEMAS
+ */
+export const PostSchema = z.object({
+    title: z.string(),
+    content: z.string(),
+    media: z.array( z.file() ),
+    likes: z.number(),
+    group_id: z.number(),
+    user_id: z.number()
+});
+
+/**
  *  CHART CONTAINER SCHEMA
  */
 export const ChartOptionSchema = z.object({
