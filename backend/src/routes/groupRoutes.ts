@@ -6,6 +6,7 @@ import authenticate from "../middleware/auth";
 import groupAuthorization from "../middleware/groupAuthorization";
 import { uploadFile } from "../middleware/uploadFile";
 import { groupExists } from "../middleware/groupExists";
+import { isGroupMember } from "../middleware/isGroupMember";
 
 const router = Router();
 
@@ -88,6 +89,15 @@ router.post("/:groupId/posts",
     body("content").notEmpty().withMessage("El contenido es obligatorio"),
     handleInputErrors,
     GroupsControlller.createPost
+);
+
+router.get("/:groupId/posts",
+    authenticate,
+    groupExists,
+    isGroupMember,
+    param("groupId").notEmpty().withMessage("El id del grupo es obligatorio"),
+    handleInputErrors,
+    GroupsControlller.getPosts
 );
 
 
