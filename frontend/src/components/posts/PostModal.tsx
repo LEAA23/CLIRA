@@ -64,7 +64,13 @@ const PostModal = () => {
   return (
     <>
         <Transition appear show={showModal} as={Fragment}>
-            <Dialog as="div" className="relative z-10" onClose={() => navigate(location.pathname, { replace: true })}>
+            <Dialog as="div" className="relative z-10" 
+                onClose={() => {
+                    navigate(location.pathname, { replace: true });
+                    setSelectedImages([]);
+
+                }}
+            >
                 <Transition.Child
                     as={Fragment}
                     enter="ease-out duration-300"
@@ -173,7 +179,7 @@ const PostModal = () => {
                                             <div className="mt-5">
                                                 <p className="text-sm text-gray-600 font-semibold mb-5">Imagenes seleccionadas:</p>
 
-                                                <div className="flex justify-between items-center flex-wrap">
+                                                <div className="flex justify-start space-x-5 space-y-5 items-center flex-wrap">
                                                     {mediaURLS!.map( mediaURL => (
                                                         <img 
                                                             key={mediaURL}
@@ -193,7 +199,10 @@ const PostModal = () => {
                                     
                                         <button
                                             type="button"
-                                            onClick={() => navigate(location.pathname, { replace: true })}
+                                            onClick={() => {
+                                                navigate(location.pathname, { replace: true });
+                                                setSelectedImages([]);
+                                            }}
                                             className="bg-red-400 py-2 px-6 w-full mt-10 text-white font-bold rounded-lg hover:cursor-pointer 
                                             hover:transition-colors hover:bg-red-500 md:w-auto flex justify-start items-center gap-x-2"
                                         >

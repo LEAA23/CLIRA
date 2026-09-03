@@ -333,7 +333,7 @@ export class GroupsControlller {
 
                 //Creamos una llave unica para cada imagen
                 const key = `groups/posts/${ Date.now() }-${ image!.originalname.split(".")[0] }.webp`;
-                
+
                 //Ejecutamos una instruccion con el cliente de S3
                 await s3Client.send(
                     //Ejecutamos un comando de poner un objeto en el bucket
@@ -357,6 +357,17 @@ export class GroupsControlller {
             
         } catch (error) {
             console.log(error)
+            return res.status(500).json( { error: "Error interno del servidor" } );
+        }
+    }
+
+    static getPosts = async( req: Request, res: Response ) => {
+        const { groupId } = req.params;
+
+        try {
+            const posts = await Post.findAll( { where: { group_id: groupId } } );
+            return res.status(200).json( { posts } );
+        } catch (error) {
             return res.status(500).json( { error: "Error interno del servidor" } );
         }
     }
