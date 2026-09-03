@@ -7,6 +7,7 @@ import ErrorMessage from "../ErrorMessage";
 import type { PostRegistationForm } from "../../types";
 import { toast } from "react-toastify";
 import { useAppStore } from "../../stores/useAppStore";
+import { useState } from "react";
 
 const PostModal = () => {
     //useNavigate para redireccionar al usuario a la misma pagina pero sin los query params
@@ -28,11 +29,13 @@ const PostModal = () => {
         media: []
     }
 
-    const { register, formState: { errors }, reset, handleSubmit, watch } = useForm<PostRegistationForm>( {defaultValues: initialValues } );
+    //State local para permitirle a los usuarios seleccionar varias imagenes y mantener la seleccion
+    const [ selectedImages, setSelectedImages ] = useState<File[]>([]);
+
+    const { register, formState: { errors }, reset, handleSubmit } = useForm<PostRegistationForm>( {defaultValues: initialValues } );
 
     //Construimos una URL temporal para poder renderizarla en el componnete cuando el usuario seleccione una imagen
-    const media = watch("media");
-    const files = media;
+    const files = selectedImages;
     const mediaURLS = files? Array.from(files).map( file => URL.createObjectURL(file) ) : null; 
 
     const handleCreatePost = async( formData: PostRegistationForm ) => {
@@ -144,9 +147,17 @@ const PostModal = () => {
                                             id="media"
                                             type="file"
                                             accept="image/*"
-                                            multiple
                                             className="hidden"
-                                            {...register("media")}
+                                            {...register("media", {
+                                                onChange: e => {
+                                                    const files : File[] = Array.from( e.target.files ?? [] );
+
+                                                    setSelectedImages( prev => [
+                                                        ...prev,
+                                                        ...files
+                                                    ] )
+                                                }
+                                            })}
                                         />
                                         <label 
                                             htmlFor="media"
@@ -158,13 +169,14 @@ const PostModal = () => {
                                             Seleccionar imagen
                                         </label>
 
-                                        {mediaURLS?.length && (
+                                        {mediaURLS!.length > 0 && (
                                             <div className="mt-5">
                                                 <p className="text-sm text-gray-600 font-semibold mb-5">Imagenes seleccionadas:</p>
 
                                                 <div className="flex justify-between items-center flex-wrap">
-                                                    {mediaURLS.map( mediaURL => (
+                                                    {mediaURLS!.map( mediaURL => (
                                                         <img 
+                                                            key={mediaURL}
                                                             src={ mediaURL } 
                                                             alt="Vista previa de imagen de fondo"
                                                             className="h-36" 
