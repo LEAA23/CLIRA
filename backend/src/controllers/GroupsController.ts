@@ -8,6 +8,7 @@ import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { compressImage } from "../utils/compressImage";
 import { UserGroup } from "../models/UserGroup";
 import { Post } from "../models/Post";
+import { Media } from "../models/Media";
 
 
 export class GroupsControlller {
@@ -313,37 +314,49 @@ export class GroupsControlller {
     static createPost = async( req: Request, res: Response ) => {
         const groupId = +req.params.groupId;
         const { title, content } = req.body;
-        const media = req.file;
+        const media = req.files as Express.Multer.File[];
 
         try {
-            //Comprimimos la imagen que mando el usuario
-            const compresedImage = await compressImage( media!.buffer );
-            //Creamos una llave unica para cada imagen
-            const key = `groups/posts/${ Date.now() }-${ media!.originalname.split(".")[0] }.webp`;
-
-            //Ejecutamos una instruccion con el cliente de S3
-            await s3Client.send(
-                //Ejecutamos un comando de poner un objeto en el bucket
-                new PutObjectCommand({
-                    Bucket: process.env.AWS_BUCKET,
-                    Key: key,
-                    Body: compresedImage,
-                    ContentType: "image/webp"
-                })
-            );
-
-            await Post.create({
+            //Creamos la publicacion con los datos enviados por el usuario
+            const post = await Post.create({
                 title,
                 content,
-                media: key,
                 likes: 0,
                 group_id: groupId,
                 user_id: req.user.id
             });
+
+            //Iteramos sobre cada imagen mandada por el usuario
+            media?.forEach( async(image) => {
+                //Comprimimos cada imagen que mando el usuario
+                const compresedImage = await compressImage( image.buffer );
+
+                //Creamos una llave unica para cada imagen
+                const key = `groups/posts/${ Date.now() }-${ image!.originalname.split(".")[0] }.webp`;
+                
+                //Ejecutamos una instruccion con el cliente de S3
+                await s3Client.send(
+                    //Ejecutamos un comando de poner un objeto en el bucket
+                    new PutObjectCommand({
+                        Bucket: process.env.AWS_BUCKET,
+                        Key: key,
+                        Body: compresedImage,
+                        ContentType: "image/webp"
+                    })
+                );
+    
+                //Guardamos el arhivo dentro de la tabla de Media
+                await Media.create({
+                    path: key,
+                    post_id: post.id
+                })
+            } );
+
             
             return res.status(200).send("Publicacion realizada correctamente");
             
         } catch (error) {
+            console.log(error)
             return res.status(500).json( { error: "Error interno del servidor" } );
         }
     }

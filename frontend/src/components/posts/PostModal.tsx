@@ -32,14 +32,19 @@ const PostModal = () => {
 
     //Construimos una URL temporal para poder renderizarla en el componnete cuando el usuario seleccione una imagen
     const media = watch("media");
-    const file = media?.[0];
-    const mediaURL = file? URL.createObjectURL( file ) : null; 
+    const files = media;
+    const mediaURLS = files? Array.from(files).map( file => URL.createObjectURL(file) ) : null; 
 
     const handleCreatePost = async( formData: PostRegistationForm ) => {
+
         const data = new FormData();
         data.append("title", formData.title);
         data.append("content", formData.content);
-        data.append("media", formData.media[0]);
+
+        //Iteramos sobre cada archivo en media y lo agregamos al campo de media
+        Array.from( formData.media ).forEach( image => {
+            data.append("media", image);
+        } );
 
         try {
             const message = await createPost( { groupId: +groupId, formData: data } );
@@ -139,6 +144,7 @@ const PostModal = () => {
                                             id="media"
                                             type="file"
                                             accept="image/*"
+                                            multiple
                                             className="hidden"
                                             {...register("media")}
                                         />
@@ -152,14 +158,20 @@ const PostModal = () => {
                                             Seleccionar imagen
                                         </label>
 
-                                        {mediaURL && (
+                                        {mediaURLS?.length && (
                                             <div className="mt-5">
-                                                <p className="text-sm text-gray-600 font-semibold mb-5">Imagen seleccionada:</p>
-                                                <img 
-                                                    src={ mediaURL } 
-                                                    alt="Vista previa de imagen de fondo"
-                                                    className="w-1/2 h-full" 
-                                                />
+                                                <p className="text-sm text-gray-600 font-semibold mb-5">Imagenes seleccionadas:</p>
+
+                                                <div className="flex justify-between items-center flex-wrap">
+                                                    {mediaURLS.map( mediaURL => (
+                                                        <img 
+                                                            src={ mediaURL } 
+                                                            alt="Vista previa de imagen de fondo"
+                                                            className="h-36" 
+                                                        />
+
+                                                    ) )}
+                                                </div>
                                             </div>
                                         )}
 

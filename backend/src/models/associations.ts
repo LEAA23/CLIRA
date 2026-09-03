@@ -1,5 +1,7 @@
 import { Group } from "./Group";
+import { Post } from "./Post";
 import { User } from "./User";
+import { Media } from "./Media"
 import { UserGroup } from "./UserGroup";
 
 //LAS ASOCIACIONES EN SEQUELIZE SON LAS RELACIONES ENTRE LAS BASES DE DATOS
@@ -34,4 +36,9 @@ Group.belongsToMany(User, {
     foreignKey: "group_id",
     otherKey: "user_id",
     as: "users"
+});
+
+Post.hasMany(Media, {
+    foreignKey: "post_id",
+    as: "files"
 });

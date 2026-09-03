@@ -6,7 +6,6 @@ export class Post extends Model< InferAttributes<Post>, InferCreationAttributes<
     declare id: CreationOptional<number>;
     declare title: string;
     declare content: string;
-    declare media: string;
     declare likes: number;
     declare group_id: number;
     declare user_id: number;
@@ -25,10 +24,6 @@ Post.init({
     content: {
         type: DataTypes.TEXT,
         allowNull: false
-    },
-    media: {
-        type: DataTypes.STRING,
-        allowNull: true
     },
     likes: {
         type: DataTypes.INTEGER,
