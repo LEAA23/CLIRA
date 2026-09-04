@@ -38,7 +38,23 @@ Group.belongsToMany(User, {
     as: "users"
 });
 
+/**
+ * Association para obtener todas las imagenes de un post
+ */
 Post.hasMany(Media, {
     foreignKey: "post_id",
     as: "files"
+});
+
+/**
+ * Associations para traer los datos de los usuarios en relacion a su post
+ */
+User.hasMany(Post, {
+    foreignKey: "user_id",
+    as: "posts"
+});
+
+Post.belongsTo(User, {
+    foreignKey: "user_id",
+    as: "user"
 });

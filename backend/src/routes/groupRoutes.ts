@@ -94,7 +94,7 @@ router.post("/:groupId/posts",
 router.get("/:groupId/posts",
     authenticate,
     groupExists,
-    isGroupMember,
+    // isGroupMember,
     param("groupId").notEmpty().withMessage("El id del grupo es obligatorio"),
     handleInputErrors,
     GroupsControlller.getPosts
