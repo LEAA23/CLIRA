@@ -83,6 +83,14 @@ export const PostSchema = z.object({
     user_id: z.number()
 });
 
+export const PostsSchema = z.array(
+    PostSchema.omit({
+        media: true
+    }).extend({
+        id: z.number()
+    })
+)
+
 /**
  *  CHART CONTAINER SCHEMA
  */
