@@ -16,12 +16,16 @@ const GroupView = () => {
     const fetchGroup = useAppStore( state => state.fetchGroup );
     const group = useAppStore( state => state.group );
 
+    const fetchPosts = useAppStore( state => state.fetchPosts );
+    const posts = useAppStore( state => state.posts );
+
     //Se ejecuta cada vez que hay cambios en el id del grupo
     useEffect(() => {
         if(id) {
-            fetchGroup( Number(id) );
+            fetchGroup( +id );
+            fetchPosts( +id );
         }
-    }, [id, fetchGroup]);
+    }, [id, fetchGroup, fetchPosts]);
     
   return (
     <>
@@ -88,9 +92,14 @@ const GroupView = () => {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-            <PostCard/>
-            <PostCard/>
-            <PostCard/>
+            {posts.map( post =>  (
+                <PostCard
+                    key={ post.id }
+                    title={ post.title }
+                    content={ post.content }
+                />
+
+            ))}
         </div>
 
         <PostModal/>
