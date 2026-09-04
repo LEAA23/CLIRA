@@ -36,7 +36,11 @@ const PostModal = () => {
 
     //Construimos una URL temporal para poder renderizarla en el componnete cuando el usuario seleccione una imagen
     const files = selectedImages;
-    const mediaURLS = files? Array.from(files).map( file => URL.createObjectURL(file) ) : null; 
+    let mediaURLS = files? Array.from(files).map( file => URL.createObjectURL(file) ) : null; 
+
+    const handleClick = ( index : number ) => {
+        setSelectedImages( prev => prev.filter( (_, i) => i !== index ) )
+    }
 
     const handleCreatePost = async( formData: PostRegistationForm ) => {
 
@@ -180,13 +184,24 @@ const PostModal = () => {
                                                 <p className="text-sm text-gray-600 font-semibold mb-5">Imagenes seleccionadas:</p>
 
                                                 <div className="flex justify-start space-x-5 space-y-5 items-center flex-wrap">
-                                                    {mediaURLS!.map( mediaURL => (
-                                                        <img 
-                                                            key={mediaURL}
-                                                            src={ mediaURL } 
-                                                            alt="Vista previa de imagen de fondo"
-                                                            className="h-36" 
-                                                        />
+                                                    {mediaURLS!.map( (mediaURL, index) => (
+                                                        <div className="relative">
+                                                            <img 
+                                                                key={mediaURL}
+                                                                src={ mediaURL } 
+                                                                alt="Vista previa de imagen de fondo"
+                                                                className="h-36" 
+                                                            />
+
+                                                            <div 
+                                                                className="absolute top-1 right-1 bg-red-400 h-8 aspect-square rounded-full
+                                                                            hover:bg-red-500 cursor-pointer p-1"
+                                                                onClick={ () => handleClick( index ) }
+                                                            >
+                                                                <p className="font-bold text-white text-center">X</p>
+                                                            </div>
+
+                                                        </div>
 
                                                     ) )}
                                                 </div>

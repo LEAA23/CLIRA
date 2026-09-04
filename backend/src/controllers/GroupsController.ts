@@ -365,9 +365,13 @@ export class GroupsControlller {
         const { groupId } = req.params;
 
         try {
-            const posts = await Post.findAll( { where: { group_id: groupId } } );
+            const posts = await Post.findAll({ 
+                where: { group_id: groupId },
+                include: [ { model: User, as: "user", attributes: ["name", "lastName"] } ]
+            });
             return res.status(200).json( { posts } );
         } catch (error) {
+            console.log(error)
             return res.status(500).json( { error: "Error interno del servidor" } );
         }
     }
