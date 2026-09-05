@@ -26,7 +26,6 @@ const GroupView = () => {
             fetchPosts( +id );
         }
     }, [id, fetchGroup, fetchPosts]);
-    
   return (
     <>
         <div className="flex flex-col md:flex-row justify-between items-center">
@@ -97,6 +96,7 @@ const GroupView = () => {
                     key={ post.id }
                     title={ post.title }
                     content={ post.content }
+                
                 />
 
             ))}
