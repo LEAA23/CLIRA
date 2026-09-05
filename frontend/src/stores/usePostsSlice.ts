@@ -8,10 +8,11 @@ export type PostsSliceType = {
     fetchPosts: (groupId: number) => Promise<void>;
 }
 
-export const createPostsSlice : StateCreator<PostsSliceType> = ( set ) =>({
+export const createPostsSlice : StateCreator<PostsSliceType> = ( set, get ) =>({
     posts: [],
     createPost: async( { groupId, formData } : { groupId: Group["id"] ; formData : FormData } ) => {
         const message = await createPost( { groupId, formData } );
+        await get().fetchPosts( groupId );
         return message;
     },
     fetchPosts: async( groupId : Group["id"] ) => {
