@@ -43,7 +43,6 @@ const PostModal = () => {
     }
 
     const handleCreatePost = async( formData: PostRegistationForm ) => {
-
         const data = new FormData();
         data.append("title", formData.title);
         data.append("content", formData.content);
@@ -55,7 +54,7 @@ const PostModal = () => {
 
         try {
             const message = await createPost( { groupId: +groupId, formData: data } );
-            toast.success( message ),
+            toast.success( message );
             reset();
             navigate( location.pathname, { replace: true } );
         } catch (error) {

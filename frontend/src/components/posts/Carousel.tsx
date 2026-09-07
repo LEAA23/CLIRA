@@ -1,13 +1,18 @@
 import useFancybox from "../../hooks/useFancybox"
 
-const Carousel = () => {
+type CarouselProps = {
+  firstImage: string;
+}
+
+const Carousel = ( { firstImage } : CarouselProps ) => {
   const [fancyboxRef] = useFancybox({
     // Your custom options
   });
   return (
+
     <div ref={fancyboxRef} className="flex justify-start items-center px-5">
-      <a data-fancybox="gallery" href="/postExample.png">
-        <img src="/postExample.png" alt="Sample image #1" className="rounded-lg" />
+      <a data-fancybox="gallery" href={ firstImage }>
+        <img src={ firstImage } alt="Sample image #1" className="w-full rounded-lg" />
       </a>
 
       <div className="hidden">

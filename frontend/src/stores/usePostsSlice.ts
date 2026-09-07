@@ -17,6 +17,7 @@ export const createPostsSlice : StateCreator<PostsSliceType> = ( set, get ) =>({
     },
     fetchPosts: async( groupId : Group["id"] ) => {
         const posts = await getPosts( groupId );
+        console.log(posts)
         set(() => ({
             posts
         }));
