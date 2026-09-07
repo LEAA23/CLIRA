@@ -87,7 +87,13 @@ export const PostsSchema = z.array(
     PostSchema.omit({
         media: true
     }).extend({
-        id: z.number()
+        id: z.number(),
+        images: z.array(
+            z.object({
+                id: z.number(),
+                path: z.string()
+            })
+        )
     })
 )
 

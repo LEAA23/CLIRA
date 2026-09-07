@@ -58,3 +58,15 @@ Post.belongsTo(User, {
     foreignKey: "user_id",
     as: "user"
 });
+
+/**
+ * Association para traer las imagenes de un post
+ */
+Post.hasMany(Media, {
+    foreignKey: "post_id",
+    as: "images"
+});
+Media.belongsTo(Post, {
+    foreignKey: "post_id",
+    as: "post"
+})

@@ -1,5 +1,6 @@
 import { CreationOptional, DataTypes, InferAttributes, InferCreationAttributes, Model } from "sequelize";
 import db from "../config/db";
+import { Media } from "./Media";
 
 
 export class Post extends Model< InferAttributes<Post>, InferCreationAttributes<Post> > {
@@ -9,6 +10,8 @@ export class Post extends Model< InferAttributes<Post>, InferCreationAttributes<
     declare likes: number;
     declare group_id: number;
     declare user_id: number;
+
+    declare images?: Media[]
 }
 
 Post.init({

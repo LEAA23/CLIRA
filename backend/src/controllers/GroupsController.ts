@@ -351,7 +351,6 @@ export class GroupsControlller {
                     post_id: post.id
                 })
             } );
-
             
             return res.status(200).send("Publicacion realizada correctamente");
             
@@ -367,9 +366,29 @@ export class GroupsControlller {
         try {
             const posts = await Post.findAll({ 
                 where: { group_id: groupId },
-                include: [ { model: User, as: "user", attributes: ["name", "lastName"] } ]
+                include: [ 
+                    { model: User, as: "user", attributes: ["name", "lastName"] },
+                    { model: Media, as: "images", attributes: ["id", "path"], limit: 1 }
+                ]
             });
-            return res.status(200).json( { posts } );
+
+            const postsWithImages = await Promise.all( 
+                posts.map( async( post ) => {
+                    const image = post.images?.[0];
+
+                    if( !image?.path ) return post;
+
+                    const command = new GetObjectCommand({
+                        Bucket: process.env.AWS_BUCKET,
+                        Key: image.path
+                    });
+                    const key = await getSignedUrl( s3Client, command, { expiresIn: 60 * 60 * 24 } );
+                    image.path = key;
+                    return post;
+                })
+            );
+
+            return res.status(200).json( { posts : postsWithImages } );
         } catch (error) {
             console.log(error)
             return res.status(500).json( { error: "Error interno del servidor" } );
