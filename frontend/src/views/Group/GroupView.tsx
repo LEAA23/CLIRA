@@ -2,9 +2,9 @@ import { AcademicCapIcon, BriefcaseIcon, ChevronDoubleLeftIcon, PlusIcon } from 
 import { Link, useNavigate, useParams } from "react-router-dom";
 import PostModal from "../../components/posts/PostModal";
 import PostCard from "../../components/posts/PostCard";
-import CommentsModal from "../../components/posts/CommentsModal";
 import { useAppStore } from "../../stores/useAppStore";
 import { useEffect } from "react";
+import ViewPostModal from "../../components/posts/ViewPostModal";
 
 const GroupView = () => {
     const navigate = useNavigate();
@@ -94,6 +94,7 @@ const GroupView = () => {
             {posts?.map( post =>  (
                 <PostCard
                     key={ post.id }
+                    id={ post.id }
                     title={ post.title }
                     content={ post.content }
                     firstImage={ post.images?.[0]?.path }
@@ -102,8 +103,8 @@ const GroupView = () => {
             ))}
         </div>
 
+        <ViewPostModal/>
         <PostModal/>
-        <CommentsModal/>
     </>
   )
 }

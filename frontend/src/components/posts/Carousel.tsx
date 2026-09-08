@@ -5,6 +5,7 @@ type CarouselProps = {
 }
 
 const Carousel = ( { firstImage } : CarouselProps ) => {
+
   const [fancyboxRef] = useFancybox({
     // Your custom options
   });
