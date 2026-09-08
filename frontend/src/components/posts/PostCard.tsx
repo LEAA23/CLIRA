@@ -4,23 +4,30 @@ import ProfileTagName from "./ProfileTagName";
 import Carousel from "./Carousel";
 
 type PostCardProps = {
+    id: number;
     title: string,
     content: string;
     firstImage: string;
 }
 
-const PostCard = ( { title, content, firstImage } : PostCardProps ) => {
+const PostCard = ( { id, title, content, firstImage } : PostCardProps ) => {
     const navigate = useNavigate();
-
   return (
-    <div className="bg-white shadow rounded-lg max-w-full mx-auto flex flex-col justify-between">
+    <div 
+        className="bg-white shadow rounded-lg max-w-full mx-auto flex flex-col justify-between 
+        hover:shadow-xl hover:-translate-y-1 transition-all duration-200 cursor-pointer"
+        onClick={ () => navigate( location.pathname + `?viewPost=true&post=${id}` ) }
+    >
         
         <div className="p-5 h-25">
             <h3 className="text-2xl text-gray-700 font-bold text-center line-clamp-2">{ title }</h3>
         </div>
 
        <div className="px-5">
-            <div className="h-40 overflow-hidden rounded-lg">
+            <div 
+                className="h-40 overflow-hidden rounded-lg"
+                onClick={ e => e.stopPropagation() }
+            >
                 <Carousel
                     firstImage={ firstImage }
                 />

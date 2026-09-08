@@ -75,6 +75,7 @@ export const GroupsSchema = z.array(
  * POST'S SQUEMAS
  */
 export const PostSchema = z.object({
+    id: z.number(),
     title: z.string(),
     content: z.string(),
     media: z.array( z.file() ),
