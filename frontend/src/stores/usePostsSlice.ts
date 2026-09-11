@@ -1,12 +1,14 @@
 import type { StateCreator } from "zustand"
-import type { Group, Post, Posts } from "../types";
-import { createPost, getPosts } from "../api/groupsApi";
+import type { Group, LikedPosts, Post, Posts } from "../types";
+import { createPost, getPosts, likePost } from "../api/groupsApi";
 
 export type PostsSliceType = {
     posts: Posts;
     post: Post;
+    likedPosts: LikedPosts;
     createPost: ({ groupId, formData }: { groupId: number; formData: FormData; }) => Promise<string>;
     fetchPosts: (groupId: number) => Promise<void>;
+    likePost: ({ groupId, postId }: { groupId: number; postId: number; }) => Promise<{ liked: boolean; likes: unknown; } | undefined>
 }
 
 export const createPostsSlice : StateCreator<PostsSliceType> = ( set, get ) =>({
@@ -16,10 +18,10 @@ export const createPostsSlice : StateCreator<PostsSliceType> = ( set, get ) =>({
         title: "",
         content: "",
         media: [],
-        likes: 0,
         group_id: 0,
         user_id: 0
     },
+    likedPosts: [],
     createPost: async( { groupId, formData } : { groupId: Group["id"] ; formData : FormData } ) => {
         const message = await createPost( { groupId, formData } );
         await get().fetchPosts( groupId );
@@ -27,10 +29,15 @@ export const createPostsSlice : StateCreator<PostsSliceType> = ( set, get ) =>({
     },
     fetchPosts: async( groupId : Group["id"] ) => {
         const posts = await getPosts( groupId );
-        console.log(posts)
         set(() => ({
             posts
         }));
+    },
+    likePost: async( { groupId, postId } : { groupId: Group["id"] ; postId: Post["id"] } ) => {
+        const likedPosts = await likePost( { groupId, postId } );
+        set(() => ({
+            likedPosts 
+        }))
     }
 
 });

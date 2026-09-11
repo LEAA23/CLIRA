@@ -79,7 +79,6 @@ export const PostSchema = z.object({
     title: z.string(),
     content: z.string(),
     media: z.array( z.file() ),
-    likes: z.number(),
     group_id: z.number(),
     user_id: z.number()
 });
@@ -96,6 +95,10 @@ export const PostsSchema = z.array(
             })
         )
     })
+);
+
+export const likedPostsSchema = z.array(
+    z.number()
 )
 
 /**

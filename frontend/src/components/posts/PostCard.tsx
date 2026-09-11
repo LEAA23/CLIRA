@@ -1,7 +1,8 @@
 import { ChatBubbleOvalLeftEllipsisIcon, HeartIcon } from "@heroicons/react/16/solid"
-import { useNavigate } from "react-router-dom"
+import { useNavigate, useParams } from "react-router-dom"
 import ProfileTagName from "./ProfileTagName";
 import Carousel from "./Carousel";
+import { useAppStore } from "../../stores/useAppStore";
 
 type PostCardProps = {
     id: number;
@@ -12,13 +13,23 @@ type PostCardProps = {
 
 const PostCard = ( { id, title, content, firstImage } : PostCardProps ) => {
     const navigate = useNavigate();
+    const params = useParams();
+    const groupId = params.id;
+
+    const likePost = useAppStore( state => state.likePost );
+    const likedPosts = useAppStore(  state => state.likedPosts );
+
+    const postLiked = likedPosts.indexOf( id );
+
+    const handleClick = async ( id : number ) => {
+        await likePost( { groupId : Number( groupId ), postId: id } );
+    }
   return (
     <div 
-        className="bg-white shadow rounded-lg max-w-full mx-auto flex flex-col justify-between 
+        className="bg-white shadow rounded-lg min-w-full mx-auto flex flex-col justify-between 
         hover:shadow-xl hover:-translate-y-1 transition-all duration-200 cursor-pointer"
         onClick={ () => navigate( location.pathname + `?viewPost=true&post=${id}` ) }
     >
-        
         <div className="p-5 h-25">
             <h3 className="text-2xl text-gray-700 font-bold text-center line-clamp-2">{ title }</h3>
         </div>
@@ -43,10 +54,15 @@ const PostCard = ( { id, title, content, firstImage } : PostCardProps ) => {
             <p className="mb-5 ml-5 line-clamp-2 h-13">
                 { content }
             </p>
+            
             <div className="flex justify-between items-center gap-x-5 mt-2 ml-5 text-gray-300">
                 <button 
-                    className="flex justify-between items-center hover:text-red-400 cursor-pointer transition-all 
-                    ease-in-out duration-300"
+                    className={`flex justify-between items-center hover:text-red-400 cursor-pointer transition-all 
+                    ease-in-out duration-300 ${ postLiked !== -1? "text-red-400": "" }`}
+                    onClick={ e => {
+                        e.stopPropagation();
+                        handleClick( id )
+                    } }
                 >
                     <HeartIcon className="h-8 "/>
                     Me gusta

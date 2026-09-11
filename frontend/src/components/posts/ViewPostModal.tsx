@@ -5,7 +5,7 @@ import { useShowModal } from "../../hooks/useShowModal";
 import { useAppStore } from "../../stores/useAppStore";
 import Carousel from "./Carousel";
 import ProfileTagName from "./ProfileTagName";
-import { ChatBubbleOvalLeftEllipsisIcon, HeartIcon, PaperAirplaneIcon, TrashIcon } from "@heroicons/react/16/solid";
+import { HeartIcon, PaperAirplaneIcon, TrashIcon } from "@heroicons/react/16/solid";
 import CommentaCard from "./CommentCard";
 
 const ViewPostModal = () => {
