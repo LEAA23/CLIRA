@@ -93,13 +93,17 @@ export const PostsSchema = z.array(
                 id: z.number(),
                 path: z.string()
             })
-        )
+        ),
+        likesCount: z.number(),
+        likedByMe: z.boolean()
     })
 );
 
-export const likedPostsSchema = z.array(
-    z.number()
-)
+export const likePostSquema = z.object({
+    id: z.number(),
+    likesCount: z.number(),
+    likedByMe: z.boolean()
+});
 
 /**
  *  CHART CONTAINER SCHEMA

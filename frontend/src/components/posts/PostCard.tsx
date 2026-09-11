@@ -16,10 +16,10 @@ const PostCard = ( { id, title, content, firstImage } : PostCardProps ) => {
     const params = useParams();
     const groupId = params.id;
 
-    const likePost = useAppStore( state => state.likePost );
-    const likedPosts = useAppStore(  state => state.likedPosts );
+    const posts = useAppStore( state => state.posts );
+    const post = posts.find( post => post.id === id );
 
-    const postLiked = likedPosts.indexOf( id );
+    const likePost = useAppStore( state => state.likePost );
 
     const handleClick = async ( id : number ) => {
         await likePost( { groupId : Number( groupId ), postId: id } );
@@ -58,14 +58,14 @@ const PostCard = ( { id, title, content, firstImage } : PostCardProps ) => {
             <div className="flex justify-between items-center gap-x-5 mt-2 ml-5 text-gray-300">
                 <button 
                     className={`flex justify-between items-center hover:text-red-400 cursor-pointer transition-all 
-                    ease-in-out duration-300 ${ postLiked !== -1? "text-red-400": "" }`}
+                    ease-in-out duration-300 ${ post?.likedByMe? "text-red-400": "" }`}
                     onClick={ e => {
                         e.stopPropagation();
                         handleClick( id )
                     } }
                 >
                     <HeartIcon className="h-8 "/>
-                    Me gusta
+                    { post && post?.likesCount > 0? `${post?.likesCount} Me gusta` : `Me gusta` }
                 </button>
 
                 <button 

@@ -1,6 +1,6 @@
 import { isAxiosError } from "axios"
 import api from "../lib/axios";
-import { GroupResponse, GroupsSchema, likedPostsSchema, PostsSchema, UserSearchSchema } from "../schemas";
+import { GroupResponse, GroupsSchema, likePostSquema, PostsSchema, UserSearchSchema } from "../schemas";
 import type { AddMemberForm, Group, Post, RemoveMemberForm, UserSearchForm } from "../types";
 
 export const getGroups = async() => {
@@ -152,6 +152,7 @@ export const getPosts = async(  groupId : Group["id"]  ) => {
     try {
         const { data } = await api(`/groups/${groupId}/posts`);
         const response = PostsSchema.safeParse( data.posts );
+        console.log(response)
         if( response.data ) {
             return response.data;
         }
@@ -166,8 +167,8 @@ export const getPosts = async(  groupId : Group["id"]  ) => {
 
 export const likePost = async( { groupId, postId } : { groupId: Group["id"] ; postId: Post["id"] } ) => {
     try {
-        const { data: { likedPosts } } = await api.post(`/groups/${groupId}/posts/${postId}/likePost`);
-        const response = likedPostsSchema.safeParse( likedPosts );
+        const { data } = await api.post(`/groups/${groupId}/posts/${postId}/likePost`);
+        const response = likePostSquema.safeParse( data );
         if( response.data ) {
             return response.data;
         }

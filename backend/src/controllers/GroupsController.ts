@@ -11,6 +11,7 @@ import { Post } from "../models/Post";
 import { Media } from "../models/Media";
 import { param } from "express-validator";
 import { Like } from "../models/Like";
+import { col, fn, literal } from "sequelize";
 
 
 export class GroupsControlller {
@@ -367,9 +368,34 @@ export class GroupsControlller {
         try {
             const posts = await Post.findAll({ 
                 where: { group_id: groupId },
+
+                attributes: {
+                    include: [
+                        [
+                            literal(`CAST(COUNT("likes"."id") AS INTEGER)`),
+                            "likesCount"
+                        ],
+                        [
+                            literal(`
+                                CASE 
+                                    WHEN COUNT(CASE WHEN likes.user_id = ${req.user.id} THEN 1 END) > 0
+                                    THEN true
+                                    ELSE false
+                                END
+                            `),
+                            "likedByMe"
+                        ]
+                    ]
+                },
+
                 include: [ 
                     { model: User, as: "user", attributes: ["name", "lastName"] },
-                    { model: Media, as: "images", attributes: ["id", "path"], limit: 1 }
+                    { model: Media, as: "images", attributes: ["id", "path"], limit: 1 },
+                    { model: Like, as: "likes", attributes: [] }
+                ],
+                group: [
+                    "Post.id",
+                    "user.id"
                 ]
             });
 
@@ -405,27 +431,20 @@ export class GroupsControlller {
 
             if(!alreadyLiked) {
                 //El usuario no le ha dado aun like a la publicacion
-
-                //Insertamos el lik en la tabla de likes
                 await Like.create({
-                    post_id: req.post.id,
-                    user_id: req.user.id
+                    user_id: req.user.id,
+                    post_id: req.post.id
                 });
-                const likedPosts = await Like.findAll({
-                    where: { user_id: req.user.id },
-                    attributes: ["post_id"],
-                    raw: true
-                });
-                return res.status(200).json( { likedPosts : likedPosts.map( like => like.post_id ) } );
+            } else {
+                await alreadyLiked.destroy();
             }
 
-            await alreadyLiked.destroy();
-            const likedPosts = await Like.findAll({
-                where: { user_id: req.user.id },
-                attributes: ["post_id"],
-                raw: true
+            const likesCount = await Like.count({
+                where: { post_id: req.post.id }
             });
-            return res.status(200).json( { likedPosts : likedPosts.map( like => like.post_id ) } )
+
+            const likedByMe = !alreadyLiked;
+            return res.status(200).json( { id: req.post.id, likesCount, likedByMe } );
 
         } catch (error) {
             console.log(error)
