@@ -1,6 +1,6 @@
 import { Transition, Dialog } from "@headlessui/react";
 import { Fragment } from "react/jsx-runtime";
-import {  useLocation, useNavigate } from "react-router-dom";
+import {  useLocation, useNavigate, useParams } from "react-router-dom";
 import { useShowModal } from "../../hooks/useShowModal";
 import { useAppStore } from "../../stores/useAppStore";
 import Carousel from "./Carousel";
@@ -12,12 +12,20 @@ const ViewPostModal = () => {
     const navigate = useNavigate();
     const showModal = useShowModal("viewPost");
 
-    const params = useLocation();
-    const queryParams = new URLSearchParams( params.search );
+    const location = useLocation();
+    const queryParams = new URLSearchParams( location.search );
     const postId = queryParams.get("post");
+
+    const params = useParams();
+    const groupId = params.id;
 
     const posts = useAppStore( state => state.posts );
     const post = posts.find( post => +postId! === post.id );
+    const likePost = useAppStore( state => state.likePost );
+
+    const handleClick = async ( id : number ) => {
+        await likePost( { groupId : Number( groupId ), postId: id } );
+    }
 
   return (
    <>
@@ -75,11 +83,15 @@ const ViewPostModal = () => {
                                             </p>
                                             <div className="flex justify-between items-center gap-x-5 mt-5 text-gray-300">
                                                 <button 
-                                                    className="flex justify-between items-center hover:text-red-400 cursor-pointer transition-all 
-                                                    ease-in-out duration-300"
+                                                    className={`flex justify-between items-center hover:text-red-400 cursor-pointer transition-all 
+                                                    ease-in-out duration-300 ${ post?.likedByMe? "text-red-400": "" }`}
+                                                    onClick={ e => {
+                                                        e.stopPropagation();
+                                                        if(post?.id !== undefined ) handleClick( post?.id );
+                                                    } }
                                                 >
                                                     <HeartIcon className="h-8 "/>
-                                                    Me gusta
+                                                    { post && post?.likesCount > 0? `${post?.likesCount} Me gusta` : `Me gusta` }
                                                 </button>
                                 
                                             </div>
