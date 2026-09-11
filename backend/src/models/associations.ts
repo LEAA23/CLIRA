@@ -3,6 +3,7 @@ import { Post } from "./Post";
 import { User } from "./User";
 import { Media } from "./Media"
 import { UserGroup } from "./UserGroup";
+import { Like } from "./Like";
 
 //LAS ASOCIACIONES EN SEQUELIZE SON LAS RELACIONES ENTRE LAS BASES DE DATOS
 
@@ -70,3 +71,24 @@ Media.belongsTo(Post, {
     foreignKey: "post_id",
     as: "post"
 })
+
+/**
+ * Association para traer los likes de un post
+ */
+Post.hasMany(Like, {
+    foreignKey: "post_id",
+    as: "likes"
+});
+Like.belongsTo(Post, {
+    foreignKey: "post_id",
+    as: "post"
+});
+
+User.hasMany(Like, {
+    foreignKey: "user_id",
+    as: "likes"
+});
+Like.belongsTo(User, {
+    foreignKey: "user_id",
+    as: "user"
+});

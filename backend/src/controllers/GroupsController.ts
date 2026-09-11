@@ -9,6 +9,8 @@ import { compressImage } from "../utils/compressImage";
 import { UserGroup } from "../models/UserGroup";
 import { Post } from "../models/Post";
 import { Media } from "../models/Media";
+import { param } from "express-validator";
+import { Like } from "../models/Like";
 
 
 export class GroupsControlller {
@@ -321,7 +323,6 @@ export class GroupsControlller {
             const post = await Post.create({
                 title,
                 content,
-                likes: 0,
                 group_id: groupId,
                 user_id: req.user.id
             });
@@ -389,6 +390,43 @@ export class GroupsControlller {
             );
 
             return res.status(200).json( { posts : postsWithImages } );
+        } catch (error) {
+            console.log(error)
+            return res.status(500).json( { error: "Error interno del servidor" } );
+        }
+    }
+
+    static likePost = async( req: Request, res: Response ) => {
+
+        try {
+            const alreadyLiked = await Like.findOne({
+                where: { post_id: req.post.id, user_id: req.user.id }
+            });
+
+            if(!alreadyLiked) {
+                //El usuario no le ha dado aun like a la publicacion
+
+                //Insertamos el lik en la tabla de likes
+                await Like.create({
+                    post_id: req.post.id,
+                    user_id: req.user.id
+                });
+                const likedPosts = await Like.findAll({
+                    where: { user_id: req.user.id },
+                    attributes: ["post_id"],
+                    raw: true
+                });
+                return res.status(200).json( { likedPosts : likedPosts.map( like => like.post_id ) } );
+            }
+
+            await alreadyLiked.destroy();
+            const likedPosts = await Like.findAll({
+                where: { user_id: req.user.id },
+                attributes: ["post_id"],
+                raw: true
+            });
+            return res.status(200).json( { likedPosts : likedPosts.map( like => like.post_id ) } )
+
         } catch (error) {
             console.log(error)
             return res.status(500).json( { error: "Error interno del servidor" } );
