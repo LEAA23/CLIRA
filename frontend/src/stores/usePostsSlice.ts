@@ -34,9 +34,18 @@ export const createPostsSlice : StateCreator<PostsSliceType> = ( set, get ) =>({
         }));
     },
     likePost: async( { groupId, postId } : { groupId: Group["id"] ; postId: Post["id"] } ) => {
-        const likedPosts = await likePost( { groupId, postId } );
+        const likePostData = await likePost( { groupId, postId } );
         set(() => ({
-            likedPosts 
+            posts: get().posts.map( post => {
+                if( likePostData && post.id === likePostData.id ) {
+                    return {
+                        ...post,
+                        likedByMe: likePostData.likedByMe,
+                        likesCount: likePostData.likesCount
+                    }
+                }
+                return post;
+            } )
         }))
     }
 
