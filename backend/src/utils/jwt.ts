@@ -8,7 +8,7 @@ const generateJsonWebToken = (id : string) => {
     }
 
     //Recibe 3 argumentos, los datos a transferir, una llave privada y la fecha de expiracion del token
-    const token = jwt.sign( dataExample, String(process.env.JWT_PRIVATEKEY) , { expiresIn: "6m" } );
+    const token = jwt.sign( dataExample, String(process.env.JWT_PRIVATEKEY) , { expiresIn: "30d" } );
     return token;
 }
 
