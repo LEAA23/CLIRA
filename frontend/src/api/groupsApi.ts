@@ -103,9 +103,7 @@ export const addMembertoGroup = async(  { groupId, email } : { groupId : Group["
 export const searchDeleteUser = async( { groupId, email } : { groupId: Group["id"] ; email: RemoveMemberForm["email"] } ) => {
     try {
         const { data: user } = await api(`/groups/${groupId}/members?email=${email}`);
-        console.log(user)
         const response = UserSearchSchema.safeParse( user.user );
-        console.log(response)
         if(response.data) {
             return response.data;
         }
@@ -152,7 +150,6 @@ export const getPosts = async(  groupId : Group["id"]  ) => {
     try {
         const { data } = await api(`/groups/${groupId}/posts`);
         const response = PostsSchema.safeParse( data.posts );
-        console.log(response)
         if( response.data ) {
             return response.data;
         }

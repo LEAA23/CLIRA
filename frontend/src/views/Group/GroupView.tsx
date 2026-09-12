@@ -98,6 +98,8 @@ const GroupView = () => {
                     title={ post.title }
                     content={ post.content }
                     firstImage={ post.images?.[0]?.path }
+                    userName={ post.user.name }
+                    userLastName={ post.user.lastName }
                 />
 
             ))}
