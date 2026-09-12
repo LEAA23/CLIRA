@@ -76,7 +76,13 @@ const ViewPostModal = () => {
                                         </div>
                                         <div className="max-w-full flex flex-col justify-center">
                                             <div className="mb-5 border-b-gray-300 pb-5 border-b-2">
-                                                <ProfileTagName/>   
+                                                {post && (
+                                                    <ProfileTagName
+                                                        name={ post?.user.name }
+                                                        lastName={ post?.user.lastName }
+                                                    />   
+
+                                                )}
                                             </div>
                                             <p>
                                                 { post?.content }

@@ -9,9 +9,11 @@ type PostCardProps = {
     title: string,
     content: string;
     firstImage: string;
+    userName: string;
+    userLastName: string;
 }
 
-const PostCard = ( { id, title, content, firstImage } : PostCardProps ) => {
+const PostCard = ( { id, title, content, firstImage , userName, userLastName } : PostCardProps ) => {
     const navigate = useNavigate();
     const params = useParams();
     const groupId = params.id;
@@ -46,7 +48,10 @@ const PostCard = ( { id, title, content, firstImage } : PostCardProps ) => {
             </div>
 
             <div className="-mt-8 ml-5">
-                <ProfileTagName/>
+                <ProfileTagName
+                    name={ userName }
+                    lastName={ userLastName }
+                />
             </div>
         </div> 
 

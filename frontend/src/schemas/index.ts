@@ -94,6 +94,10 @@ export const PostsSchema = z.array(
                 path: z.string()
             })
         ),
+        user: z.object({
+            name: z.string(),
+            lastName: z.string()
+        }),
         likesCount: z.number(),
         likedByMe: z.boolean()
     })
