@@ -12,6 +12,7 @@ import { Media } from "../models/Media";
 import { param } from "express-validator";
 import { Like } from "../models/Like";
 import { col, fn, literal } from "sequelize";
+import { Comment } from "../models/Comment";
 
 
 export class GroupsControlller {
@@ -448,6 +449,24 @@ export class GroupsControlller {
 
         } catch (error) {
             console.log(error)
+            return res.status(500).json( { error: "Error interno del servidor" } );
+        }
+    }
+
+    static createComment = async( req: Request, res: Response ) => {
+        const { content } = req.body;
+        try {
+            if( content ) {
+                await Comment.create({
+                    content,
+                    post_id: req.post.id,
+                    user_id: req.user.id
+                });
+
+                return res.status(200).send("Comentario publicado correctamente");    
+            }
+            return res.status(400).json( { error: "El contenido del comentario es obligatorio" } );
+        } catch (error) {
             return res.status(500).json( { error: "Error interno del servidor" } );
         }
     }
