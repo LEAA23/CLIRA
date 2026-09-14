@@ -7,6 +7,9 @@ import Carousel from "./Carousel";
 import ProfileTagName from "./ProfileTagName";
 import { HeartIcon, PaperAirplaneIcon, TrashIcon } from "@heroicons/react/16/solid";
 import CommentaCard from "./CommentCard";
+import { useForm } from "react-hook-form";
+import type { CommentForm } from "../../types";
+import ErrorMessage from "../ErrorMessage";
 
 const ViewPostModal = () => {
     const navigate = useNavigate();
@@ -23,8 +26,18 @@ const ViewPostModal = () => {
     const post = posts.find( post => +postId! === post.id );
     const likePost = useAppStore( state => state.likePost );
 
+    const initialValues : CommentForm = {
+        content: ""
+    }
+    
+    const { handleSubmit, register, formState: { errors }, reset } = useForm( { defaultValues: initialValues } );
+
     const handleClick = async ( id : number ) => {
         await likePost( { groupId : Number( groupId ), postId: id } );
+    }
+
+    const handleSubmitComment = async() => {
+
     }
 
   return (
@@ -120,15 +133,23 @@ const ViewPostModal = () => {
                                     </div>
 
                                     <div className="bg-white shadow-xl p-5 rounded-lg max-w-full my-5">
-                                        <form>
+                                        <form
+                                            onSubmit={ handleSubmit( handleSubmitComment ) }
+                                        >
                                             <label 
-                                                htmlFor="comment"
+                                                htmlFor="content"
                                                 className="text-gray-600 font-bold text-xl"
                                             >Comentario</label>
                                             <textarea 
-                                                id="comment"
+                                                id="cotent"
                                                 className="border border-gray-400 p-2 mt-3 w-full rounded-lg"
+                                                {...register("content", {
+                                                    required: "El contenido del comentario es obligatorio"
+                                                })}
                                             ></textarea>
+                                            { errors.content && (
+                                                <ErrorMessage>{ String( errors.content.message ) }</ErrorMessage>
+                                            ) }
 
                                             <div className='flex flex-col md:flex-row justify-center gap-x-10'>
                                         
