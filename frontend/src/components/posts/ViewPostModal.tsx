@@ -10,6 +10,7 @@ import CommentaCard from "./CommentCard";
 import { useForm } from "react-hook-form";
 import type { CommentForm } from "../../types";
 import ErrorMessage from "../ErrorMessage";
+import { toast } from "react-toastify";
 
 const ViewPostModal = () => {
     const navigate = useNavigate();
@@ -26,6 +27,8 @@ const ViewPostModal = () => {
     const post = posts.find( post => +postId! === post.id );
     const likePost = useAppStore( state => state.likePost );
 
+    const createComment = useAppStore( state => state.createComment );
+
     const initialValues : CommentForm = {
         content: ""
     }
@@ -36,8 +39,22 @@ const ViewPostModal = () => {
         await likePost( { groupId : Number( groupId ), postId: id } );
     }
 
-    const handleSubmitComment = async() => {
-
+    const handleSubmitComment = async( formData: CommentForm ) => {
+        const data = {
+            groupId: +groupId!,
+            postId: +postId!,
+            content: formData.content
+        };
+        try {
+            const message = await createComment( data );
+            toast.success( message );
+            reset();
+            navigate( location.pathname, { replace: true } );
+        } catch (error) {
+            if( error instanceof Error ) {
+                toast.error( error.message );
+            }
+        }
     }
 
   return (
