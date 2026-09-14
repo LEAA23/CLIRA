@@ -109,6 +109,13 @@ export const likePostSquema = z.object({
     likedByMe: z.boolean()
 });
 
+export const CommentSquema = z.object({
+    id: z.number(),
+    content: z.string(),
+    post_id: z.number(),
+    user_id: z.number()
+});
+
 /**
  *  CHART CONTAINER SCHEMA
  */
