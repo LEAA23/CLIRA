@@ -11,7 +11,7 @@ import { Post } from "../models/Post";
 import { Media } from "../models/Media";
 import { param } from "express-validator";
 import { Like } from "../models/Like";
-import { col, fn, literal } from "sequelize";
+import { col, fn, literal, where } from "sequelize";
 import { Comment } from "../models/Comment";
 
 
@@ -466,6 +466,17 @@ export class GroupsControlller {
                 return res.status(200).send("Comentario publicado correctamente");    
             }
             return res.status(400).json( { error: "El contenido del comentario es obligatorio" } );
+        } catch (error) {
+            return res.status(500).json( { error: "Error interno del servidor" } );
+        }
+    }
+
+    static getComments = async( req: Request, res: Response ) => {
+        try {
+            const comments = await Comment.findAll({
+                where: { post_id: req.post.id }
+            });
+            return res.status(200).json( { comments } );
         } catch (error) {
             return res.status(500).json( { error: "Error interno del servidor" } );
         }
