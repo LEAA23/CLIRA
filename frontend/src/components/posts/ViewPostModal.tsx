@@ -56,7 +56,6 @@ const ViewPostModal = () => {
             const message = await createComment( data );
             toast.success( message );
             reset();
-            navigate( location.pathname, { replace: true } );
         } catch (error) {
             if( error instanceof Error ) {
                 toast.error( error.message );

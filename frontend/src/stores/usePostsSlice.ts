@@ -54,6 +54,7 @@ export const createPostsSlice : StateCreator<PostsSliceType> = ( set, get ) =>({
     },
     createComment: async( { groupId, postId, content } : { groupId : Group["id"] ; postId: Post["id"]; content: CommentForm["content"] } ) => {
         const data = await createComment( { groupId, postId, content } );
+        await get().fecthComments( { groupId, postId } );
         return data;
     },
     fecthComments: async( { groupId, postId } : { groupId: Group["id"] ; postId: Post["id"] } ) => {
