@@ -474,7 +474,9 @@ export class GroupsControlller {
     static getComments = async( req: Request, res: Response ) => {
         try {
             const comments = await Comment.findAll({
-                where: { post_id: req.post.id }
+                where: { post_id: req.post.id },
+                attributes: ["id", "content", "post_id"],
+                include: [ { model: User, as: "user" ,attributes: [ "id", "name", "lastName" ] } ]
             });
             return res.status(200).json( { comments } );
         } catch (error) {

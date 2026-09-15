@@ -4,6 +4,7 @@ import { User } from "./User";
 import { Media } from "./Media"
 import { UserGroup } from "./UserGroup";
 import { Like } from "./Like";
+import { Comment } from "./Comment";
 
 //LAS ASOCIACIONES EN SEQUELIZE SON LAS RELACIONES ENTRE LAS BASES DE DATOS
 
@@ -91,4 +92,23 @@ User.hasMany(Like, {
 Like.belongsTo(User, {
     foreignKey: "user_id",
     as: "user"
+});
+
+//Associations para traer los comentarios de un post
+User.hasMany(Comment, {
+    foreignKey: "user_id",
+    as: "comments"
+});
+Comment.belongsTo(User, {
+    foreignKey: "user_id",
+    as: "user"
+});
+
+Post.hasMany(Comment, {
+    foreignKey: "post_id",
+    as: "comments"
+});
+Comment.belongsTo(Post, {
+    foreignKey: "post_id",
+    as: "post"
 });
