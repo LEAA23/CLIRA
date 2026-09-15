@@ -145,7 +145,7 @@ const ViewPostModal = () => {
                                     </div>
 
                                     <div className="overflow-hidden">
-                                        <div className="flex flex-col space-y-5 h-auto p-5 overflow-y-scroll">
+                                        <div className="flex flex-col space-y-5 h-100 p-5 overflow-y-scroll scrollbar-thumb-blue-500">
                                             {comments.length? (
                                                 comments.map( comment => (
                                                     <CommentaCard
