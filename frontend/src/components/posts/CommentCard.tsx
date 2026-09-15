@@ -1,6 +1,13 @@
-import ProfileTagName from "./ProfileTagName"
+import ProfileTagName from "./ProfileTagName";
 
-const CommentaCard = () => {
+type CommentaCardProps = {
+  id: number,
+  content: string,
+  post_id: number,
+  user_id: number,
+}
+
+const CommentaCard = ( { id, content, post_id, user_id } : CommentaCardProps ) => {
   return (
     <div className="bg-white shadow rounded-lg p-5 border-l-4 border-l-amber-400">
       <div className="ml-5">
@@ -8,8 +15,7 @@ const CommentaCard = () => {
       </div>
       <div className="mt-3 ml-8">
         <p>
-          Lorem ipsum dolor sit amet consectetur adipisicing elit. Minus vitae numquam ipsum soluta! Distinctio saepe 
-          libe
+          { content }
         </p>
       </div>
     </div>

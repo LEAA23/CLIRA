@@ -1,6 +1,6 @@
 import { isAxiosError } from "axios"
 import api from "../lib/axios";
-import { GroupResponse, GroupsSchema, likePostSquema, PostsSchema, UserSearchSchema } from "../schemas";
+import { CommentsSchema, GroupResponse, GroupsSchema, likePostSquema, PostsSchema, UserSearchSchema } from "../schemas";
 import type { AddMemberForm, CommentForm, Group, Post, RemoveMemberForm, UserSearchForm } from "../types";
 
 export const getGroups = async() => {
@@ -182,6 +182,21 @@ export const createComment = async( { groupId, postId, content } : { groupId : G
     try {
         const { data } = await api.post<string>(`/groups/${groupId}/posts/${postId}/comments`, {content});
         return data;
+    } catch (error) {
+        if( isAxiosError(error) && error.response ) {
+            throw new Error( error.response.data.error );
+        }
+    }
+}
+
+export const getComments = async( { groupId, postId } : { groupId : Group["id"] ; postId: Post["id"] } ) => {
+    try {
+        const { data: { comments } } = await api(`/groups/${groupId}/posts/${postId}/comments`);
+        const response = CommentsSchema.safeParse( comments );
+        if( response.data ) {
+            return response.data;
+        }
+
     } catch (error) {
         if( isAxiosError(error) && error.response ) {
             throw new Error( error.response.data.error );

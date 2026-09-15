@@ -11,6 +11,7 @@ import { useForm } from "react-hook-form";
 import type { CommentForm } from "../../types";
 import ErrorMessage from "../ErrorMessage";
 import { toast } from "react-toastify";
+import { useEffect } from "react";
 
 const ViewPostModal = () => {
     const navigate = useNavigate();
@@ -28,6 +29,8 @@ const ViewPostModal = () => {
     const likePost = useAppStore( state => state.likePost );
 
     const createComment = useAppStore( state => state.createComment );
+    const fecthComments = useAppStore( state => state.fecthComments );
+    const comments = useAppStore( state => state.currentPostComments );
 
     const initialValues : CommentForm = {
         content: ""
@@ -38,6 +41,10 @@ const ViewPostModal = () => {
     const handleClick = async ( id : number ) => {
         await likePost( { groupId : Number( groupId ), postId: id } );
     }
+
+    useEffect(() => {
+        fecthComments( { groupId : +groupId!, postId: +postId! } ); 
+    }, [ fecthComments, postId ]);
 
     const handleSubmitComment = async( formData: CommentForm ) => {
         const data = {
@@ -139,8 +146,19 @@ const ViewPostModal = () => {
                                     </div>
 
                                     <div className="overflow-hidden">
-                                        <div className="flex flex-col space-y-5 h-100 p-5 overflow-y-scroll">
-                                            <CommentaCard/>
+                                        <div className="flex flex-col space-y-5 h-auto p-5 overflow-y-scroll">
+                                            {comments.length? (
+                                                comments.map( comment => (
+                                                    <CommentaCard
+                                                        id={ comment.id }
+                                                        content= { comment.content }
+                                                        post_id= { comment.post_id }
+                                                        user_id= { comment.user_id }
+                                                    />
+                                                ) )
+                                            ): (
+                                                <p className="font-semibold text-gray-500 text-center">No hay comentarios a&uacute;n</p>
+                                            )}
 
                                         </div>
                                     </div>
