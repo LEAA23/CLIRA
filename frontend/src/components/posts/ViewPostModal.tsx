@@ -153,7 +153,9 @@ const ViewPostModal = () => {
                                                         id={ comment.id }
                                                         content= { comment.content }
                                                         post_id= { comment.post_id }
-                                                        user_id= { comment.user_id }
+                                                        user={ comment.user }
+                                                        createdAt={ comment.createdAt }
+                                                        updatedAt={ comment.updatedAt }
                                                     />
                                                 ) )
                                             ): (
