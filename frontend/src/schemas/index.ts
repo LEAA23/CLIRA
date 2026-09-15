@@ -116,6 +116,10 @@ export const CommentSquema = z.object({
     user_id: z.number()
 });
 
+export const CommentsSchema = z.array(
+    CommentSquema
+);
+
 /**
  *  CHART CONTAINER SCHEMA
  */

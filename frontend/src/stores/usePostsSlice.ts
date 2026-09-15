@@ -1,14 +1,17 @@
 import type { StateCreator } from "zustand"
-import type { Group, LikedPosts, Post, Posts } from "../types";
-import { createPost, getPosts, likePost } from "../api/groupsApi";
+import type { CommentForm, Comments, Group, LikedPosts, Post, Posts } from "../types";
+import { createComment, createPost, getComments, getPosts, likePost } from "../api/groupsApi";
 
 export type PostsSliceType = {
     posts: Posts;
     post: Post;
     likedPosts: LikedPosts;
+    currentPostComments: Comments;
     createPost: ({ groupId, formData }: { groupId: number; formData: FormData; }) => Promise<string>;
     fetchPosts: (groupId: number) => Promise<void>;
-    likePost: ({ groupId, postId }: { groupId: number; postId: number; }) => Promise<{ liked: boolean; likes: unknown; } | undefined>
+    likePost: ({ groupId, postId }: { groupId: number; postId: number; }) => Promise<{ liked: boolean; likes: unknown; } | undefined>;
+    createComment: ({ groupId, postId, content }: { groupId: number; postId: number; content: string; }) => Promise<string | undefined>;
+    fecthComments: ({ groupId, postId }: { groupId: number; postId: number; }) => Promise<void>
 }
 
 export const createPostsSlice : StateCreator<PostsSliceType> = ( set, get ) =>({
@@ -22,6 +25,7 @@ export const createPostsSlice : StateCreator<PostsSliceType> = ( set, get ) =>({
         user_id: 0
     },
     likedPosts: [],
+    currentPostComments: [],
     createPost: async( { groupId, formData } : { groupId: Group["id"] ; formData : FormData } ) => {
         const message = await createPost( { groupId, formData } );
         await get().fetchPosts( groupId );
@@ -47,6 +51,16 @@ export const createPostsSlice : StateCreator<PostsSliceType> = ( set, get ) =>({
                 return post;
             } )
         }))
+    },
+    createComment: async( { groupId, postId, content } : { groupId : Group["id"] ; postId: Post["id"]; content: CommentForm["content"] } ) => {
+        const data = await createComment( { groupId, postId, content } );
+        return data;
+    },
+    fecthComments: async( { groupId, postId } : { groupId: Group["id"] ; postId: Post["id"] } ) => {
+        const comments = await getComments( { groupId, postId } );
+        set(() => ({
+            currentPostComments: comments
+        }));
     }
 
 });

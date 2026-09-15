@@ -1,6 +1,6 @@
 import type { StateCreator } from "zustand"
-import type { CommentForm, CurrentGroup, Group, Groups, Post, UserSearched, UserSearchForm } from "../types";
-import { addMembertoGroup, createComment, createGroup, deleteGroup, getGroup, getGroups, removeMemberFromGroup, searchDeleteUser, searchUser, updateGroup } from "../api/groupsApi";
+import type { CurrentGroup, Group, Groups, UserSearched, UserSearchForm } from "../types";
+import { addMembertoGroup, createGroup, deleteGroup, getGroup, getGroups, removeMemberFromGroup, searchDeleteUser, searchUser, updateGroup } from "../api/groupsApi";
 
 export type GroupsSliceType = {
     groups: Groups;
@@ -17,7 +17,6 @@ export type GroupsSliceType = {
     addMembertoGroup: ( { groupId, user } : { groupId : Group["id"] ; user : UserSearched } ) => Promise<string>;
     fetchUserDelete: ({ groupId, email }: { groupId: number; email: string; }) => Promise<void>
     removeMemberFromGroup: ({ groupId, user }: { groupId: number; user: UserSearched; }) => Promise<string>;
-    createComment: ({ groupId, postId, content }: { groupId: number; postId: number; content: string; }) => Promise<string | undefined>
 }
 
 export const createGroupsSlice : StateCreator<GroupsSliceType> = ( set, get ) => ({
@@ -140,9 +139,5 @@ export const createGroupsSlice : StateCreator<GroupsSliceType> = ( set, get ) =>
             get().cleanUserSearched();
         }
         return message;
-    },
-    createComment: async( { groupId, postId, content } : { groupId : Group["id"] ; postId: Post["id"]; content: CommentForm["content"] } ) => {
-        const data = await createComment( { groupId, postId, content } );
-        return data;
     }
 })

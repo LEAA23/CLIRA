@@ -35,6 +35,7 @@ export type Posts = z.infer<typeof PostsSchema>;
 export type LikedPosts = z.infer<typeof likedPostsSchema>;
 export type Comment = z.infer<typeof CommentSquema>;
 export type CommentForm = Pick<Comment, "content">;
+export type Comments = Comment[];
 
 /**
  * CHART OPTION TYPE
