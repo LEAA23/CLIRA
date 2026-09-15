@@ -141,10 +141,6 @@ const ViewPostModal = () => {
                                     <div className="overflow-hidden">
                                         <div className="flex flex-col space-y-5 h-100 p-5 overflow-y-scroll">
                                             <CommentaCard/>
-                                            <CommentaCard/>
-                                            <CommentaCard/>
-                                            <CommentaCard/>
-                                            <CommentaCard/>
 
                                         </div>
                                     </div>

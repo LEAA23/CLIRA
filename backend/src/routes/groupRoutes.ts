@@ -121,6 +121,16 @@ router.post("/:groupId/posts/:postId/comments",
     param("postId").notEmpty().withMessage("El id del post es obligatorio"),
     body("content").trim().notEmpty().withMessage("El contenido del comentario es obligatorio").isLength({ min: 10 }).withMessage("El comentario debe contener al menos 10 caracteres"),
     GroupsControlller.createComment
-)
+);
+
+router.get("/:groupId/posts/:postId/comments",
+    authenticate,
+    groupExists,
+    postExists,
+    isGroupMember,
+    param("groupId").notEmpty().withMessage("El id del grupo es obligatorio"),
+    param("postId").notEmpty().withMessage("El id del post es obligatorio"),
+    GroupsControlller.getComments
+);
 
 export default router;
