@@ -36,7 +36,7 @@ const ViewPostModal = () => {
         content: ""
     }
     
-    const { handleSubmit, register, formState: { errors }, reset } = useForm( { defaultValues: initialValues } );
+    const { handleSubmit, register, formState: { errors }, reset, resetField } = useForm( { defaultValues: initialValues } );
 
     const handleClick = async ( id : number ) => {
         await likePost( { groupId : Number( groupId ), postId: id } );
@@ -173,10 +173,10 @@ const ViewPostModal = () => {
                                                 className="text-gray-600 font-bold text-xl"
                                             >Comentario</label>
                                             <textarea 
-                                                id="cotent"
+                                                id="content"
                                                 className="border border-gray-400 p-2 mt-3 w-full rounded-lg"
                                                 {...register("content", {
-                                                    required: "El contenido del comentario es obligatorio"
+                                                    required: "El contenido del comentario es obligatorio",
                                                 })}
                                             ></textarea>
                                             { errors.content && (
@@ -187,7 +187,7 @@ const ViewPostModal = () => {
                                         
                                                 <button
                                                     type="button"
-                                                    onClick={() => navigate(location.pathname, { replace: true })}
+                                                    onClick={() => resetField("content") }
                                                     className="bg-red-400 py-2 px-6 w-full mt-10 text-white font-bold rounded-lg hover:cursor-pointer 
                                                     hover:transition-colors hover:bg-red-500 md:w-auto flex justify-start items-center gap-x-2"
                                                 >
