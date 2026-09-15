@@ -6,6 +6,8 @@ export class Comment extends Model< InferAttributes<Comment>, InferCreationAttri
     declare content: string;
     declare post_id: number;
     declare user_id: number;
+    declare createdAt?: string;
+    declare updatedAt?: string;
 }
 
 Comment.init({

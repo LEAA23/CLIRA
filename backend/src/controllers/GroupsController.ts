@@ -13,6 +13,7 @@ import { param } from "express-validator";
 import { Like } from "../models/Like";
 import { col, fn, literal, where } from "sequelize";
 import { Comment } from "../models/Comment";
+import { dateFormater } from "../utils/dateFormater";
 
 
 export class GroupsControlller {
@@ -478,8 +479,17 @@ export class GroupsControlller {
                 attributes: ["id", "content", "post_id", "createdAt", "updatedAt"],
                 include: [ { model: User, as: "user" ,attributes: [ "id", "name", "lastName" ] } ]
             });
-            return res.status(200).json( { comments } );
+            const formatedComments= comments.map(comment => {
+                const commentData = comment.toJSON();
+                return {
+                    ...commentData,
+                    createdAt: dateFormater( new Date(commentData.createdAt!) ),
+                    updatedAt: dateFormater( new Date( commentData.updatedAt! ) )
+                }
+            })
+            return res.status(200).json( { comments: formatedComments } );
         } catch (error) {
+            console.log(error)
             return res.status(500).json( { error: "Error interno del servidor" } );
         }
     }
