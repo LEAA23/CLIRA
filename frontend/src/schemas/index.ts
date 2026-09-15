@@ -113,7 +113,13 @@ export const CommentSquema = z.object({
     id: z.number(),
     content: z.string(),
     post_id: z.number(),
-    user_id: z.number()
+    user: z.object({
+        id: z.number(),
+        name: z.string(),
+        lastName: z.string()
+    }),
+    createdAt: z.string(),
+    updatedAt: z.string()
 });
 
 export const CommentsSchema = z.array(

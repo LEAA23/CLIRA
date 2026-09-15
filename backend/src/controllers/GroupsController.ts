@@ -475,7 +475,7 @@ export class GroupsControlller {
         try {
             const comments = await Comment.findAll({
                 where: { post_id: req.post.id },
-                attributes: ["id", "content", "post_id"],
+                attributes: ["id", "content", "post_id", "createdAt", "updatedAt"],
                 include: [ { model: User, as: "user" ,attributes: [ "id", "name", "lastName" ] } ]
             });
             return res.status(200).json( { comments } );
