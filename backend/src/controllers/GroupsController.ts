@@ -9,9 +9,8 @@ import { compressImage } from "../utils/compressImage";
 import { UserGroup } from "../models/UserGroup";
 import { Post } from "../models/Post";
 import { Media } from "../models/Media";
-import { param } from "express-validator";
 import { Like } from "../models/Like";
-import { col, fn, literal, where } from "sequelize";
+import { literal  } from "sequelize";
 import { Comment } from "../models/Comment";
 import { dateFormater } from "../utils/dateFormater";
 
@@ -490,6 +489,27 @@ export class GroupsControlller {
             return res.status(200).json( { comments: formatedComments } );
         } catch (error) {
             console.log(error)
+            return res.status(500).json( { error: "Error interno del servidor" } );
+        }
+    }
+
+    static updateComment = async( req: Request, res: Response ) => {
+        const { content } = req.body;
+        const { commentId } = req.params;
+        try {
+            const commentExists = await Comment.findOne( { where: { id: commentId, user_id: req.user.id } } );
+            if( !commentExists ) {
+                const error = new Error("Comentario no disponible");
+                return res.status(404).json( { error: error.message } );
+            }
+
+            if( content ) {
+                commentExists.content = content;
+                await commentExists.save();
+                return res.status(200).send("El comentario se actualizo correctamente");
+            }
+            return res.status(400).json( { error: "El contenido del comentario es obligatorio" } );
+        } catch (error) {
             return res.status(500).json( { error: "Error interno del servidor" } );
         }
     }
