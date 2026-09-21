@@ -4,6 +4,5 @@ export const dateFormater = ( date: Date ) => {
         month: "long",
         year: "numeric"
     });
-    console.log(newDate)
-    return newDate
+    return newDate;
 }

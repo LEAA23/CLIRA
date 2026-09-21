@@ -8,6 +8,7 @@ import type { PostRegistationForm } from "../../types";
 import { toast } from "react-toastify";
 import { useAppStore } from "../../stores/useAppStore";
 import { useState } from "react";
+import EditCommentModal from "./EditCommentModal";
 
 const PostModal = () => {
     //useNavigate para redireccionar al usuario a la misma pagina pero sin los query params
@@ -243,6 +244,8 @@ const PostModal = () => {
                 </div>
             </Dialog>
         </Transition>
+
+        <EditCommentModal/>
     </>
   )
 }

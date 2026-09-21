@@ -24,9 +24,17 @@ const ViewPostModal = () => {
     const params = useParams();
     const groupId = params.id;
 
-    const posts = useAppStore( state => state.posts );
-    const post = posts.find( post => +postId! === post.id );
+    const posts = useAppStore( state => state.posts );   
+    const fetchPost = useAppStore( state => state.fetchPost );
+    useEffect(() => {
+        if (postId) {
+            fetchPost(Number(postId));
+        }
+    }, [postId, fetchPost]);
+
+    const post = useAppStore( state => state.post );
     const likePost = useAppStore( state => state.likePost );
+
 
     const createComment = useAppStore( state => state.createComment );
     const fecthComments = useAppStore( state => state.fecthComments );
@@ -102,12 +110,11 @@ const ViewPostModal = () => {
                                     { post?.title }
                                 </Dialog.Title>
 
-
                                 <div className="p-5 max-w-full mt-5">
                                     <div className="grid grid-cols-2 space-x-5 ">
                                         <div className="h-full">
-                                            {post?.images?.[0].path && (
-                                                <Carousel firstImage={ post?.images?.[0].path } />
+                                            {post?.images?.[0]?.path && (
+                                                <Carousel firstImage={ post?.images?.[0]?.path } />
                                             )}
                                         </div>
                                         <div className="max-w-full flex flex-col justify-center">
