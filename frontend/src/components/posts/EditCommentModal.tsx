@@ -7,6 +7,7 @@ import { useAppStore } from "../../stores/useAppStore";
 import { useForm } from "react-hook-form";
 import ErrorMessage from "../ErrorMessage";
 import { useEffect } from "react";
+import type { CommentForm } from "../../types";
 
 const EditCommentModal = () => {
     const navigate = useNavigate();
@@ -21,8 +22,12 @@ const EditCommentModal = () => {
     const fetchComment = useAppStore( state => state.fecthComment );
     const cleanComment = useAppStore( state => state.cleanComment );
     const comment = useAppStore( state => state.comment );
+
+    const initialValues : CommentForm = {
+        content: ""
+    }
     
-    const { register, reset, formState: { errors }, handleSubmit } = useForm();
+    const { register, reset, formState: { errors }, handleSubmit } = useForm( { defaultValues: initialValues } );
     
     useEffect(() => {
         if(commentId) {

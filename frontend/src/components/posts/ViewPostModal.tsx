@@ -24,7 +24,6 @@ const ViewPostModal = () => {
     const params = useParams();
     const groupId = params.id;
 
-    const posts = useAppStore( state => state.posts );   
     const fetchPost = useAppStore( state => state.fetchPost );
     useEffect(() => {
         if (postId) {
@@ -156,6 +155,7 @@ const ViewPostModal = () => {
                                             {comments.length? (
                                                 comments.map( comment => (
                                                     <CommentaCard
+                                                        key={ comment.id }
                                                         id={ comment.id }
                                                         content= { comment.content }
                                                         post_id= { comment.post_id }

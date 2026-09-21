@@ -27,7 +27,7 @@ const PostModal = () => {
     const initialValues : PostRegistationForm = {
         title: "",
         content: "",
-        media: []
+        images: []
     }
 
     //State local para permitirle a los usuarios seleccionar varias imagenes y mantener la seleccion
@@ -49,8 +49,8 @@ const PostModal = () => {
         data.append("content", formData.content);
 
         //Iteramos sobre cada archivo en media y lo agregamos al campo de media
-        Array.from( formData.media ).forEach( image => {
-            data.append("media", image);
+        selectedImages.forEach( image => {
+            data.append("images", image);
         } );
 
         try {
@@ -149,16 +149,16 @@ const PostModal = () => {
 
                                     <div className="flex flex-col justify-between space-x-5">
                                         <label 
-                                            htmlFor="media"
+                                            htmlFor="images"
                                             className="text-gray-600 text-2xl font-bold"
                                         >Imagenes</label>
 
                                         <input
-                                            id="media"
+                                            id="images"
                                             type="file"
                                             accept="image/*"
                                             className="hidden"
-                                            {...register("media", {
+                                            {...register("images", {
                                                 onChange: e => {
                                                     const files : File[] = Array.from( e.target.files ?? [] );
 
@@ -170,7 +170,7 @@ const PostModal = () => {
                                             })}
                                         />
                                         <label 
-                                            htmlFor="media"
+                                            htmlFor="images"
                                             className="bg-purple-500 py-2 px-6 text-white font-bold rounded-lg mt-10 md:mt-5 
                                             hover:cursor-pointer hover:transition-colors hover:bg-purple-600 w-full flex 
                                             justify-center items-center gap-x-2"

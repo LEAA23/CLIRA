@@ -318,7 +318,7 @@ export class GroupsControlller {
     static createPost = async( req: Request, res: Response ) => {
         const groupId = +req.params.groupId;
         const { title, content } = req.body;
-        const media = req.files as Express.Multer.File[];
+        const images = req.files as Express.Multer.File[];
 
         try {
             //Creamos la publicacion con los datos enviados por el usuario
@@ -330,7 +330,7 @@ export class GroupsControlller {
             });
 
             //Iteramos sobre cada imagen mandada por el usuario
-            media?.forEach( async(image) => {
+            images?.forEach( async(image) => {
                 //Comprimimos cada imagen que mando el usuario
                 const compresedImage = await compressImage( image.buffer );
 
