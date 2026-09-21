@@ -78,29 +78,24 @@ export const PostSchema = z.object({
     id: z.number(),
     title: z.string(),
     content: z.string(),
-    media: z.array( z.file() ),
+    images: z.array(
+        z.object({
+            id: z.number(),
+            path: z.string()
+        })
+    ),
+    user: z.object({
+        name: z.string(),
+        lastName: z.string()
+    }),
+    likesCount: z.number(),
+    likedByMe: z.boolean(),
     group_id: z.number(),
     user_id: z.number()
 });
 
 export const PostsSchema = z.array(
-    PostSchema.omit({
-        media: true
-    }).extend({
-        id: z.number(),
-        images: z.array(
-            z.object({
-                id: z.number(),
-                path: z.string()
-            })
-        ),
-        user: z.object({
-            name: z.string(),
-            lastName: z.string()
-        }),
-        likesCount: z.number(),
-        likedByMe: z.boolean()
-    })
+    PostSchema
 );
 
 export const likePostSquema = z.object({

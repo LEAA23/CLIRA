@@ -15,6 +15,8 @@ const GroupView = () => {
     //Extraemos tanto la funcion para consultar el grupo como el state global de group
     const fetchGroup = useAppStore( state => state.fetchGroup );
     const group = useAppStore( state => state.group );
+    const fetchUserAuth = useAppStore( state => state.fetchUserAuth );
+    fetchUserAuth();
 
     const fetchPosts = useAppStore( state => state.fetchPosts );
     const posts = useAppStore( state => state.posts );
