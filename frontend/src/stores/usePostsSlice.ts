@@ -1,11 +1,10 @@
 import type { StateCreator } from "zustand"
-import type { Comment, CommentForm, Comments, Group, LikedPosts, Post, Posts } from "../types";
+import type { Comment, CommentForm, Comments, Group, Post, Posts } from "../types";
 import { createComment, createPost, getComments, getPosts, likePost } from "../api/groupsApi";
 
 export type PostsSliceType = {
     posts: Posts;
     post: Post;
-    likedPosts: LikedPosts;
     currentPostComments: Comments;
     comment: Comment;
     createPost: ({ groupId, formData }: { groupId: number; formData: FormData; }) => Promise<string>;
@@ -34,7 +33,6 @@ export const createPostsSlice : StateCreator<PostsSliceType> = ( set, get ) =>({
         group_id: 0,
         user_id: 0
     },
-    likedPosts: [],
     comment: {
         id: 0,
         content: "",
@@ -76,7 +74,15 @@ export const createPostsSlice : StateCreator<PostsSliceType> = ( set, get ) =>({
                     }
                 }
                 return post;
-            } )
+            } ),
+            
+            post:
+                likePostData && get().post.id === likePostData.id? {
+                    ...get().post,
+                    likedByMe: likePostData.likedByMe,
+                    likesCount: likePostData.likesCount
+                }:
+                get().post
         }))
     },
     createComment: async( { groupId, postId, content } : { groupId : Group["id"] ; postId: Post["id"]; content: CommentForm["content"] } ) => {
