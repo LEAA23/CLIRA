@@ -8,6 +8,7 @@ import { useForm } from "react-hook-form";
 import ErrorMessage from "../ErrorMessage";
 import { useEffect } from "react";
 import type { CommentForm } from "../../types";
+import { toast } from "react-toastify";
 
 const EditCommentModal = () => {
     const navigate = useNavigate();
@@ -16,12 +17,15 @@ const EditCommentModal = () => {
     
     const location = useLocation();
     const queryParams = new URLSearchParams( location.search );
+    const postId = queryParams.get("post");
     const commentId = queryParams.get("Comment");
+
 
     const group = useAppStore( state => state.group );
     const fetchComment = useAppStore( state => state.fecthComment );
     const cleanComment = useAppStore( state => state.cleanComment );
     const comment = useAppStore( state => state.comment );
+    const updateComment = useAppStore( state => state.updateComment );
 
     const initialValues : CommentForm = {
         content: ""
@@ -46,8 +50,16 @@ const EditCommentModal = () => {
     }, [ comment, reset ])
 
 
-    const handleUpdateComment = async() => {
-
+    const handleUpdateComment = async( formData: CommentForm ) => {
+        try {
+            const message = await updateComment( { groupId : group.id, postId: +postId!, commentId: +commentId!, content: formData.content } );
+            toast.success( message );
+            navigate(`/groups/${group.id}?viewPost=true&post=${postId}`);
+        } catch (error) {
+            if( error instanceof Error ) {
+                toast.error( error.message );
+            }
+        }
     }
 
 
