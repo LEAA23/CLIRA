@@ -1,10 +1,10 @@
 import { Transition, Dialog } from "@headlessui/react";
 import { Fragment } from "react/jsx-runtime";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { useShowModal } from "../../hooks/useShowModal";
 import { useAppStore } from "../../stores/useAppStore";
-import { useForm } from "react-hook-form";
 import { TrashIcon, XMarkIcon } from "@heroicons/react/16/solid";
+import { toast } from "react-toastify";
 
 const DeleteCommentModal = () => {
     const navigate = useNavigate();
@@ -12,11 +12,26 @@ const DeleteCommentModal = () => {
     const showModal = useShowModal("DeleteCommentModal");
     const comment = useAppStore( state => state.comment );
     const group = useAppStore( state => state.group );
+    const deleteComment = useAppStore( state => state.deleteComment );
 
-    const { handleSubmit } = useForm();
+    const params = useParams();
+    const groupId = params.id;
 
-    const handleDeleteComment = () => {
+    const location = useLocation();
+    const queryParams = new URLSearchParams( location.search );
+    const postId = queryParams.get("post");
 
+    const handleDeleteComment = async( e : React.SubmitEvent<HTMLFormElement> ) => {
+        e.preventDefault();
+        try {
+            const message = await deleteComment( { groupId: +groupId!, postId: +postId!, commentId: comment.id } );
+            toast.success( message );
+            navigate(`/groups/${group.id}?viewPost=true&post=${comment.post_id}`);
+        } catch (error) {
+            if( error instanceof Error ) {
+                toast.error( error.message );
+            }
+        }
     }
   return (
     <>
@@ -57,37 +72,25 @@ const DeleteCommentModal = () => {
                                     Eliminar Comentario
                                 </Dialog.Title>
 
+                                <div className="text-center mt-5 text-2xl">
+                                    <p>&iquest;Estas seguro que quieres eliminar este comentario?</p>
+                                </div>
 
-                                <div className="p-5 max-w-full mt-5">
+                                <div className="max-w-full">
                                     <form
-                                        onSubmit={ handleSubmit( handleDeleteComment ) }
+                                        onSubmit={ (e) => handleDeleteComment(e) }
                                     >
+                                        <input  id="groupId" name="groupId" type="hidden"/>
 
-                                        <div className="flex flex-col">
-                                            <label 
-                                                htmlFor="content"
-                                                className="text-gray-600 font-bold text-xl"
-                                            >Comentario</label>
-                                            <input 
-                                                id="name"
-                                                type="content"
-                                                placeholder="Escribe el contenido del comentario aqui"
-                                                className="border border-gray-400 p-2 my-3 w-full rounded-lg"
-
-                                            />
-
-                                        </div>
-                                        
-
-                                        <div className='flex flex-col md:flex-row justify-center gap-x-10'>
+                                        <div className='flex flex-col md:flex-row mt-5 justify-center gap-x-10'>
                                     
                                             <button
                                                 type="button"
                                                 onClick={() => {
                                                     navigate(`/groups/${group.id}?viewPost=true&post=${comment.post_id}`);
                                                 }}
-                                                className="bg-red-400 py-2 px-6 w-full mt-5 text-white font-bold rounded-lg hover:cursor-pointer 
-                                                hover:transition-colors hover:bg-red-500 md:w-auto flex justify-start items-center gap-x-2"
+                                                className="bg-blue-400 py-2 px-6 w-full mt-5 text-white font-bold rounded-lg hover:cursor-pointer 
+                                                hover:transition-colors hover:bg-blue-500 md:w-auto flex md:justify-start justify-center items-center gap-x-2"
                                             >
                                                 <XMarkIcon className="h-6"/>
                                                 Cancelar
@@ -95,11 +98,11 @@ const DeleteCommentModal = () => {
 
                                             <button
                                                 type="submit"
-                                                className="bg-blue-500 py-2 px-6 w-full mt-5 text-white font-bold rounded-lg hover:cursor-pointer 
-                                                hover:transition-colors hover:bg-blue-600 md:w-auto flex justify-start items-center gap-x-2"
+                                                className="bg-red-500 py-2 px-6 w-full mt-5 text-white font-bold rounded-lg hover:cursor-pointer 
+                                                hover:transition-colors hover:bg-red-600 md:w-auto flex md:justify-start justify-center items-center gap-x-2"
                                             >
                                                 <TrashIcon className="h-6"/>
-                                                Eliminar comentario
+                                                Eliminar
                                             </button>  
                                         </div>
                                     </form>
