@@ -40,7 +40,7 @@ const CommentCardOptions = ( { post_id, id } : CommentCardOptionsProps ) => {
                     <div 
                         className='flex justify-start gap-x-2 text-gray-400 hover:text-red-400 cursor-pointer transition-all ease-in-out
                         duration-200'
-                        onClick={ () => navigate( location.pathname + "?DeleteCommentModal=true&viewPost=true" + `&Group=${ id }` ) }
+                        onClick={ () => navigate( location.pathname + "?DeleteCommentModal=true&viewPost=true" + `&post=${ post_id }` + `&Comment=${ id }` ) }
                     >
                         <TrashIcon className='h-6'/>
                         <button 
