@@ -145,4 +145,15 @@ router.patch("/:groupId/posts/:postId/comments/:commentId",
     GroupsControlller.updateComment
 );
 
+router.delete("/:groupId/posts/:postId/comments/:commentId",
+    authenticate,
+    groupExists,
+    postExists,
+    isGroupMember,
+    param("groupId").notEmpty().withMessage("El id del grupo es obligatorio"),
+    param("postId").notEmpty().withMessage("El id del post es obligatorio"),
+    param("commentId").notEmpty().withMessage("El id del comentario es obligatorio"),
+    GroupsControlller.deleteComment
+);
+
 export default router;
