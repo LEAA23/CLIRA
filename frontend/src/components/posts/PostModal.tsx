@@ -9,6 +9,7 @@ import { toast } from "react-toastify";
 import { useAppStore } from "../../stores/useAppStore";
 import { useState } from "react";
 import EditCommentModal from "./EditCommentModal";
+import DeleteCommentModal from "./DeleteCommentModal";
 
 const PostModal = () => {
     //useNavigate para redireccionar al usuario a la misma pagina pero sin los query params
@@ -246,6 +247,7 @@ const PostModal = () => {
         </Transition>
 
         <EditCommentModal/>
+        <DeleteCommentModal/>
     </>
   )
 }
