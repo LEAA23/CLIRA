@@ -215,3 +215,16 @@ export const updateComment = async( { groupId, postId, commentId, content } : { 
         throw error;
     }
 }
+
+export const deleteComment = async( { groupId, postId, commentId } : { groupId: Group["id"] ; postId: Post["id"]; commentId: Comment["id"] } ) => {
+    try {
+        const { data } = await api.delete<string>(`/groups/${ groupId }/posts/${ postId }/comments/${ commentId }`);
+        return data;
+    } catch (error) {
+        if( isAxiosError(error) && error.response ) {
+            throw new Error( error.response.data.error );
+        }
+
+        throw error;
+    }
+}

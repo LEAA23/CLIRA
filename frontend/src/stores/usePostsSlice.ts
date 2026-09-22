@@ -1,6 +1,6 @@
 import type { StateCreator } from "zustand"
 import type { Comment, CommentForm, Comments, Group, Post, Posts } from "../types";
-import { createComment, createPost, getComments, getPosts, likePost, updateComment } from "../api/groupsApi";
+import { createComment, createPost, deleteComment, getComments, getPosts, likePost, updateComment } from "../api/groupsApi";
 
 export type PostsSliceType = {
     posts: Posts;
@@ -15,7 +15,8 @@ export type PostsSliceType = {
     fecthComment: (commentId: number) => void;
     fecthComments: ({ groupId, postId }: { groupId: number; postId: number; }) => Promise<void>;
     cleanComment: () => void;
-    updateComment: ({ groupId, postId, commentId, content }: { groupId: number; postId: number; commentId: number; content: string; }) => Promise<string>
+    updateComment: ({ groupId, postId, commentId, content }: { groupId: number; postId: number; commentId: number; content: string; }) => Promise<string>;
+    deleteComment: ({ groupId, postId, commentId }: { groupId: number; postId: number; commentId: number; }) => Promise<string>;
 }
 
 export const createPostsSlice : StateCreator<PostsSliceType> = ( set, get ) =>({
@@ -134,6 +135,14 @@ export const createPostsSlice : StateCreator<PostsSliceType> = ( set, get ) =>({
                 } )
             }));
         }
+        return message;
+    },
+    deleteComment: async( { groupId, postId, commentId } : { groupId: Group["id"] ; postId: Post["id"]; commentId: Comment["id"] } ) => {
+        const message = await deleteComment( { groupId, postId, commentId } );
+        set(() => ({
+            currentPostComments: get().currentPostComments.filter( comment => comment.id !== commentId )
+        }));
+        get().cleanComment();
         return message;
     }
 
