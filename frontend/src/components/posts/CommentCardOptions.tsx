@@ -4,9 +4,10 @@ import { useNavigate } from 'react-router-dom';
 
 type CommentCardOptionsProps = {
     id: number;
+    post_id: number;
 }
 
-const CommentCardOptions = ( { id } : CommentCardOptionsProps ) => {
+const CommentCardOptions = ( { post_id, id } : CommentCardOptionsProps ) => {
     const navigate = useNavigate();
     
   return (
@@ -24,7 +25,7 @@ const CommentCardOptions = ( { id } : CommentCardOptionsProps ) => {
                     <div 
                         className='flex justify-start gap-x-2 text-gray-400 hover:text-amber-400 cursor-pointer transition-all ease-in-out
                         duration-200'
-                        onClick={ () => navigate( location.pathname + "?EditCommentModal=true&viewPost=true" + `&post=63` + `&Comment=${ id }` ) }
+                        onClick={ () => navigate( location.pathname + "?EditCommentModal=true&viewPost=true" + `&post=${post_id}` + `&Comment=${ id }` ) }
                     >
                         <PencilIcon className='h-6'/>
                         <button 
@@ -39,7 +40,7 @@ const CommentCardOptions = ( { id } : CommentCardOptionsProps ) => {
                     <div 
                         className='flex justify-start gap-x-2 text-gray-400 hover:text-red-400 cursor-pointer transition-all ease-in-out
                         duration-200'
-                        onClick={ () => navigate( location.pathname + "?EditGroupModal=true" + `&Group=${ id }` ) }
+                        onClick={ () => navigate( location.pathname + "?DeleteCommentModal=true&viewPost=true" + `&Group=${ id }` ) }
                     >
                         <TrashIcon className='h-6'/>
                         <button 
