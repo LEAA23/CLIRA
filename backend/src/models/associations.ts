@@ -40,6 +40,7 @@ Group.belongsToMany(User, {
     as: "users"
 });
 
+
 /**
  * Association para obtener todas las imagenes de un post
  */

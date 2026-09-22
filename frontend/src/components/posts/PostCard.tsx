@@ -1,7 +1,6 @@
 import { ChatBubbleOvalLeftEllipsisIcon, HeartIcon } from "@heroicons/react/16/solid"
 import { useNavigate, useParams } from "react-router-dom"
 import ProfileTagName from "./ProfileTagName";
-import Carousel from "./Carousel";
 import { useAppStore } from "../../stores/useAppStore";
 
 type PostCardProps = {
@@ -37,14 +36,8 @@ const PostCard = ( { id, title, content, firstImage , userName, userLastName } :
         </div>
 
        <div className="px-5">
-            <div 
-                className="h-40 overflow-hidden rounded-lg"
-                onClick={ e => e.stopPropagation() }
-            >
-                <Carousel
-                    firstImage={ firstImage }
-                />
-
+            <div className="h-40 overflow-hidden rounded-lg">
+                <img src={ firstImage } alt="Sample image #1" className="w-full rounded-lg" />
             </div>
 
             <div className="-mt-8 ml-5">

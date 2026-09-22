@@ -38,7 +38,6 @@ const GroupsView = () => {
    return (
     <>
         <h1 className="text-blue-500 text-5xl my-10 text-center font-bold">Mis Grupos</h1>
-
         {user.rol === "teacher" && (
           <div className="flex justify-end items-center mb-5">
             <button

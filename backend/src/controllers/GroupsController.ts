@@ -57,14 +57,30 @@ export class GroupsControlller {
         try {
             //Extraemos el id del maestro
             const teacher = req.user.id;
+            const rol = req.user.rol;
+            
+            if(rol === "teacher") {
+                //Econtramos todos los grupos que pertencen al maetsro mediante el id del mismo, ademas mediante la asociacion teahcerUser obtenemos el nombre del maestro
+                const groups = await Group.findAll( { 
+                    where: { teacher }, 
+                    include: [ { model: User, as: "teacherUser", attributes: ["id", "name"] } ]
+                } );
+                return res.status(200).json({ groups });
+            }
 
-            //Econtramos todos los grupos que pertencen al maetsro mediante el id del mismo, ademas mediante la asociacion teahcerUser obtenemos el nombre del maestro
-            const groups = await Group.findAll( { 
-                where: { teacher }, 
-                include: [ { model: User, as: "teacherUser", attributes: ["id", "name"] } ]
-            } );
-            return res.status(200).json({ groups });
+            //El rol es de un estudiante, entonces consulatmos los grupos en donde esta dicho estudiante
+            const student = await User.findOne({
+                where: { id: req.user.id },
+                attributes:[],
+                include: [ 
+                    { model: Group, as: "groups", include: [ { model: User, as: "teacherUser", attributes: ["id", "name"] } ] }
+                ]
+            }) as (User & { groups: Group[] }) | null;
+
+            return res.status(200).json({ groups: student!.groups  });
+            
         } catch (error) {
+            console.log(error)
             return res.status(500).json( { error: "Error interno del servidor" } );
         }
     }
