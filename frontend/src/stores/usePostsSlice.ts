@@ -120,6 +120,20 @@ export const createPostsSlice : StateCreator<PostsSliceType> = ( set, get ) =>({
     },
     updateComment: async( { groupId, postId, commentId, content } : { groupId: Group["id"] ; postId: Post["id"] ; commentId: Comment["id"] ; content: CommentForm["content"] } ) => {
         const message = await updateComment( { groupId, postId, commentId, content } );
+        if( message === "El comentario se actualizo correctamente" ) {
+            set(() => ({
+                currentPostComments: get().currentPostComments.map( comment => {
+                    if( comment.id === commentId ) {
+                        return {
+                            ...comment,
+                            content
+                        }
+                    }
+
+                    return comment;
+                } )
+            }));
+        }
         return message;
     }
 
