@@ -25,6 +25,7 @@ const CommentaCard = ( { id, content, post_id, user, createdAt, updatedAt } : Co
         {userAuth.id === user.id && (
             <CommentCardOptions
               id={id}
+              post_id={post_id}
             />
         )}
       </div>
