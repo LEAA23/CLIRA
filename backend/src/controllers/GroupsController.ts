@@ -353,22 +353,26 @@ export class GroupsControlller {
                 //Creamos una llave unica para cada imagen
                 const key = `groups/posts/${ Date.now() }-${ image!.originalname.split(".")[0] }.webp`;
 
-                //Ejecutamos una instruccion con el cliente de S3
-                await s3Client.send(
-                    //Ejecutamos un comando de poner un objeto en el bucket
-                    new PutObjectCommand({
-                        Bucket: process.env.AWS_BUCKET,
-                        Key: key,
-                        Body: compresedImage,
-                        ContentType: "image/webp"
+                
+                await Promise.allSettled([
+                    //Ejecutamos una instruccion con el cliente de S3
+                    await s3Client.send(
+                        //Ejecutamos un comando de poner un objeto en el bucket
+                        new PutObjectCommand({
+                            Bucket: process.env.AWS_BUCKET,
+                            Key: key,
+                            Body: compresedImage,
+                            ContentType: "image/webp"
+                        })
+                    ),
+                    //Guardamos el arhivo dentro de la tabla de Media
+                    await Media.create({
+                        path: key,
+                        post_id: post.id
                     })
-                );
-    
-                //Guardamos el arhivo dentro de la tabla de Media
-                await Media.create({
-                    path: key,
-                    post_id: post.id
-                })
+
+                ]);
+                
             } );
             
             return res.status(200).send("Publicacion realizada correctamente");
@@ -435,6 +439,26 @@ export class GroupsControlller {
             return res.status(200).json( { posts : postsWithImages } );
         } catch (error) {
             console.log(error)
+            return res.status(500).json( { error: "Error interno del servidor" } );
+        }
+    }
+
+    static updatePost = async( req: Request, res: Response ) => {
+        const { title, content } = req.body;
+        const images = req.files as Express.Multer.File[];
+
+        try {
+            if( req.post.user_id !== req.user.id ) {
+                const error = new Error("Accion no permitida");
+                return res.status(405).json( { error: error.message } );
+            }
+
+            //El usuario si es propietario del post, entonces actualizamos la informacion
+            req.post.title = title,
+            req.post.content = content;
+            
+            
+        } catch (error) {
             return res.status(500).json( { error: "Error interno del servidor" } );
         }
     }

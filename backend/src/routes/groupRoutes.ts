@@ -101,6 +101,20 @@ router.get("/:groupId/posts",
     GroupsControlller.getPosts
 );
 
+router.patch("/:groupId/posts/:postId",
+    authenticate,
+    groupExists,
+    isGroupMember,
+    postExists,
+    uploadFile.array("images"),
+    param("groupId").notEmpty().withMessage("El id del grupo es obligatorio"),
+    param("postId").notEmpty().withMessage("El id del post es obligatorio"),
+    body("title").notEmpty().withMessage("El titulo es obligatorio"),
+    body("content").notEmpty().withMessage("El contenido es obligatorio"),
+    handleInputErrors,
+    GroupsControlller.updatePost
+);
+
 router.post("/:groupId/posts/:postId/likePost",
     authenticate,
     groupExists,
