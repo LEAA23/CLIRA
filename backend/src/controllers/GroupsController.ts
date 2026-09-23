@@ -13,6 +13,7 @@ import { Like } from "../models/Like";
 import { literal  } from "sequelize";
 import { Comment } from "../models/Comment";
 import { dateFormater } from "../utils/dateFormater";
+import { saveImages } from "../utils/saveImages";
 
 
 export class GroupsControlller {
@@ -345,35 +346,8 @@ export class GroupsControlller {
                 user_id: req.user.id
             });
 
-            //Iteramos sobre cada imagen mandada por el usuario
-            images?.forEach( async(image) => {
-                //Comprimimos cada imagen que mando el usuario
-                const compresedImage = await compressImage( image.buffer );
-
-                //Creamos una llave unica para cada imagen
-                const key = `groups/posts/${ Date.now() }-${ image!.originalname.split(".")[0] }.webp`;
-
-                
-                await Promise.allSettled([
-                    //Ejecutamos una instruccion con el cliente de S3
-                    await s3Client.send(
-                        //Ejecutamos un comando de poner un objeto en el bucket
-                        new PutObjectCommand({
-                            Bucket: process.env.AWS_BUCKET,
-                            Key: key,
-                            Body: compresedImage,
-                            ContentType: "image/webp"
-                        })
-                    ),
-                    //Guardamos el arhivo dentro de la tabla de Media
-                    await Media.create({
-                        path: key,
-                        post_id: post.id
-                    })
-
-                ]);
-                
-            } );
+            //Guardamos las imagenes en el bucket de AWS y las referencias en la BD
+            await saveImages( { postId: post.id, images } );
             
             return res.status(200).send("Publicacion realizada correctamente");
             
@@ -456,7 +430,13 @@ export class GroupsControlller {
             //El usuario si es propietario del post, entonces actualizamos la informacion
             req.post.title = title,
             req.post.content = content;
-            
+
+            //Verificamos si el usuario ha decido agregar nuevas imagenes al post
+            if( images.length ) {
+                //El usuario ha agregado mas imagenes, entonces las guardamos en el bucket de AWS y las referencias en la BD
+                await saveImages( { postId: req.post.id, images } );
+            }
+            return res.status(200).send("Publicacion actualizada correctamente");
             
         } catch (error) {
             return res.status(500).json( { error: "Error interno del servidor" } );
