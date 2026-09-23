@@ -2,7 +2,11 @@ import { Menu, MenuButton, MenuItems, MenuItem } from "@headlessui/react";
 import { EllipsisVerticalIcon, PencilIcon, TrashIcon } from "@heroicons/react/16/solid";
 import { useNavigate } from "react-router-dom";
 
-const PostCardOptions = () => {
+type PostCardOptionsProps = {
+    post_id: number;
+}
+
+const PostCardOptions = ( { post_id } : PostCardOptionsProps ) => {
     const navigate = useNavigate();
 
   return (
@@ -20,7 +24,7 @@ const PostCardOptions = () => {
                     <div 
                         className='flex justify-start gap-x-2 text-gray-400 hover:text-amber-400 cursor-pointer transition-all ease-in-out
                         duration-200'
-                        onClick={ () => navigate( location.pathname, { replace: true }) }
+                        onClick={ () => navigate( location.pathname + `?EditPost=true&post=${ post_id }`) }
                     >
                         <PencilIcon className='h-6'/>
                         <button 

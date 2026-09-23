@@ -5,6 +5,7 @@ import PostCard from "../../components/posts/PostCard";
 import { useAppStore } from "../../stores/useAppStore";
 import { useEffect } from "react";
 import ViewPostModal from "../../components/posts/ViewPostModal";
+import EditPostModal from "../../components/posts/EditPostModal";
 
 const GroupView = () => {
     const navigate = useNavigate();
@@ -109,6 +110,7 @@ const GroupView = () => {
 
         <ViewPostModal/>
         <PostModal/>
+        <EditPostModal/>
     </>
   )
 }
