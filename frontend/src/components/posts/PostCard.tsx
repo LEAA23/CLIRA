@@ -2,6 +2,7 @@ import { ChatBubbleOvalLeftEllipsisIcon, HeartIcon } from "@heroicons/react/16/s
 import { useNavigate, useParams } from "react-router-dom"
 import ProfileTagName from "./ProfileTagName";
 import { useAppStore } from "../../stores/useAppStore";
+import PostCardOptions from "./PostCardOptions";
 
 type PostCardProps = {
     id: number;
@@ -17,6 +18,7 @@ const PostCard = ( { id, title, content, firstImage , userName, userLastName } :
     const params = useParams();
     const groupId = params.id;
 
+    const user = useAppStore( state => state.user );
     const posts = useAppStore( state => state.posts );
     const post = posts.find( post => post.id === id );
 
@@ -31,8 +33,19 @@ const PostCard = ( { id, title, content, firstImage , userName, userLastName } :
         hover:shadow-xl hover:-translate-y-1 transition-all duration-200 cursor-pointer"
         onClick={ () => navigate( location.pathname + `?viewPost=true&post=${id}` ) }
     >
-        <div className="p-5 h-25">
+        <div className="relative p-5 h-25 flex justify-center items-center">
             <h3 className="text-2xl text-gray-700 font-bold text-center line-clamp-2">{ title }</h3>
+
+            {user.id === post?.user_id && (
+                <div 
+                    className="absolute right-2.5"
+                    onClick={ e => e.stopPropagation()}
+                >
+                    <PostCardOptions/>
+                    
+                </div>
+
+            )}
         </div>
 
        <div className="px-5">
