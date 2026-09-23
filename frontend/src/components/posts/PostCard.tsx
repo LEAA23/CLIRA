@@ -6,7 +6,7 @@ import PostCardOptions from "./PostCardOptions";
 
 type PostCardProps = {
     id: number;
-    title: string,
+    title: string;
     content: string;
     firstImage: string;
     userName: string;
@@ -41,7 +41,9 @@ const PostCard = ( { id, title, content, firstImage , userName, userLastName } :
                     className="absolute right-2.5"
                     onClick={ e => e.stopPropagation()}
                 >
-                    <PostCardOptions/>
+                    <PostCardOptions
+                        post_id={id}
+                    />
                     
                 </div>
 
