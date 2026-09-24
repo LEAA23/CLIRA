@@ -21,6 +21,7 @@ const GroupView = () => {
 
     const fetchPosts = useAppStore( state => state.fetchPosts );
     const posts = useAppStore( state => state.posts );
+    const post = useAppStore( state => state.post )
 
     //Se ejecuta cada vez que hay cambios en el id del grupo
     useEffect(() => {
@@ -28,7 +29,7 @@ const GroupView = () => {
             fetchGroup( +id );
             fetchPosts( +id );
         }
-    }, [id, fetchGroup, fetchPosts]);
+    }, [id, fetchGroup, fetchPosts, post]);
   return (
     <>
         <div className="flex flex-col md:flex-row justify-between items-center">

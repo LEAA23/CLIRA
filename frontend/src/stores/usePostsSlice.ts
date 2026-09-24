@@ -10,6 +10,7 @@ export type PostsSliceType = {
     createPost: ({ groupId, formData }: { groupId: number; formData: FormData; }) => Promise<string>;
     fetchPost: (postId: number) => void;
     fetchPosts: (groupId: number) => Promise<void>;
+    deletePostImage: ({ groupId, postId, imageId }: { groupId: number; postId: number; imageId: unknown; }) => Promise<string>
     likePost: ({ groupId, postId }: { groupId: number; postId: number; }) => Promise<{ liked: boolean; likes: unknown; } | undefined>;
     createComment: ({ groupId, postId, content }: { groupId: number; postId: number; content: string; }) => Promise<string | undefined>;
     fecthComment: (commentId: number) => void;
@@ -65,14 +66,14 @@ export const createPostsSlice : StateCreator<PostsSliceType> = ( set, get ) =>({
         }));
     },
     deletePostImage: async( { groupId, postId, imageId } : { groupId: Group["id"]; postId: Post["id"]; imageId: PostImage["id"] } ) => {
-        const data = await deletePostImage( { groupId, postId, imageId } );
+        const message = await deletePostImage( { groupId, postId, imageId } );
         set( state => ({
             post: {
                 ...state.post,
                 images: state.post.images.filter( image => image.id !== imageId )
             }
         }));
-        return data;
+        return message;
     },
     likePost: async( { groupId, postId } : { groupId: Group["id"] ; postId: Post["id"] } ) => {
         const likePostData = await likePost( { groupId, postId } );
