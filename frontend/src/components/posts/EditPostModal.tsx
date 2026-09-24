@@ -25,6 +25,7 @@ const EditPostModal = () => {
     const groupId = params.id!;
 
     const fetchPost = useAppStore( state => state.fetchPost );
+    const fetchPostImages = useAppStore( state => state.fetchPostImages );
     const post = useAppStore( state => state.post );
     const deletePostImage = useAppStore( state => state.deletePostImage );
 
@@ -43,8 +44,9 @@ const EditPostModal = () => {
     useEffect(() => {
         if( postId ) {
             fetchPost( Number( postId ) );
+            fetchPostImages( { groupId: +groupId, postId: +postId } )
         }
-    }, [ fetchPost, postId ]);
+    }, [ fetchPost, fetchPostImages, postId ]);
     
     useEffect(() => {
         if( post ) {
