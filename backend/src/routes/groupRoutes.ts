@@ -101,7 +101,7 @@ router.get("/:groupId/posts",
     GroupsControlller.getPosts
 );
 
-router.get("/:groupId/posts/:postId",
+router.get("/:groupId/posts/:postId/images",
     authenticate,
     groupExists,
     isGroupMember,

@@ -1,6 +1,6 @@
 import { isAxiosError } from "axios"
 import api from "../lib/axios";
-import { CommentsSchema, GroupResponse, GroupsSchema, likePostSquema, PostsSchema, UserSearchSchema } from "../schemas";
+import { CommentsSchema, GroupResponse, GroupsSchema, likePostSquema, PostImagesSchema, PostsSchema, UserSearchSchema } from "../schemas";
 import type { AddMemberForm, Comment, CommentForm, Group, Post, PostImage, RemoveMemberForm, UserSearchForm } from "../types";
 
 export const getGroups = async() => {
@@ -172,6 +172,24 @@ export const getPosts = async(  groupId : Group["id"]  ) => {
         }
 
         throw error
+    }
+}
+export const getPostImages = async( { groupId, postId } : { groupId: Group["id"]; postId: Post["id"] } ) => {
+    try {
+        const { data: { images } } = await api(`/groups/${ groupId }/posts/${ postId }/images`);
+        const response = PostImagesSchema.safeParse( images );
+        
+        if (!response.success) {
+            throw new Error("Formato de imágenes inválido");
+        }
+
+        return response.data;
+
+    } catch (error) {
+        if( isAxiosError( error ) && error.response ) {
+            throw new Error( error.response.data.error );
+        }
+        throw error;
     }
 }
 
