@@ -3,7 +3,7 @@ import { Group } from "../models/Group";
 import "../models/associations";
 import { User } from "../models/User";
 import { s3Client } from "../config/services/s3";
-import { DeleteObjectCommand, GetObjectCommand, PutObjectCommand } from "@aws-sdk/client-s3";
+import { DeleteObjectCommand, GetObjectCommand, PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { compressImage } from "../utils/compressImage";
 import { UserGroup } from "../models/UserGroup";
@@ -439,6 +439,43 @@ export class GroupsControlller {
             return res.status(200).send("Publicacion actualizada correctamente");
             
         } catch (error) {
+            return res.status(500).json( { error: "Error interno del servidor" } );
+        }
+    }
+
+    //!!!!!!!!
+    static deleteImage = async( req: Request, res: Response ) => {
+        const { imageId } = req.params;
+
+        try {
+            //Verificamos si el post pertenece al usuario que esta intentando eliminar la imagen
+            const postBelongsToUser = await Post.findOne( { where: { id: req.post.id, user_id: req.user.id } } );
+            if( !postBelongsToUser ) {
+                const error = new Error("Publicacion no disponible");
+                return res.status(401).json( { error: error.message } );
+            }
+
+            //Buscamos si la imagen existe en la base de datos
+            const image = await Media.findOne( { where: { id: imageId, post_id: req.post.id } } );
+            if( !image ) {
+                const error = new Error("Imagen no disponible");
+                return res.status(401).json( { error: error.message } );
+            }
+
+            //Eliminamos la imagen del bucket de AWS
+            await Promise.allSettled([
+                s3Client.send(
+                    new DeleteObjectCommand({
+                        Bucket: process.env.AWS_BUCKET,
+                        Key: image?.path
+                    })
+                ),
+                image?.destroy()
+            ])
+            return res.status(200).send("Imagen eliminada correctamente");
+
+        } catch (error) {
+            console.log(error)
             return res.status(500).json( { error: "Error interno del servidor" } );
         }
     }
