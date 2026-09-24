@@ -146,7 +146,7 @@ export const createPost = async( { groupId, formData } : { groupId: Group["id"] 
     }
 }
 
-export const deletePost = async( { groupId, postId, imageId } : { groupId: Group["id"]; postId: Post["id"]; imageId: PostImage["id"] } ) => {
+export const deletePostImage = async( { groupId, postId, imageId } : { groupId: Group["id"]; postId: Post["id"]; imageId: PostImage["id"] } ) => {
     try {
         const { data } = await api.delete<string>(`/groups/${ groupId }/posts/${ postId }/images/${ imageId }`);
         return data;
