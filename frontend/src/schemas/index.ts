@@ -1,4 +1,4 @@
-import z from "zod";
+import z, { number, string } from "zod";
 
 /**
  * AUTH SCHEMAS
@@ -97,6 +97,11 @@ export const PostSchema = z.object({
 export const PostsSchema = z.array(
     PostSchema
 );
+
+export const PostImageSchema = z.object({
+    id: number,
+    path: string
+})
 
 export const likePostSquema = z.object({
     id: z.number(),
