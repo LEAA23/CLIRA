@@ -1,5 +1,5 @@
 import z from "zod"
-import type { AuthSchema, ChartOptionSchema, CommentSquema, GroupResponse, GroupShcema, GroupsSchema, MembersOptionSchema, PostSchema, PostsSchema, UserSchema } from "../schemas"
+import type { AuthSchema, ChartOptionSchema, CommentSquema, GroupResponse, GroupShcema, GroupsSchema, MembersOptionSchema, PostImageSchema, PostSchema, PostsSchema, UserSchema } from "../schemas"
 
 /**
  * AUTH TYPES
@@ -32,6 +32,7 @@ export type UserSearched = Pick<UserAuthenticate, "id" | "name" | "lastName" | "
 export type Post = z.infer<typeof PostSchema >;
 export type PostRegistationForm = Pick<Post, "title" | "content" | "images">;
 export type Posts = z.infer<typeof PostsSchema>;
+export type PostImage= z.infer<typeof PostImageSchema>;
 export type Comment = z.infer<typeof CommentSquema>;
 export type CommentForm = Pick<Comment, "content">;
 export type Comments = Comment[];

@@ -1,7 +1,7 @@
 import { isAxiosError } from "axios"
 import api from "../lib/axios";
 import { CommentsSchema, GroupResponse, GroupsSchema, likePostSquema, PostsSchema, UserSearchSchema } from "../schemas";
-import type { AddMemberForm, Comment, CommentForm, Group, Post, RemoveMemberForm, UserSearchForm } from "../types";
+import type { AddMemberForm, Comment, CommentForm, Group, Post, PostImage, RemoveMemberForm, UserSearchForm } from "../types";
 
 export const getGroups = async() => {
     try {
@@ -136,6 +136,19 @@ export const removeMemberFromGroup = async( { groupId, email } : { groupId: Grou
 export const createPost = async( { groupId, formData } : { groupId: Group["id"] ; formData: FormData } ) => {
     try {
         const { data } = await api.post<string>(`/groups/${groupId}/posts`, formData);
+        return data;
+    } catch (error) {
+        if( isAxiosError( error ) && error.response ) {
+            throw new Error( error.response.data.error );
+        }
+
+        throw error;
+    }
+}
+
+export const deletePost = async( { groupId, postId, imageId } : { groupId: Group["id"]; postId: Post["id"]; imageId: PostImage["id"] } ) => {
+    try {
+        const { data } = await api.delete<string>(`/groups/${ groupId }/posts/${ postId }/images/${ imageId }`);
         return data;
     } catch (error) {
         if( isAxiosError( error ) && error.response ) {
