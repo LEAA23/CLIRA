@@ -357,6 +357,37 @@ export class GroupsControlller {
         }
     }
 
+    static getPostImages = async( req: Request, res: Response ) => {
+        const { groupId } = req.params;
+
+        try {
+            const images = await Media.findAll({
+                where: { post_id: req.post.id },
+                attributes: [ "id", "path"]
+            })
+
+            await Promise.all( 
+                images.map( async( image ) => {
+
+                    if( !image.path ) return;
+
+                    const command = new GetObjectCommand({
+                        Bucket: process.env.AWS_BUCKET,
+                        Key: image.path
+                    });
+                    const key = await getSignedUrl( s3Client, command, { expiresIn: 60 * 60 * 24 } );
+                    image.path = key;
+                })
+            );
+
+            return res.status(200).json( { images } );
+        } catch (error) {
+            console.log(error)
+            return res.status(500).json( { error: "Error interno del servidor" } );
+        }
+
+    }
+
     static getPosts = async( req: Request, res: Response ) => {
         const { groupId } = req.params;
 
