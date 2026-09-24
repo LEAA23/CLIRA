@@ -7,7 +7,7 @@ import ErrorMessage from "../ErrorMessage";
 import type { PostRegistationForm } from "../../types";
 import { toast } from "react-toastify";
 import { useAppStore } from "../../stores/useAppStore";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import EditCommentModal from "./EditCommentModal";
 import DeleteCommentModal from "./DeleteCommentModal";
 
@@ -19,27 +19,59 @@ const EditPostModal = () => {
     const queryParams = new URLSearchParams(location.search);
     const makePost = queryParams.get("EditPost");
     const showModal = makePost? true: false;
+    const postId = queryParams.get("post");
 
     const params = useParams();
     const groupId = params.id!;
 
+    const fetchPost = useAppStore( state => state.fetchPost );
+    const post = useAppStore( state => state.post );
+
+    
     const initialValues : PostRegistationForm = {
         title: "",
         content: "",
         images: []
     }
-
+    
     //State local para permitirle a los usuarios seleccionar varias imagenes y mantener la seleccion
     const [ selectedImages, setSelectedImages ] = useState<File[]>([]);
-
+    
     const { register, formState: { errors }, reset, handleSubmit } = useForm<PostRegistationForm>( {defaultValues: initialValues } );
-
+    
+    useEffect(() => {
+        if( postId ) {
+            fetchPost( Number( postId ) );
+        }
+    }, [ fetchPost, postId ]);
+    
+    useEffect(() => {
+        if( post ) {
+            reset({
+                title: post.title,
+                content: post.content,
+                images: post.images
+            });
+        }
+    }, [ post, reset ]);
+    
+    
     //Construimos una URL temporal para poder renderizarla en el componnete cuando el usuario seleccione una imagen
     const files = selectedImages;
     let mediaURLS = files? Array.from(files).map( file => URL.createObjectURL(file) ) : null; 
 
     const handleClick = ( index : number ) => {
-        setSelectedImages( prev => prev.filter( (_, i) => i !== index ) )
+        setSelectedImages( prev => prev.filter( (_, i) => i !== index ) );
+    }
+
+    const handleDeleteImage = ( imageId: number ) => {
+        try {
+            //
+        } catch (error) {
+            if( error instanceof Error ) {
+                toast.error( error.message );
+            }
+        }
     }
 
     const handleCreatePost = async( formData: PostRegistationForm ) => {
@@ -150,6 +182,35 @@ const EditPostModal = () => {
                                             htmlFor="images"
                                             className="text-gray-600 text-2xl font-bold"
                                         >Imagenes</label>
+                                        
+                                        {post.images.length > 0 && (
+                                            <div className="mt-5">
+                                                <p className="text-sm text-gray-600 font-semibold mb-5">Imagenes previamente seleccionadas:</p>
+
+                                                <div className="flex justify-start space-x-5 space-y-5 items-center flex-wrap">
+                                                    {post.images.map( image => (
+                                                        <div className="relative">
+                                                            <img 
+                                                                key={ image.path }
+                                                                src={ image.path } 
+                                                                alt="Vista previa de imagen de fondo"
+                                                                className="h-36" 
+                                                            />
+
+                                                            <div 
+                                                                className="absolute top-1 right-1 bg-red-400 h-8 aspect-square rounded-full
+                                                                            hover:bg-red-500 cursor-pointer p-1"
+                                                                onClick={ () => handleDeleteImage( image.id ) }
+                                                            >
+                                                                <p className="font-bold text-white text-center">X</p>
+                                                            </div>
+
+                                                        </div>
+
+                                                    ) )}
+                                                </div>
+                                            </div>
+                                        )}
 
                                         <input
                                             id="images"
@@ -174,7 +235,7 @@ const EditPostModal = () => {
                                             justify-center items-center gap-x-2"
                                         >
                                             <ArrowUpTrayIcon className="h-6"/>
-                                            Seleccionar imagen
+                                            Seleccionar m&aacute;s imagenes
                                         </label>
 
                                         {mediaURLS!.length > 0 && (
