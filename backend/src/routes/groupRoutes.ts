@@ -115,6 +115,18 @@ router.patch("/:groupId/posts/:postId",
     GroupsControlller.updatePost
 );
 
+router.delete("/:groupId/posts/:postId/images/:imageId",
+    authenticate,
+    groupExists,
+    isGroupMember,
+    postExists,
+    param("groupId").notEmpty().withMessage("El id del grupo es obligatorio"),
+    param("postId").notEmpty().withMessage("El id del post es obligatorio"),
+    param("imageId").notEmpty().withMessage("El id de la imagen es obligatorio"),
+    handleInputErrors,
+    GroupsControlller.deleteImage
+);
+
 router.post("/:groupId/posts/:postId/likePost",
     authenticate,
     groupExists,
