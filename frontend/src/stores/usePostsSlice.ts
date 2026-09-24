@@ -1,6 +1,6 @@
 import type { StateCreator } from "zustand"
 import type { Comment, CommentForm, Comments, Group, Post, PostImage, Posts } from "../types";
-import { createComment, createPost, deleteComment, deletePostImage, getComments, getPosts, likePost, updateComment } from "../api/groupsApi";
+import { createComment, createPost, deleteComment, deletePostImage, getComments, getPostImages, getPosts, likePost, updateComment } from "../api/groupsApi";
 
 export type PostsSliceType = {
     posts: Posts;
@@ -9,9 +9,10 @@ export type PostsSliceType = {
     comment: Comment;
     createPost: ({ groupId, formData }: { groupId: number; formData: FormData; }) => Promise<string>;
     fetchPost: (postId: number) => void;
+    fetchPostImages: ({ groupId, postId }: { groupId: number; postId: number; }) => Promise<void>;
     fetchPosts: (groupId: number) => Promise<void>;
-    deletePostImage: ({ groupId, postId, imageId }: { groupId: number; postId: number; imageId: unknown; }) => Promise<string>
-    likePost: ({ groupId, postId }: { groupId: number; postId: number; }) => Promise<{ liked: boolean; likes: unknown; } | undefined>;
+    deletePostImage: ({ groupId, postId, imageId }: { groupId: number; postId: number; imageId: number; }) => Promise<string>;
+    likePost: ({ groupId, postId }: { groupId: number; postId: number; }) => Promise<{ liked: boolean; likes: number; } | undefined>;
     createComment: ({ groupId, postId, content }: { groupId: number; postId: number; content: string; }) => Promise<string | undefined>;
     fecthComment: (commentId: number) => void;
     fecthComments: ({ groupId, postId }: { groupId: number; postId: number; }) => Promise<void>;
@@ -58,6 +59,15 @@ export const createPostsSlice : StateCreator<PostsSliceType> = ( set, get ) =>({
         set(() => ({
             post : get().posts.find( post => post.id === postId )
         }));
+    },
+    fetchPostImages: async( { groupId, postId } : { groupId: Group["id"]; postId: Post["id"] } ) => {
+        const images = await getPostImages( { groupId, postId } );
+        set( state => ({
+            post: {
+                ...state.post,
+                images
+            }
+        }))
     },
     fetchPosts: async( groupId : Group["id"] ) => {
         const posts = await getPosts( groupId );
