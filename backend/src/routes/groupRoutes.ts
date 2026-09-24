@@ -101,6 +101,17 @@ router.get("/:groupId/posts",
     GroupsControlller.getPosts
 );
 
+router.get("/:groupId/posts/:postId",
+    authenticate,
+    groupExists,
+    isGroupMember,
+    postExists,
+    param("groupId").notEmpty().withMessage("El id del grupo es obligatorio"),
+    param("postId").notEmpty().withMessage("El id del post es obligatorio"),
+    handleInputErrors,
+    GroupsControlller.getPostImages
+);
+
 router.patch("/:groupId/posts/:postId",
     authenticate,
     groupExists,
