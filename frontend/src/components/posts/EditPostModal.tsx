@@ -26,6 +26,7 @@ const EditPostModal = () => {
 
     const fetchPost = useAppStore( state => state.fetchPost );
     const post = useAppStore( state => state.post );
+    const deletePostImage = useAppStore( state => state.deletePostImage );
 
     
     const initialValues : PostRegistationForm = {
@@ -53,7 +54,7 @@ const EditPostModal = () => {
                 images: post.images
             });
         }
-    }, [ post, reset ]);
+    }, [ post, reset, deletePostImage ]);
     
     
     //Construimos una URL temporal para poder renderizarla en el componnete cuando el usuario seleccione una imagen
@@ -64,9 +65,10 @@ const EditPostModal = () => {
         setSelectedImages( prev => prev.filter( (_, i) => i !== index ) );
     }
 
-    const handleDeleteImage = ( imageId: number ) => {
+    const handleDeleteImage = async( imageId: number ) => {
         try {
-            //
+            const message = await deletePostImage( { groupId: +groupId, postId: +postId!, imageId: imageId } );
+            toast.success( message );
         } catch (error) {
             if( error instanceof Error ) {
                 toast.error( error.message );
