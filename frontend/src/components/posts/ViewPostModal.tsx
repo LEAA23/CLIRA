@@ -32,12 +32,14 @@ const ViewPostModal = () => {
     }, [postId, fetchPost]);
 
     const post = useAppStore( state => state.post );
+    const cleanPost = useAppStore( state => state.cleanPost );
     const likePost = useAppStore( state => state.likePost );
 
 
     const createComment = useAppStore( state => state.createComment );
     const fecthComments = useAppStore( state => state.fecthComments );
     const comments = useAppStore( state => state.currentPostComments );
+    const cleanCurrentPostComments = useAppStore( state => state.cleanCurrentPostComments );
 
     const initialValues : CommentForm = {
         content: ""
@@ -76,7 +78,9 @@ const ViewPostModal = () => {
         <Transition appear show={showModal} as={Fragment}>
             <Dialog as="div" className="relative z-10" 
                 onClose={() => {
-                navigate(location.pathname, { replace: true })
+                    navigate(location.pathname, { replace: true });
+                    cleanPost();
+                    cleanCurrentPostComments();
                 }}
             >
                 <Transition.Child
@@ -216,8 +220,6 @@ const ViewPostModal = () => {
 
                                     </div>
                                 
-                                
-
                                 </div>
                             </Dialog.Panel>
                         </Transition.Child>

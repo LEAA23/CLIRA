@@ -13,6 +13,7 @@ const DeleteCommentModal = () => {
     const comment = useAppStore( state => state.comment );
     const group = useAppStore( state => state.group );
     const deleteComment = useAppStore( state => state.deleteComment );
+    const cleanComment = useAppStore( state => state.cleanComment );
 
     const params = useParams();
     const groupId = params.id;
@@ -39,6 +40,7 @@ const DeleteCommentModal = () => {
             <Dialog as="div" className="relative z-10" 
                 onClose={() => {
                     navigate(`/groups/${group.id}?viewPost=true&post=${comment.post_id}`);
+                    cleanComment();
                 }}
             >
                 <Transition.Child
@@ -88,6 +90,7 @@ const DeleteCommentModal = () => {
                                                 type="button"
                                                 onClick={() => {
                                                     navigate(`/groups/${group.id}?viewPost=true&post=${comment.post_id}`);
+                                                    cleanComment();
                                                 }}
                                                 className="bg-blue-400 py-2 px-6 w-full mt-5 text-white font-bold rounded-lg hover:cursor-pointer 
                                                 hover:transition-colors hover:bg-blue-500 md:w-auto flex md:justify-start justify-center items-center gap-x-2"

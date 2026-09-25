@@ -18,6 +18,7 @@ const DeletePostModal = () => {
     const postId = queryParams.get("post");
 
     const deletePost = useAppStore( state => state.deletePost );
+    const cleanPost = useAppStore( state => state.cleanPost );
 
     const handleDeletePost = async( e: React.SubmitEvent<HTMLFormElement> ) => {
         e.preventDefault();
@@ -38,6 +39,7 @@ const DeletePostModal = () => {
             <Dialog as="div" className="relative z-10" 
                 onClose={() => {
                     navigate(location.pathname, { replace: true });
+                    cleanPost();
                 }}
             >
                 <Transition.Child
@@ -87,6 +89,7 @@ const DeletePostModal = () => {
                                                 type="button"
                                                 onClick={() => {
                                                     navigate(location.pathname, { replace: true });
+                                                    cleanPost();
                                                 }}
                                                 className="bg-blue-400 py-2 px-6 w-full mt-5 text-white font-bold rounded-lg hover:cursor-pointer 
                                                 hover:transition-colors hover:bg-blue-500 md:w-auto flex md:justify-start justify-center items-center gap-x-2"

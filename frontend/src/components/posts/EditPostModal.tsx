@@ -27,6 +27,7 @@ const EditPostModal = () => {
     const fetchPost = useAppStore( state => state.fetchPost );
     const fetchPostImages = useAppStore( state => state.fetchPostImages );
     const post = useAppStore( state => state.post );
+    const cleanPost = useAppStore( state => state.cleanPost );
     const deletePostImage = useAppStore( state => state.deletePostImage );
     const updatePost = useAppStore(state => state.updatePost );
 
@@ -103,7 +104,7 @@ const EditPostModal = () => {
                 onClose={() => {
                     navigate(location.pathname, { replace: true });
                     setSelectedImages([]);
-
+                    cleanPost();
                 }}
             >
                 <Transition.Child
@@ -276,6 +277,7 @@ const EditPostModal = () => {
                                             onClick={() => {
                                                 navigate(location.pathname, { replace: true });
                                                 setSelectedImages([]);
+                                                cleanPost();
                                             }}
                                             className="bg-red-400 py-2 px-6 w-full mt-10 text-white font-bold rounded-lg hover:cursor-pointer 
                                             hover:transition-colors hover:bg-red-500 md:w-auto flex justify-start items-center gap-x-2"
