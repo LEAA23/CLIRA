@@ -204,6 +204,19 @@ export const updatePost = async( { groupId, postId, formData } : { groupId: Grou
     }
 }
 
+export const deletePost = async( { groupId, postId } : { groupId: Group["id"]; postId: Post["id"] } ) => {
+    try {
+        const { data } = await api.delete<string>(`/groups/${ groupId }/posts/${ postId }`);
+        return data;
+    } catch (error) {
+        if( isAxiosError( error ) && error.response ) {
+            throw new Error( error.response.data.error );
+        }
+
+        throw error;
+    }
+}
+
 export const likePost = async( { groupId, postId } : { groupId: Group["id"] ; postId: Post["id"] } ) => {
     try {
         const { data } = await api.post(`/groups/${groupId}/posts/${postId}/likePost`);
