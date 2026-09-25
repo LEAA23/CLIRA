@@ -1,6 +1,6 @@
 import type { StateCreator } from "zustand"
 import type { Comment, CommentForm, Comments, Group, Post, PostImage, Posts } from "../types";
-import { createComment, createPost, deleteComment, deletePostImage, getComments, getPostImages, getPosts, likePost, updateComment } from "../api/groupsApi";
+import { createComment, createPost, deleteComment, deletePostImage, getComments, getPostImages, getPosts, likePost, updateComment, updatePost } from "../api/groupsApi";
 
 export type PostsSliceType = {
     posts: Posts;
@@ -11,6 +11,7 @@ export type PostsSliceType = {
     fetchPost: (postId: number) => void;
     fetchPostImages: ({ groupId, postId }: { groupId: number; postId: number; }) => Promise<void>;
     fetchPosts: (groupId: number) => Promise<void>;
+    updatePost: ({ groupId, postId, formData }: { groupId: number; postId: number; formData: FormData; }) => Promise<string>;
     deletePostImage: ({ groupId, postId, imageId }: { groupId: number; postId: number; imageId: number; }) => Promise<string>;
     likePost: ({ groupId, postId }: { groupId: number; postId: number; }) => Promise<{ liked: boolean; likes: number; } | undefined>;
     createComment: ({ groupId, postId, content }: { groupId: number; postId: number; content: string; }) => Promise<string | undefined>;
@@ -74,6 +75,12 @@ export const createPostsSlice : StateCreator<PostsSliceType> = ( set, get ) =>({
         set(() => ({
             posts
         }));
+    },
+    updatePost: async( { groupId, postId, formData } : { groupId: Group["id"]; postId: Post["id"]; formData: FormData } ) => {
+        const message = await updatePost( { groupId, postId, formData } );
+        await get().fetchPosts( groupId );
+        get().fetchPost( postId );
+        return message;
     },
     deletePostImage: async( { groupId, postId, imageId } : { groupId: Group["id"]; postId: Post["id"]; imageId: PostImage["id"] } ) => {
         const message = await deletePostImage( { groupId, postId, imageId } );
