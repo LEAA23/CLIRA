@@ -44,10 +44,10 @@ Group.belongsToMany(User, {
 /**
  * Association para obtener todas las imagenes de un post
  */
-Post.hasMany(Media, {
-    foreignKey: "post_id",
-    as: "files"
-});
+// Post.hasMany(Media, {
+//     foreignKey: "post_id",
+//     as: "files"
+// });
 
 /**
  * Associations para traer los datos de los usuarios en relacion a su post
@@ -67,8 +67,10 @@ Post.belongsTo(User, {
  */
 Post.hasMany(Media, {
     foreignKey: "post_id",
-    as: "images"
+    as: "images",
+    onDelete: "CASCADE"
 });
+
 Media.belongsTo(Post, {
     foreignKey: "post_id",
     as: "post"
@@ -79,7 +81,8 @@ Media.belongsTo(Post, {
  */
 Post.hasMany(Like, {
     foreignKey: "post_id",
-    as: "likes"
+    as: "likes",
+    onDelete: "CASCADE"
 });
 Like.belongsTo(Post, {
     foreignKey: "post_id",
@@ -107,7 +110,8 @@ Comment.belongsTo(User, {
 
 Post.hasMany(Comment, {
     foreignKey: "post_id",
-    as: "comments"
+    as: "comments",
+    onDelete: "CASCADE"
 });
 Comment.belongsTo(Post, {
     foreignKey: "post_id",
