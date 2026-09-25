@@ -3,7 +3,7 @@ import { Group } from "../models/Group";
 import "../models/associations";
 import { User } from "../models/User";
 import { s3Client } from "../config/services/s3";
-import { DeleteObjectCommand, GetObjectCommand, PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
+import { Bucket$, DeleteObjectCommand, GetObjectCommand, PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { compressImage } from "../utils/compressImage";
 import { UserGroup } from "../models/UserGroup";
@@ -472,6 +472,45 @@ export class GroupsControlller {
             return res.status(200).send("Publicacion actualizada correctamente");
             
         } catch (error) {
+            return res.status(500).json( { error: "Error interno del servidor" } );
+        }
+    }
+
+    static deletePost = async( req: Request, res: Response ) => {
+        try {
+            //Verificamos si el post pertenece al usuario que esta intentando eliminar la imagen
+            const [postBelongsToUser, images] = await Promise.all([
+                Post.findOne( { where: { id: req.post.id, user_id: req.user.id } } ),
+                Media.findAll( { where: { post_id: req.post.id }, attributes: [ "path" ] } )
+            ]);
+
+            if( !postBelongsToUser ) {
+                const error = new Error("Publicacion no disponible");
+                return res.status(404).json( { error: error.message } );
+            }
+
+            //Si el post tiene imagenes entonces vamos a borrar cada imagen del post almacenada en el Bucket de AWS
+            if( images.length ) {
+
+                await Promise.all([
+                    images.forEach( (image) => {
+    
+                        s3Client.send(
+                            new DeleteObjectCommand({
+                                Bucket: process.env.AWS_BUCKET,
+                                Key: image.path
+                            })
+                        )
+                    })
+
+                ]);
+            }
+
+            await postBelongsToUser.destroy();
+            return res.status(200).send("Publicacion eliminada correctamente");
+
+        } catch (error) {
+            console.log(error)
             return res.status(500).json( { error: "Error interno del servidor" } );
         }
     }

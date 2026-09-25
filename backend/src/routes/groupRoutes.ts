@@ -126,6 +126,17 @@ router.patch("/:groupId/posts/:postId",
     GroupsControlller.updatePost
 );
 
+router.delete("/:groupId/posts/:postId",
+    authenticate,
+    groupExists,
+    isGroupMember,
+    postExists,
+    param("groupId").notEmpty().withMessage("El id del grupo es obliatorio"),
+    param("postId").notEmpty().withMessage("El id del grupo es obliatorio"),
+    handleInputErrors,
+    GroupsControlller.deletePost
+)
+
 router.delete("/:groupId/posts/:postId/images/:imageId",
     authenticate,
     groupExists,
