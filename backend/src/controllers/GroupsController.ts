@@ -610,37 +610,23 @@ export class GroupsControlller {
 
     static updateComment = async( req: Request, res: Response ) => {
         const { content } = req.body;
-        const { commentId } = req.params;
         try {
-            const commentExists = await Comment.findOne( { where: { id: commentId, user_id: req.user.id } } );
-            if( !commentExists ) {
-                const error = new Error("Comentario no disponible");
-                return res.status(404).json( { error: error.message } );
-            }
-
             if( content ) {
-                commentExists.content = content;
-                await commentExists.save();
+                req.comment.content = content;
+                await req.comment.save();
                 return res.status(200).send("El comentario se actualizo correctamente");
             }
             return res.status(400).json( { error: "El contenido del comentario es obligatorio" } );
+
         } catch (error) {
             return res.status(500).json( { error: "Error interno del servidor" } );
         }
     }
 
     static deleteComment = async( req: Request, res: Response ) => {
-        const { commentId } = req.params;
         try {
-            const commentExists = await Comment.findOne( { where: { id: commentId, user_id: req.user.id } } );
-            if( !commentExists ) {
-                const error = new Error("Comentario no disponible");
-                return res.status(404).json( { error: error.message } );
-            }
-
-            await commentExists.destroy();
-            return res.status(200).send("Comentario eliminado correctamente");
-            
+            await req.comment.destroy();
+            return res.status(200).send("Comentario eliminado correctamente");     
         } catch (error) {
             return res.status(500).json( { error: "Error interno del servidor" } );
         }

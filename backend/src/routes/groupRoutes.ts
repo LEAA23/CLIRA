@@ -9,6 +9,7 @@ import { groupExists } from "../middleware/groupExists";
 import { isGroupMember } from "../middleware/isGroupMember";
 import { postExists } from "../middleware/postExists";
 import { postBelongsToUser } from "../middleware/postBelongsToUser";
+import { commentBelongsToUser } from "../middleware/commentBelongsToUser";
 
 const router = Router();
 
@@ -187,6 +188,7 @@ router.patch("/:groupId/posts/:postId/comments/:commentId",
     groupExists,
     postExists,
     isGroupMember,
+    commentBelongsToUser,
     param("groupId").notEmpty().withMessage("El id del grupo es obligatorio"),
     param("postId").notEmpty().withMessage("El id del post es obligatorio"),
     param("commentId").notEmpty().withMessage("El id del comentario es obligatorio"),
@@ -199,6 +201,7 @@ router.delete("/:groupId/posts/:postId/comments/:commentId",
     groupExists,
     postExists,
     isGroupMember,
+    commentBelongsToUser,
     param("groupId").notEmpty().withMessage("El id del grupo es obligatorio"),
     param("postId").notEmpty().withMessage("El id del post es obligatorio"),
     param("commentId").notEmpty().withMessage("El id del comentario es obligatorio"),
