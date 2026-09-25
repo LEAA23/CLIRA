@@ -453,11 +453,6 @@ export class GroupsControlller {
         const images = req.files as Express.Multer.File[];
 
         try {
-            if( req.post.user_id !== req.user.id ) {
-                const error = new Error("Accion no permitida");
-                return res.status(405).json( { error: error.message } );
-            }
-
             //El usuario si es propietario del post, entonces actualizamos la informacion
             req.post.title = title;
             req.post.content = content;
@@ -510,23 +505,14 @@ export class GroupsControlller {
             return res.status(200).send("Publicacion eliminada correctamente");
 
         } catch (error) {
-            console.log(error)
             return res.status(500).json( { error: "Error interno del servidor" } );
         }
     }
 
-    //!!!!!!!!
     static deleteImage = async( req: Request, res: Response ) => {
         const { imageId } = req.params;
 
         try {
-            //Verificamos si el post pertenece al usuario que esta intentando eliminar la imagen
-            const postBelongsToUser = await Post.findOne( { where: { id: req.post.id, user_id: req.user.id } } );
-            if( !postBelongsToUser ) {
-                const error = new Error("Publicacion no disponible");
-                return res.status(401).json( { error: error.message } );
-            }
-
             //Buscamos si la imagen existe en la base de datos
             const image = await Media.findOne( { where: { id: imageId, post_id: req.post.id } } );
             if( !image ) {

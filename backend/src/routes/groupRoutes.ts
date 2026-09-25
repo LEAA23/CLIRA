@@ -8,6 +8,7 @@ import { uploadFile } from "../middleware/uploadFile";
 import { groupExists } from "../middleware/groupExists";
 import { isGroupMember } from "../middleware/isGroupMember";
 import { postExists } from "../middleware/postExists";
+import { postBelongsToUser } from "../middleware/postBelongsToUser";
 
 const router = Router();
 
@@ -116,7 +117,7 @@ router.patch("/:groupId/posts/:postId",
     authenticate,
     groupExists,
     isGroupMember,
-    postExists,
+    postBelongsToUser,
     uploadFile.array("images"),
     param("groupId").notEmpty().withMessage("El id del grupo es obligatorio"),
     param("postId").notEmpty().withMessage("El id del post es obligatorio"),
@@ -130,7 +131,7 @@ router.delete("/:groupId/posts/:postId",
     authenticate,
     groupExists,
     isGroupMember,
-    postExists,
+    postBelongsToUser,
     param("groupId").notEmpty().withMessage("El id del grupo es obliatorio"),
     param("postId").notEmpty().withMessage("El id del grupo es obliatorio"),
     handleInputErrors,
@@ -141,7 +142,7 @@ router.delete("/:groupId/posts/:postId/images/:imageId",
     authenticate,
     groupExists,
     isGroupMember,
-    postExists,
+    postBelongsToUser,
     param("groupId").notEmpty().withMessage("El id del grupo es obligatorio"),
     param("postId").notEmpty().withMessage("El id del post es obligatorio"),
     param("imageId").notEmpty().withMessage("El id de la imagen es obligatorio"),
