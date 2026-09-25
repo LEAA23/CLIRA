@@ -4,7 +4,7 @@ import { useForm } from "react-hook-form";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { Fragment } from "react/jsx-runtime";
 import ErrorMessage from "../ErrorMessage";
-import type { PostRegistationForm } from "../../types";
+import type { PostEditForm } from "../../types";
 import { toast } from "react-toastify";
 import { useAppStore } from "../../stores/useAppStore";
 import { useEffect, useState } from "react";
@@ -28,18 +28,17 @@ const EditPostModal = () => {
     const fetchPostImages = useAppStore( state => state.fetchPostImages );
     const post = useAppStore( state => state.post );
     const deletePostImage = useAppStore( state => state.deletePostImage );
+    const updatePost = useAppStore(state => state.updatePost );
 
-    
-    const initialValues : PostRegistationForm = {
+    const initialValues : PostEditForm = {
         title: "",
-        content: "",
-        images: []
+        content: ""
     }
     
     //State local para permitirle a los usuarios seleccionar varias imagenes y mantener la seleccion
     const [ selectedImages, setSelectedImages ] = useState<File[]>([]);
     
-    const { register, formState: { errors }, reset, handleSubmit } = useForm<PostRegistationForm>( {defaultValues: initialValues } );
+    const { register, formState: { errors }, reset,  setValue, handleSubmit } = useForm<PostEditForm>( {defaultValues: initialValues } );
     
     useEffect(() => {
         if( postId ) {
@@ -50,13 +49,10 @@ const EditPostModal = () => {
     
     useEffect(() => {
         if( post ) {
-            reset({
-                title: post.title,
-                content: post.content,
-                images: post.images
-            });
+            setValue("title", post.title);
+            setValue("content", post.content);
         }
-    }, [ post, reset, deletePostImage ]);
+    }, [ post.id, reset ]);
     
     
     //Construimos una URL temporal para poder renderizarla en el componnete cuando el usuario seleccione una imagen
@@ -78,7 +74,7 @@ const EditPostModal = () => {
         }
     }
 
-    const handleCreatePost = async( formData: PostRegistationForm ) => {
+    const handleUpdatePost = async( formData: PostEditForm ) => {
         const data = new FormData();
         data.append("title", formData.title);
         data.append("content", formData.content);
@@ -89,8 +85,9 @@ const EditPostModal = () => {
         } );
 
         try {
-
-            reset();
+            const message = await updatePost( { groupId: +groupId, postId: +postId!, formData: data } );
+            toast.success( message );
+            setSelectedImages([]);
             navigate( location.pathname, { replace: true } );
         } catch (error) {
             if ( error instanceof Error ) {
@@ -143,7 +140,7 @@ const EditPostModal = () => {
                                             
                                 <form
                                     className="space-y-2 p-5"
-                                    onSubmit={ handleSubmit( handleCreatePost ) }
+                                    onSubmit={ handleSubmit( handleUpdatePost ) }
                                 >
                                     <div className="flex flex-col">
                                         <label 
@@ -221,16 +218,15 @@ const EditPostModal = () => {
                                             type="file"
                                             accept="image/*"
                                             className="hidden"
-                                            {...register("images", {
-                                                onChange: e => {
-                                                    const files : File[] = Array.from( e.target.files ?? [] );
+                                            name="images"
+                                            onChange={(e) => {
+                                                const files = Array.from(e.target.files ?? []);
 
-                                                    setSelectedImages( prev => [
-                                                        ...prev,
-                                                        ...files
-                                                    ] )
-                                                }
-                                            })}
+                                                setSelectedImages(prev => [
+                                                    ...prev,
+                                                    ...files
+                                                ]);
+                                            }}
                                         />
                                         <label 
                                             htmlFor="images"

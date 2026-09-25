@@ -192,6 +192,17 @@ export const getPostImages = async( { groupId, postId } : { groupId: Group["id"]
         throw error;
     }
 }
+export const updatePost = async( { groupId, postId, formData } : { groupId: Group["id"]; postId: Post["id"]; formData: FormData } ) => {
+    try {
+        const { data } = await api.patch<string>(`/groups/${ groupId }/posts/${ postId }`, formData);
+        return data
+    } catch (error) {
+        if( isAxiosError( error ) && error.response ) {
+            throw new Error( error.response.data.error );
+        }
+        throw error;
+    }
+}
 
 export const likePost = async( { groupId, postId } : { groupId: Group["id"] ; postId: Post["id"] } ) => {
     try {

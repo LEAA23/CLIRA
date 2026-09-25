@@ -459,7 +459,7 @@ export class GroupsControlller {
             }
 
             //El usuario si es propietario del post, entonces actualizamos la informacion
-            req.post.title = title,
+            req.post.title = title;
             req.post.content = content;
 
             //Verificamos si el usuario ha decido agregar nuevas imagenes al post
@@ -467,6 +467,8 @@ export class GroupsControlller {
                 //El usuario ha agregado mas imagenes, entonces las guardamos en el bucket de AWS y las referencias en la BD
                 await saveImages( { postId: req.post.id, images } );
             }
+            await req.post.save();
+            
             return res.status(200).send("Publicacion actualizada correctamente");
             
         } catch (error) {

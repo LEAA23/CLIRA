@@ -45,7 +45,6 @@ const EditCommentModal = () => {
             reset({
                 content: comment.content
             });
-
         }
     }, [ comment, reset ])
 
