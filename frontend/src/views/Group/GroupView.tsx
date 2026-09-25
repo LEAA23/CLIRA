@@ -6,6 +6,7 @@ import { useAppStore } from "../../stores/useAppStore";
 import { useEffect } from "react";
 import ViewPostModal from "../../components/posts/ViewPostModal";
 import EditPostModal from "../../components/posts/EditPostModal";
+import DeletePostModal from "../../components/posts/DeletePostModal";
 
 const GroupView = () => {
     const navigate = useNavigate();
@@ -112,6 +113,7 @@ const GroupView = () => {
         <ViewPostModal/>
         <PostModal/>
         <EditPostModal/>
+        <DeletePostModal/>
     </>
   )
 }

@@ -39,7 +39,7 @@ const PostCardOptions = ( { post_id } : PostCardOptionsProps ) => {
                     <div 
                         className='flex justify-start gap-x-2 text-gray-400 hover:text-red-400 cursor-pointer transition-all ease-in-out
                         duration-200'
-                        onClick={ () => navigate( location.pathname, { replace: true } ) }
+                        onClick={ () => navigate( location.pathname + `?DeletePost=true&post=${ post_id }` ) }
                     >
                         <TrashIcon className='h-6'/>
                         <button 
