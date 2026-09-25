@@ -12,12 +12,14 @@ export type PostsSliceType = {
     fetchPostImages: ({ groupId, postId }: { groupId: number; postId: number; }) => Promise<void>;
     fetchPosts: (groupId: number) => Promise<void>;
     updatePost: ({ groupId, postId, formData }: { groupId: number; postId: number; formData: FormData; }) => Promise<string>;
-    deletePost: ({ groupId, postId }: { groupId: number; postId: number; }) => Promise<string>
+    deletePost: ({ groupId, postId }: { groupId: number; postId: number; }) => Promise<string>;
+    cleanPost: () => void;
     deletePostImage: ({ groupId, postId, imageId }: { groupId: number; postId: number; imageId: number; }) => Promise<string>;
     likePost: ({ groupId, postId }: { groupId: number; postId: number; }) => Promise<{ liked: boolean; likes: number; } | undefined>;
     createComment: ({ groupId, postId, content }: { groupId: number; postId: number; content: string; }) => Promise<string | undefined>;
     fecthComment: (commentId: number) => void;
     fecthComments: ({ groupId, postId }: { groupId: number; postId: number; }) => Promise<void>;
+    cleanCurrentPostComments: () => void;
     cleanComment: () => void;
     updateComment: ({ groupId, postId, commentId, content }: { groupId: number; postId: number; commentId: number; content: string; }) => Promise<string>;
     deleteComment: ({ groupId, postId, commentId }: { groupId: number; postId: number; commentId: number; }) => Promise<string>;
@@ -85,10 +87,29 @@ export const createPostsSlice : StateCreator<PostsSliceType> = ( set, get ) =>({
     },
     deletePost: async( { groupId, postId } : { groupId: Group["id"]; postId: Post["id"] } ) => {
         const message = await deletePost( { groupId, postId } );
-        // set(() => ({
-        //     posts
-        // }));
+        set(() => ({
+            posts: get().posts.filter( post => post.id !== postId )
+        }));
+        get().cleanPost();
         return message;
+    },
+    cleanPost: () => {
+        set(() => ({
+            post: {
+                id: 0,
+                title: "",
+                content: "",
+                images: [],
+                user: {
+                    name: "",
+                    lastName: ""
+                },
+                likesCount: 0,
+                likedByMe: false,
+                group_id: 0,
+                user_id: 0
+            }
+        }))
     },
     deletePostImage: async( { groupId, postId, imageId } : { groupId: Group["id"]; postId: Post["id"]; imageId: PostImage["id"] } ) => {
         const message = await deletePostImage( { groupId, postId, imageId } );
@@ -153,6 +174,11 @@ export const createPostsSlice : StateCreator<PostsSliceType> = ( set, get ) =>({
         const comments = await getComments( { groupId, postId } );
         set(() => ({
             currentPostComments: comments
+        }));
+    },
+    cleanCurrentPostComments: () => {
+        set(() => ({
+            currentPostComments: []
         }));
     },
     updateComment: async( { groupId, postId, commentId, content } : { groupId: Group["id"] ; postId: Post["id"] ; commentId: Comment["id"] ; content: CommentForm["content"] } ) => {
