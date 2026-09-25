@@ -12,6 +12,7 @@ export type PostsSliceType = {
     fetchPostImages: ({ groupId, postId }: { groupId: number; postId: number; }) => Promise<void>;
     fetchPosts: (groupId: number) => Promise<void>;
     updatePost: ({ groupId, postId, formData }: { groupId: number; postId: number; formData: FormData; }) => Promise<string>;
+    deletePost: ({ groupId, postId }: { groupId: number; postId: number; }) => Promise<string>
     deletePostImage: ({ groupId, postId, imageId }: { groupId: number; postId: number; imageId: number; }) => Promise<string>;
     likePost: ({ groupId, postId }: { groupId: number; postId: number; }) => Promise<{ liked: boolean; likes: number; } | undefined>;
     createComment: ({ groupId, postId, content }: { groupId: number; postId: number; content: string; }) => Promise<string | undefined>;
