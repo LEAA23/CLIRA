@@ -1,6 +1,6 @@
 import type { StateCreator } from "zustand"
 import type { Comment, CommentForm, Comments, Group, Post, PostImage, Posts } from "../types";
-import { createComment, createPost, deleteComment, deletePostImage, getComments, getPostImages, getPosts, likePost, updateComment, updatePost } from "../api/groupsApi";
+import { createComment, createPost, deleteComment, deletePost, deletePostImage, getComments, getPostImages, getPosts, likePost, updateComment, updatePost } from "../api/groupsApi";
 
 export type PostsSliceType = {
     posts: Posts;
@@ -80,6 +80,13 @@ export const createPostsSlice : StateCreator<PostsSliceType> = ( set, get ) =>({
         const message = await updatePost( { groupId, postId, formData } );
         await get().fetchPosts( groupId );
         get().fetchPost( postId );
+        return message;
+    },
+    deletePost: async( { groupId, postId } : { groupId: Group["id"]; postId: Post["id"] } ) => {
+        const message = await deletePost( { groupId, postId } );
+        // set(() => ({
+        //     posts
+        // }));
         return message;
     },
     deletePostImage: async( { groupId, postId, imageId } : { groupId: Group["id"]; postId: Post["id"]; imageId: PostImage["id"] } ) => {
