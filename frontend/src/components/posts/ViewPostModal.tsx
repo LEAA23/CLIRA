@@ -43,7 +43,7 @@ const ViewPostModal = () => {
         content: ""
     }
     
-    const { handleSubmit, register, formState: { errors }, reset, resetField } = useForm( { defaultValues: initialValues } );
+    const { handleSubmit, register, formState: { errors }, setValue } = useForm( { defaultValues: initialValues } );
 
     const handleClick = async ( id : number ) => {
         await likePost( { groupId : Number( groupId ), postId: id } );
@@ -59,10 +59,11 @@ const ViewPostModal = () => {
             postId: +postId!,
             content: formData.content
         };
+        console.log(data)
         try {
             const message = await createComment( data );
             toast.success( message );
-            reset();
+            setValue("content", "");
         } catch (error) {
             if( error instanceof Error ) {
                 toast.error( error.message );
@@ -194,7 +195,7 @@ const ViewPostModal = () => {
                                         
                                                 <button
                                                     type="button"
-                                                    onClick={() => resetField("content") }
+                                                    onClick={() => setValue("content", "") }
                                                     className="bg-red-400 py-2 px-6 w-full mt-10 text-white font-bold rounded-lg hover:cursor-pointer 
                                                     hover:transition-colors hover:bg-red-500 md:w-auto flex justify-start items-center gap-x-2"
                                                 >
