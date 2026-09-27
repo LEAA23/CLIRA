@@ -117,8 +117,8 @@ const ViewPostModal = () => {
                                 <div className="p-5 max-w-full mt-5">
                                     <div className="grid grid-cols-2 space-x-5 ">
                                         <div className="h-full">
-                                            {post?.images?.[0]?.path && (
-                                                <Carousel firstImage={ post?.images?.[0]?.path } />
+                                            {post?.images && (
+                                                <Carousel images={ post?.images } />
                                             )}
                                         </div>
                                         <div className="max-w-full flex flex-col justify-center">
