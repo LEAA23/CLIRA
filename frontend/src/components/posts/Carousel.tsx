@@ -1,10 +1,16 @@
+import { useMemo } from "react";
 import useFancybox from "../../hooks/useFancybox"
+import type { PostImage } from "../../types";
+import { CameraIcon } from "@heroicons/react/16/solid";
 
 type CarouselProps = {
-  firstImage: string;
+  images: PostImage[];
 }
 
-const Carousel = ( { firstImage } : CarouselProps ) => {
+const Carousel = ( { images } : CarouselProps ) => {
+
+  //Contar el numero total de imagenes
+  const totalImages = useMemo(() => images.length , [ images ]);
 
   const [fancyboxRef] = useFancybox({
     // Your custom options
@@ -12,24 +18,37 @@ const Carousel = ( { firstImage } : CarouselProps ) => {
   return (
 
     <div ref={fancyboxRef} className="flex justify-start items-center px-5">
-      <a data-fancybox="gallery" href={ firstImage }>
-        <img src={ firstImage } alt="Sample image #1" className="w-full rounded-lg" />
-      </a>
+
+      {totalImages > 1? (
+        <div className="relative">
+          <div className="brightness-[0.40]">
+            <a data-fancybox="gallery" href={ images[0]?.path }>
+              <img src={ images[0]?.path } alt={`Imagen de post ${ images[0]?.id }`} className="w-full rounded-lg" />
+            </a>
+          </div>   
+          <a className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex justify-between gap-x-3 items-center
+           text-white font-bold text-3xl filter-none cursor-pointer"
+            href={ images[0]?.path }
+          >
+            <CameraIcon className="h-10 aspect-square"/>
+            { totalImages }
+          </a>
+        </div>
+
+      ): (
+        <a data-fancybox="gallery" href={ images[0]?.path }>
+          <img src={ images[0]?.path } alt={`Imagen de post ${ images[0]?.id }`} className="w-full rounded-lg" />
+        </a>      
+      )}
 
       <div className="hidden">
+
+        {images.slice(1).map( image => (
+          <a data-fancybox="gallery" href={ image.path }>
+            <img src={ image.path } alt={`Imagen de post ${ image.id }`} />
+          </a>
+        ) )}
         
-        <a data-fancybox="gallery" href="https://lipsum.app/id/61/1600x1200">
-            <img src="https://lipsum.app/id/61/200x150" alt="Sample image #2" />
-        </a>
-        <a data-fancybox="gallery" href="https://lipsum.app/id/62/1600x1200">
-            <img src="https://lipsum.app/id/62/200x150" alt="Sample image #3" />
-        </a>
-        <a data-fancybox="gallery" href="https://lipsum.app/id/63/1600x1200">
-            <img src="https://lipsum.app/id/63/200x150" alt="Sample image #4" />
-        </a>
-        <a data-fancybox="gallery" href="https://lipsum.app/id/64/1600x1200">
-            <img src="https://lipsum.app/id/64/200x150" alt="Sample image #5" />
-        </a>
       </div>
     </div>
   )
