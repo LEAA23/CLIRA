@@ -20,7 +20,7 @@ const Carousel = ( { images } : CarouselProps ) => {
 
     <div ref={fancyboxRef} className="flex justify-start items-center lg:px-5">
 
-      {totalImages > 1 && (
+      {totalImages > 0 && (
         <div className="relative">
           <div className="brightness-[0.40]">
             <a data-fancybox="gallery" href={ images[0]?.path }>
