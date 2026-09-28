@@ -106,7 +106,7 @@ const ViewPostModal = () => {
                             leaveFrom="opacity-100 scale-100"
                             leaveTo="opacity-0 scale-95"
                         >
-                            <Dialog.Panel className="w-5/6 max-w-5xl transform overflow-hidden rounded-2xl bg-white text-left align-middle shadow-xl transition-all p-10">
+                            <Dialog.Panel className="w-5/6 max-w-5xl transform overflow-hidden rounded-2xl bg-white text-left align-middle shadow-xl transition-all p-3 lg:p-10">
                                 <Dialog.Title
                                     as="h3"
                                     className="font-black text-4xl my-2 text-center"
@@ -114,15 +114,17 @@ const ViewPostModal = () => {
                                     { post?.title }
                                 </Dialog.Title>
 
-                                <div className="p-5 max-w-full mt-5">
-                                    <div className="grid grid-cols-2 space-x-5 ">
-                                        <div className="h-full">
+                                <div className="p-3 lg:p-5 max-w-full mt-5">
+                                    <div className="grid grid-cols-1 lg:grid-cols-2 lg:space-x-5 ">
+
+                                        <div className="min-h-full min-w-full">
                                             {post?.images && (
                                                 <Carousel images={ post?.images } />
                                             )}
                                         </div>
+                                        
                                         <div className="max-w-full flex flex-col justify-center">
-                                            <div className="mb-5 border-b-gray-300 pb-5 border-b-2">
+                                            <div className="mb-5 lg:ml-2 ml-0 lg:mt-0 border-b-gray-300 py-5 lg:pt-0  border-b-2">
                                                 {post && (
                                                     <ProfileTagName
                                                         name={ post?.user.name }
@@ -201,7 +203,7 @@ const ViewPostModal = () => {
                                                     type="button"
                                                     onClick={() => setValue("content", "") }
                                                     className="bg-red-400 py-2 px-6 w-full mt-10 text-white font-bold rounded-lg hover:cursor-pointer 
-                                                    hover:transition-colors hover:bg-red-500 md:w-auto flex justify-start items-center gap-x-2"
+                                                    hover:transition-colors hover:bg-red-500 md:w-auto flex justify-center md:justify-start items-center gap-x-2"
                                                 >
                                                     <TrashIcon className="h-6"/>
                                                     Borrar
@@ -210,7 +212,7 @@ const ViewPostModal = () => {
                                                 <button
                                                     type="submit"
                                                     className="bg-blue-500 py-2 px-6 w-full mt-10 text-white font-bold rounded-lg hover:cursor-pointer 
-                                                    hover:transition-colors hover:bg-blue-600 md:w-auto flex justify-start items-center gap-x-2"
+                                                    hover:transition-colors hover:bg-blue-600 md:w-auto flex justify-center md:justify-start items-center gap-x-2"
                                                 >
                                                     <PaperAirplaneIcon className="h-6"/>
                                                     Publicar

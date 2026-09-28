@@ -17,7 +17,7 @@ const Carousel = ( { images } : CarouselProps ) => {
   });
   return (
 
-    <div ref={fancyboxRef} className="flex justify-start items-center px-5">
+    <div ref={fancyboxRef} className="flex justify-start items-center lg:px-5">
 
       {totalImages > 1? (
         <div className="relative">

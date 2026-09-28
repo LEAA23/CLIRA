@@ -5,7 +5,7 @@ type ProfileImageProps = {
 
 const ProfileImage = ({height} : ProfileImageProps) => {
   return (
-    <div className={`bg-white shadow rounded-full h-${height} p-1 cursor-pointer hover:bg-blue-400 transition-all ease-in-out duration-200`}>
+    <div className={`bg-white shadow rounded-full h-${height} w-auto p-1 cursor-pointer hover:bg-blue-400 transition-all ease-in-out duration-200`}>
         <img 
           src="/profileImage.jpg" 
           alt="imagen perfil" 

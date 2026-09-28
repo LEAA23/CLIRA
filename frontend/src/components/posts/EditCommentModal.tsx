@@ -95,7 +95,7 @@ const EditCommentModal = () => {
                             leaveFrom="opacity-100 scale-100"
                             leaveTo="opacity-0 scale-95"
                         >
-                            <Dialog.Panel className="w-5/6 max-w-5xl transform overflow-hidden rounded-2xl bg-white text-left align-middle shadow-xl transition-all p-10">
+                            <Dialog.Panel className="w-5/6 max-w-5xl transform overflow-hidden rounded-2xl bg-white text-left align-middle shadow-xl transition-all p-3 lg:p-10">
                                 <Dialog.Title
                                     as="h3"
                                     className="font-black text-4xl my-2 text-center"
@@ -129,7 +129,7 @@ const EditCommentModal = () => {
                                         </div>
                                         
 
-                                        <div className='flex flex-col md:flex-row justify-center gap-x-10'>
+                                        <div className='flex flex-col md:flex-row justify-center mt-5 lg:mt-0 gap-x-10'>
                                     
                                             <button
                                                 type="button"
@@ -137,8 +137,8 @@ const EditCommentModal = () => {
                                                     navigate(`/groups/${group.id}?viewPost=true&post=${comment.post_id}`);
                                                     cleanComment();
                                                 }}
-                                                className="bg-red-400 py-2 px-6 w-full mt-5 text-white font-bold rounded-lg hover:cursor-pointer 
-                                                hover:transition-colors hover:bg-red-500 md:w-auto flex justify-start items-center gap-x-2"
+                                                className="bg-red-400 py-2 px-6 w-full mb-3 lg:mb-0 lg:mt-10 text-white font-bold rounded-lg hover:cursor-pointer 
+                                                hover:transition-colors hover:bg-red-500 md:w-auto flex justify-center md:justify-start items-center gap-x-2"
                                             >
                                                 <XMarkIcon className="h-6"/>
                                                 Cancelar
@@ -146,8 +146,8 @@ const EditCommentModal = () => {
 
                                             <button
                                                 type="submit"
-                                                className="bg-blue-500 py-2 px-6 w-full mt-5 text-white font-bold rounded-lg hover:cursor-pointer 
-                                                hover:transition-colors hover:bg-blue-600 md:w-auto flex justify-start items-center gap-x-2"
+                                                className="bg-blue-500 py-2 px-6 w-full mb-3 lg:mb-0 lg:mt-10 text-white font-bold rounded-lg hover:cursor-pointer 
+                                                hover:transition-colors hover:bg-blue-600 md:w-auto flex justify-center md:justify-start items-center gap-x-2"
                                             >
                                                 <PencilIcon className="h-6"/>
                                                 Editar comentario
