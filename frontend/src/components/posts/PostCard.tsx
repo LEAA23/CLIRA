@@ -60,8 +60,11 @@ const PostCard = ( { id, title, content, firstImage , userName, userLastName } :
                 <div className="h-40 overflow-hidden rounded-lg w-full bg-gray-100"></div>
             )}
 
-            <div className="-mt-8 ml-5">
+            <div className="-mt-8 ml-5"
+                onClick={ e => e.stopPropagation() }
+            >
                 <ProfileTagName
+                    id={ +post?.user_id! }
                     name={ userName }
                     lastName={ userLastName }
                 />

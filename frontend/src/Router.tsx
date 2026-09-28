@@ -13,7 +13,7 @@ const ConfirmAccountPage = lazy( () => import("./views/auth/ConfirmAccountView")
 const NewPasswordPage = lazy( () => import("./views/auth/NewPasswordView") );
 
 /**
- * STUDENT PAGES
+ * WORK PAGES
  */
 const DashBoardPage = lazy( () => import("./views/Dashboard/DashBoardView") );
 const CasesPage = lazy( () => import("./views/Cases/CasesView") );
@@ -22,6 +22,7 @@ const SimulationPage = lazy( () => import("./views/Cases/SimulationView") );
 const GroupsPage = lazy( () => import("./views/Group/GroupsView") );
 const GroupPage = lazy( () => import("./views/Group/GroupView") );
 const RankingPage = lazy( () => import("./views/ranking/RankingView") );
+const UserProfilePage = lazy( () => import("./views/User/UserProfileView") );
 const SettingsPage = lazy( () => import("./views/Settings/SettingsView") );
 
 /*
@@ -48,6 +49,7 @@ const Router = () => {
                     <Route path="groups" element={ <Suspense fallback="cargando..."> <GroupsPage/> </Suspense> }/>
                     <Route path="groups/:id" element={ <Suspense fallback="cargando..."> <GroupPage/> </Suspense> }/>
                     <Route path="ranking" element={ <Suspense fallback={"cargando"}> <RankingPage/> </Suspense> }/>
+                    <Route path="user-profile/:id" element={ <Suspense fallback={"cargando..."}> <UserProfilePage/> </Suspense> } />
                     <Route path="settings" element={ <Suspense fallback="cargando"> <SettingsPage/> </Suspense> }/>
                 </Route>
 
