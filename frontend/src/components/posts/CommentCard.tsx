@@ -16,8 +16,8 @@ const CommentaCard = ( { id, content, post_id, user, createdAt, updatedAt } : Co
 
   const userAuth = useAppStore( state => state.user );
   return (
-    <div className="bg-white shadow rounded-lg p-5 border-l-4 border-l-amber-400">
-      <div className="ml-5 flex justify-between items-center">
+    <div className="bg-white shadow rounded-lg p-3 lg:p-5 border-l-4 border-l-amber-400">
+      <div className="flex justify-between items-center">
         <ProfileTagName
           name={ user.name }
           lastName={ user.lastName }
@@ -29,7 +29,7 @@ const CommentaCard = ( { id, content, post_id, user, createdAt, updatedAt } : Co
             />
         )}
       </div>
-      <div className="mt-3 ml-8">
+      <div className="mt-3">
         <p className="text-sm font-medium text-gray-400">
           <span className="font-semibold">fecha de publicaci&oacute;n: </span>{createdAt}
         </p>

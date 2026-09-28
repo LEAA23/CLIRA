@@ -66,7 +66,7 @@ const DeleteCommentModal = () => {
                             leaveFrom="opacity-100 scale-100"
                             leaveTo="opacity-0 scale-95"
                         >
-                            <Dialog.Panel className="w-5/6 max-w-5xl transform overflow-hidden rounded-2xl bg-white text-left align-middle shadow-xl transition-all p-10">
+                            <Dialog.Panel className="w-5/6 max-w-5xl transform overflow-hidden rounded-2xl bg-white text-left align-middle shadow-xl transition-all p-3 lg:p-10">
                                 <Dialog.Title
                                     as="h3"
                                     className="font-black text-4xl my-2 text-center"
@@ -78,7 +78,7 @@ const DeleteCommentModal = () => {
                                     <p>&iquest;Estas seguro que quieres eliminar este comentario?</p>
                                 </div>
 
-                                <div className="max-w-full">
+                                <div className="max-w-full p-5 lg:p-0">
                                     <form
                                         onSubmit={ (e) => handleDeleteComment(e) }
                                     >
