@@ -11,6 +11,10 @@ const CasesView = () => {
       <SearchBar
         pendingCases={false}
         filters={true}
+        inputType="cambiarPorField"
+        inputName="cambiarPorField"
+        placeholder="Busca al usuario escribiendo su correo electronico"
+        fn={ () => 1 }
       />
 
       <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-5">

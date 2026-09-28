@@ -137,6 +137,10 @@ const RankingView = () => {
             <SearchBar
               pendingCases={false}
               filters={false}
+              inputType="cambiarPorField"
+              inputName="cambiarPorField"
+              placeholder="Busca al usuario escribiendo su correo electronico"
+              fn={ () => 1 }
             />
 
             <UserRankingCard/>
