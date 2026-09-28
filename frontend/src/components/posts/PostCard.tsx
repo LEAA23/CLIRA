@@ -51,9 +51,14 @@ const PostCard = ( { id, title, content, firstImage , userName, userLastName } :
         </div>
 
        <div className="px-5">
-            <div className="h-40 overflow-hidden rounded-lg">
-                <img src={ firstImage } alt="Sample image #1" className="w-full rounded-lg" />
-            </div>
+            {firstImage !== undefined? (
+                <div className="h-40 overflow-hidden rounded-lg">
+                    <img src={ firstImage } alt="Sample image" className="w-full rounded-lg" />
+                </div>
+
+            ): (
+                <div className="h-40 overflow-hidden rounded-lg w-full bg-gray-100"></div>
+            )}
 
             <div className="-mt-8 ml-5">
                 <ProfileTagName
