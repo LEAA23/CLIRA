@@ -17,7 +17,7 @@ const CommentCardOptions = ( { post_id, id } : CommentCardOptionsProps ) => {
                 <EllipsisVerticalIcon className='h-6 aspect-square'/>
             </MenuButton>
             <MenuItems 
-                anchor="bottom"
+                anchor="left"
                 className="bg-white p-5 rounded-xl shadow-2xl space-y-5"
             >
                 
