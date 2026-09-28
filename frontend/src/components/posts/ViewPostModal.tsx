@@ -11,7 +11,7 @@ import { useForm } from "react-hook-form";
 import type { CommentForm } from "../../types";
 import ErrorMessage from "../ErrorMessage";
 import { toast } from "react-toastify";
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 
 const ViewPostModal = () => {
     const navigate = useNavigate();
@@ -35,6 +35,8 @@ const ViewPostModal = () => {
     const cleanPost = useAppStore( state => state.cleanPost );
     const likePost = useAppStore( state => state.likePost );
 
+    //Contar el numero total de imagenes
+    const totalImages = useMemo(() => post.images.length , [ post.images ]);
 
     const createComment = useAppStore( state => state.createComment );
     const fecthComments = useAppStore( state => state.fecthComments );
@@ -115,7 +117,7 @@ const ViewPostModal = () => {
                                 </Dialog.Title>
 
                                 <div className="p-3 lg:p-5 max-w-full mt-5">
-                                    <div className="grid grid-cols-1 lg:grid-cols-2 lg:space-x-5 ">
+                                    <div className={`grid grid-cols-1 lg:${totalImages > 0? ( "grid-cols-2" ) : ("grid-cols-1")}  lg:space-x-5`}>
 
                                         <div className="min-h-full min-w-full">
                                             {post?.images && (

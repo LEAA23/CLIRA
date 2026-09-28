@@ -16,10 +16,11 @@ const Carousel = ( { images } : CarouselProps ) => {
     // Your custom options
   });
   return (
+    
 
     <div ref={fancyboxRef} className="flex justify-start items-center lg:px-5">
 
-      {totalImages > 1? (
+      {totalImages > 1 && (
         <div className="relative">
           <div className="brightness-[0.40]">
             <a data-fancybox="gallery" href={ images[0]?.path }>
@@ -35,14 +36,9 @@ const Carousel = ( { images } : CarouselProps ) => {
           </a>
         </div>
 
-      ): (
-        <a data-fancybox="gallery" href={ images[0]?.path }>
-          <img src={ images[0]?.path } alt={`Imagen de post ${ images[0]?.id }`} className="w-full rounded-lg" />
-        </a>      
       )}
 
       <div className="hidden">
-
         {images.slice(1).map( image => (
           <a data-fancybox="gallery" href={ image.path }>
             <img src={ image.path } alt={`Imagen de post ${ image.id }`} />
