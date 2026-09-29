@@ -1,14 +1,14 @@
 import { Router } from "express";
 import authenticate from "../middleware/auth";
 import { handleInputErrors } from "../middleware/handleInputErrors";
-import { query } from "express-validator";
+import { param } from "express-validator";
 import { UserController } from "../controllers/UserController";
 
 const router = Router();
 
-router.get("/",
+router.get("/:id",
     authenticate,
-    query("email").notEmpty().withMessage("El email del usuario es obligatorio"),
+    param("id").notEmpty().withMessage("El id del usuario es obligatorio"),
     handleInputErrors,
     UserController.getUser
 );

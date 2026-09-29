@@ -4,17 +4,11 @@ import { User } from "../models/User";
 export class UserController {
 
     static getUser = async( req: Request, res: Response ) => {
-        const { email } = req.query;
+        const { id } = req.params;
         try {
-            
-            if( typeof email !== "string" ) {
-                const error = new Error("El correo es obliatorio");
-                return res.status(400).json( { error: error.message } );
-            }
-            
             const userExists = await User.findOne({ 
-                where: { email },
-                attributes: ["id", "name", "lastName", "email" , "confirm"]
+                where: { id: String(id) },
+                attributes: ["id", "name", "lastName", "email" , "rol", "confirm", "email", "profileImage"]
             });
 
             if( !userExists || !userExists.confirm ) {
@@ -23,7 +17,6 @@ export class UserController {
             }
 
             const { confirm, ...user } = userExists.toJSON();
-
             return res.status(200).json( { user } );
             
         } catch (error) {
