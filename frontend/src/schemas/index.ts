@@ -136,6 +136,13 @@ export const CommentsSchema = z.array(
 );
 
 /**
+ * USER SQUEMAS
+ */
+export const UserProfileSchema = UserSearchSchema.extend({
+    rol: z.string()
+})
+
+/**
  *  CHART CONTAINER SCHEMA
  */
 export const ChartOptionSchema = z.object({
