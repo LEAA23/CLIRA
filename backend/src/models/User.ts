@@ -10,6 +10,7 @@ export class User extends Model< InferAttributes<User>, InferCreationAttributes<
     declare phoneNumber: string;
     declare email: string;
     declare password: string;
+    declare profileImage: string;
     declare token: string | null;
     declare tokenExpiresAt: Date | null;
     declare confirm: boolean;
@@ -51,6 +52,10 @@ User.init(
         password: {
             type: DataTypes.STRING,
             allowNull: false
+        },
+        profileImage: {
+            type: DataTypes.STRING,
+            allowNull: true
         },
         token: {
             type: DataTypes.STRING,
