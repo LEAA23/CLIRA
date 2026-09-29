@@ -11,9 +11,10 @@ type PostCardProps = {
     firstImage: string;
     userName: string;
     userLastName: string;
+    profileImage: string | null;
 }
 
-const PostCard = ( { id, title, content, firstImage , userName, userLastName } : PostCardProps ) => {
+const PostCard = ( { id, title, content, firstImage , userName, userLastName, profileImage } : PostCardProps ) => {
     const navigate = useNavigate();
     const params = useParams();
     const groupId = params.id;
@@ -67,6 +68,7 @@ const PostCard = ( { id, title, content, firstImage , userName, userLastName } :
                     id={ +post?.user_id! }
                     name={ userName }
                     lastName={ userLastName }
+                    profileImage={ profileImage }
                 />
             </div>
         </div> 

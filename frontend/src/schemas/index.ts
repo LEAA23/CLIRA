@@ -24,13 +24,15 @@ export const UserSchema = AuthSchema.pick({
     rol: true
 }).extend({
     id: z.number()
-})
+});
 
 export const UserSearchSchema = UserSchema.pick({
     id: true,
     name: true,
     lastName: true,
     email: true
+}).extend({
+    profileImage: z.string().or(z.null())
 });
 
 /**
@@ -59,7 +61,8 @@ export const GroupResponse = GroupShcema.pick({
             lastName: true,
             email: true
         }).extend({
-            id: z.number()
+            id: z.number(),
+            profileImage: z.string().or( z.null() )
         })
     )
 });
@@ -86,7 +89,8 @@ export const PostSchema = z.object({
     ),
     user: z.object({
         name: z.string(),
-        lastName: z.string()
+        lastName: z.string(),
+        profileImage: z.string().or( z.null() )
     }),
     likesCount: z.number(),
     likedByMe: z.boolean(),
@@ -120,7 +124,8 @@ export const CommentSquema = z.object({
     user: z.object({
         id: z.number(),
         name: z.string(),
-        lastName: z.string()
+        lastName: z.string(),
+        profileImage: z.string().or( z.null() )
     }),
     createdAt: z.string(),
     updatedAt: z.string()

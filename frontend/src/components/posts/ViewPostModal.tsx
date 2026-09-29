@@ -129,8 +129,10 @@ const ViewPostModal = () => {
                                             <div className="mb-5 lg:ml-2 ml-0 lg:mt-0 border-b-gray-300 py-5 lg:pt-0  border-b-2">
                                                 {post && (
                                                     <ProfileTagName
+                                                        id={ post?.user_id }
                                                         name={ post?.user.name }
                                                         lastName={ post?.user.lastName }
+                                                        profileImage={ post?.user.profileImage }
                                                     />   
 
                                                 )}

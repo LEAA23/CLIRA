@@ -105,6 +105,7 @@ const GroupView = () => {
                     firstImage={ post.images?.[0]?.path }
                     userName={ post.user.name }
                     userLastName={ post.user.lastName }
+                    profileImage={ post.user.profileImage }
                 />
 
             ))}

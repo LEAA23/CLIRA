@@ -194,8 +194,10 @@ const MembersModal = () => {
                                             <p className="mb-5 text-gray-600 font-bold ">Resultados de la busqueda:</p>
                                             <div className="flex justify-start items-center gap-x-3">
                                                 <ProfileTagName
+                                                    id={userSearched.id}
                                                     name={userSearched.name}
                                                     lastName={userSearched.lastName}
+                                                    profileImage={userSearched.profileImage }
                                                 />
 
                                                 {selected === "addMember"? (
@@ -230,8 +232,10 @@ const MembersModal = () => {
                                                 {group.users.map( user => (
                                                     <ProfileTagName
                                                         key={user.id}
+                                                        id={ user.id }
                                                         name={user.name}
                                                         lastName = {user.lastName}
+                                                        profileImage={ user.profileImage }
                                                     />
                                                 ) )}
                                             </div>
@@ -242,8 +246,10 @@ const MembersModal = () => {
                                                     <div key={user.id} className="flex justify-between items-center gap-x-3">
                                                         <ProfileTagName
                                                             key={user.id}
+                                                            id={ user.id }
                                                             name={user.name}
                                                             lastName = {user.lastName}
+                                                            profileImage={ user.profileImage }
                                                         />
 
                                                         <div 
