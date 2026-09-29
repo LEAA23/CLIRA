@@ -5,9 +5,9 @@ import ChartContainer from "./ChartContainer"
 const UserRankingCard = () => {
   return (
     <div className="flex flex-col justify-center items-center">
-        <ProfileImage
+        {/* <ProfileImage
             height="40"
-        />
+        /> */}
 
         <div className="grid grid-cols-2  mt-5 py-5">
             <p className="text-3xl font-semibold text-center col-span-2">Luis Ernesto Alejandre Ayon</p>

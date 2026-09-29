@@ -8,7 +8,6 @@ export const getUserById = async( id: UserSearched["id"] ) => {
     try {
         const { data: {user} } = await api(`/users/${ id }`);
         const response = UserProfileSchema.safeParse( user );
-        console.log(response)
         if( response.data ) {
             return response.data;
         }
