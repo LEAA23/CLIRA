@@ -34,7 +34,8 @@ export const createPostsSlice : StateCreator<PostsSliceType> = ( set, get ) =>({
         images: [],
         user: {
             name: "",
-            lastName: ""
+            lastName: "",
+            profileImage: null
         },
         likesCount: 0,
         likedByMe: false,
@@ -49,6 +50,7 @@ export const createPostsSlice : StateCreator<PostsSliceType> = ( set, get ) =>({
             id: 0,
             name: "",
             lastName: "",
+            profileImage: null
         },
         createdAt: "",
         updatedAt: ""
@@ -102,7 +104,8 @@ export const createPostsSlice : StateCreator<PostsSliceType> = ( set, get ) =>({
                 images: [],
                 user: {
                     name: "",
-                    lastName: ""
+                    lastName: "",
+                    profileImage: null
                 },
                 likesCount: 0,
                 likedByMe: false,
@@ -164,6 +167,7 @@ export const createPostsSlice : StateCreator<PostsSliceType> = ( set, get ) =>({
                     id: 0,
                     name: "",
                     lastName: "",
+                    profileImage: null
                 },
                 createdAt: "",
                 updatedAt: ""

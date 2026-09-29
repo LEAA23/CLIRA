@@ -5,9 +5,10 @@ type ProfileTagNameProps = {
   id: number;
   name: string;
   lastName: string;
+  profileImage: string | null;
 }
 
-const ProfileTagName = ( { id, name, lastName } : ProfileTagNameProps ) => {
+const ProfileTagName = ( { id, name, lastName, profileImage } : ProfileTagNameProps ) => {
   const navigate = useNavigate();
 
   return (
@@ -15,11 +16,15 @@ const ProfileTagName = ( { id, name, lastName } : ProfileTagNameProps ) => {
       className="flex justify-start items-center gap-x-2"
       onClick={ () => navigate( `/user-profile/${ id }` ) }
     >
+      
       <ProfileImage
         height="15"
+        profileImage={ profileImage }
       />
-      <div className=" bg-white rounded-lg shadow h-auto w-fit py-1 px-2">
-        <p className="text-gray-400 font-bold text-left lg:text-center line-clamp-1 h-7">{`${name} ${ lastName?.split(" ")[0] }`}</p>
+      <div className="text-gray-400 hover:text-white bg-white hover:bg-blue-400 rounded-lg shadow h-auto w-fit py-1 px-2 
+            cursor-pointer transition-all duration-200 ease-in-out"
+      >
+        <p className="font-bold text-left lg:text-center line-clamp-1 h-7">{`${name} ${ lastName?.split(" ")[0] }`}</p>
       </div>
     </div>
   )

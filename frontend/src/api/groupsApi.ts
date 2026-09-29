@@ -75,6 +75,7 @@ export const searchUser = async( email : UserSearchForm["email"] ) => {
     try {
         const { data: { user } } = await api(`/users?email=${email}`);
         const response = UserSearchSchema.safeParse(user);
+        console.log(user)
         if( response.data ) {
             return response.data;
         }

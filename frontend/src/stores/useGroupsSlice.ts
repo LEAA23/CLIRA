@@ -35,7 +35,8 @@ export const createGroupsSlice : StateCreator<GroupsSliceType> = ( set, get ) =>
         id: 0,
         name: "",
         lastName: "",
-        email: ""
+        email: "",
+        profileImage: null
     },
     fetchGroups: async () => {
         const groups = await getGroups();
@@ -95,7 +96,8 @@ export const createGroupsSlice : StateCreator<GroupsSliceType> = ( set, get ) =>
                 id: 0,
                 name: "",
                 lastName: "",
-                email: ""
+                email: "",
+                profileImage: null
             }
         }))
     },

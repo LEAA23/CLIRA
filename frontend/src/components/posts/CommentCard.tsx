@@ -19,8 +19,10 @@ const CommentaCard = ( { id, content, post_id, user, createdAt, updatedAt } : Co
     <div className="bg-white shadow rounded-lg p-3 lg:p-5 border-l-4 border-l-amber-400">
       <div className="flex justify-between items-center">
         <ProfileTagName
+          id={ user.id }
           name={ user.name }
           lastName={ user.lastName }
+          profileImage={ user.profileImage }
         />
         {userAuth.id === user.id && (
             <CommentCardOptions

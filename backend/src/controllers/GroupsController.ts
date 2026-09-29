@@ -175,7 +175,7 @@ export class GroupsControlller {
                     { 
                         model: User, 
                         as: "users", 
-                        attributes: ["id", "name", "lastName", "email"], 
+                        attributes: ["id", "name", "lastName", "email", "profileImage"], 
                         through: { attributes: [] } 
                     } 
                 ]  
@@ -257,7 +257,7 @@ export class GroupsControlller {
             
             const group = await Group.findOne({
                 where: {id: groupId},
-                include: [ {model: User, as: "users", where: {email} ,attributes: ["id", "name", "lastName", "email"]} ]
+                include: [ {model: User, as: "users", where: {email} ,attributes: ["id", "name", "lastName", "email", "profileImage"]} ]
             });
             const usersInGroup = group?.users;
             const userExistsInGroup = usersInGroup?.find( user => user.email === email );
@@ -415,7 +415,7 @@ export class GroupsControlller {
                 },
 
                 include: [ 
-                    { model: User, as: "user", attributes: ["name", "lastName"] },
+                    { model: User, as: "user", attributes: ["name", "lastName", "profileImage"] },
                     { model: Media, as: "images", attributes: ["id", "path"], limit: 1 },
                     { model: Like, as: "likes", attributes: [] }
                 ],
@@ -591,7 +591,7 @@ export class GroupsControlller {
             const comments = await Comment.findAll({
                 where: { post_id: req.post.id },
                 attributes: ["id", "content", "post_id", "createdAt", "updatedAt"],
-                include: [ { model: User, as: "user" ,attributes: [ "id", "name", "lastName" ] } ]
+                include: [ { model: User, as: "user" ,attributes: [ "id", "name", "lastName", "profileImage" ] } ]
             });
             const formatedComments= comments.map(comment => {
                 const commentData = comment.toJSON();
