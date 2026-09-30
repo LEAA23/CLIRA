@@ -3,17 +3,24 @@ import { useAppStore } from "../../stores/useAppStore"
 import { useEffect } from "react";
 import ProfileImage from "../../components/ProfileImage";
 import UserRankingCard from "../../components/ranking/UserRankingCard";
-import { EnvelopeIcon, UserIcon } from "@heroicons/react/16/solid";
+import { AcademicCapIcon, EnvelopeIcon, UserIcon } from "@heroicons/react/16/solid";
+import UserProfileImageOptions from "../../components/user/UserProfileImageOptions";
+import UserProfileUpdateImageModal from "../../components/user/UserProfileUpdateImageModal";
 
 const UserProfileView = () => {
   const params = useParams();
   const id = +params.id!;
 
+  const fetchUserAuth = useAppStore( state => state.fetchUserAuth );
+  const user = useAppStore( state => state.user );
+
   const fetchUserProfile = useAppStore( state => state.fetchUserProfile );
   const userProfileSearched = useAppStore( state => state.userProfileSearched );
+
+
   useEffect(() => {
     const getProfile = async () => {
-      await fetchUserProfile( id );
+      await Promise.allSettled([ fetchUserProfile( id ), fetchUserAuth() ]);
     }
     getProfile();
   }, [ fetchUserProfile, id ]);
@@ -31,6 +38,12 @@ const UserProfileView = () => {
               height="60"
               profileImage={ userProfileSearched.profileImage }
             />
+            {user.id === userProfileSearched.id && (
+              <div className="-mt-5 bg-white h-8 p-1 aspect-square text-center my-auto text-blue shadow rounded-full hover:bg-blue-500 cursor-pointer"
+              >
+                <UserProfileImageOptions/>
+              </div>
+            )}
             <UserRankingCard/>
 
           </div>
@@ -42,7 +55,10 @@ const UserProfileView = () => {
                   Tipo de usuario:
                 </span>
                 { userProfileSearched.rol === "student"? (
-                  <p>Estudiante</p>
+                  <p className="flex justify-between items-center gap-x-3 bg-blue-500 px-4 py-2 mt-5 rounded-lg w-fit text-white font-bold">
+                    <AcademicCapIcon className="h-8"/>
+                    Estudiante
+                  </p>
                 ): (
                   <p className="flex justify-between items-center gap-x-3 bg-blue-500 px-4 py-2 mt-5 rounded-lg w-fit text-white font-bold">
                     <UserIcon className="h-8"/>
@@ -69,7 +85,7 @@ const UserProfileView = () => {
                 <span className="font-semibold">
                   Grupos:
                 </span>
-                <p className="flex justify-between items-center gap-x-3 bg-blue-600 px-4 py-2 mt-5 rounded-lg w-fit text-white font-bold">
+                <p className="flex justify-between items-center flex-wrap gap-x-3 bg-blue-600 px-4 py-2 mt-5 rounded-lg w-fit text-white font-bold">
                   { userProfileSearched.email }
                 </p>
               </div>
@@ -101,6 +117,8 @@ const UserProfileView = () => {
         </div>
 
       </section>
+
+      <UserProfileUpdateImageModal/>
 
     </>
   )
