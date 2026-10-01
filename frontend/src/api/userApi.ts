@@ -32,3 +32,16 @@ export const updateProfileImage = async( { id, formData }: { id: UserSearched["i
         throw error;
     }
 }
+
+export const deleteProfileImage = async( id: UserSearched["id"] ) => {
+    try {
+        const { data } = await api.delete<string>(`/users/${ id }`);
+        return data;
+    } catch (error) {
+        if( isAxiosError( error ) && error.response ) {
+            throw new Error( error.response.data.error );
+        }
+
+        throw error;
+    }
+}
