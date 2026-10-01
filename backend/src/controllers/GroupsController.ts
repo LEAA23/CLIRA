@@ -125,7 +125,7 @@ export class GroupsControlller {
                         Key: oldKey
                     })
                 );
-        }
+            }
 
             //Guardamos los cambios en la BD
             await groupExists.save();

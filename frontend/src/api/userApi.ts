@@ -19,3 +19,16 @@ export const getUserById = async( id: UserSearched["id"] ) => {
         throw error;
     }
 }
+
+export const updateProfileImage = async( { id, formData }: { id: UserSearched["id"]; formData: FormData } ) => {
+    try {
+        const { data } = await api.patch<string>(`/users/${ id }`, formData);
+        return data;
+    } catch (error) {
+        if( isAxiosError( error ) && error.response ) {
+            throw new Error( error.response.data.error );
+        }  
+
+        throw error;
+    }
+}

@@ -1,13 +1,14 @@
 import type { StateCreator } from "zustand";
-import type { UserProfile } from "../types";
-import { getUserById } from "../api/userApi";
+import type { UserProfile, UserSearched } from "../types";
+import { getUserById, updateProfileImage } from "../api/userApi";
 
 export type UserSliceType = {
     userProfileSearched: UserProfile;
     fetchUserProfile: (id: number) => Promise<void>;
+    updateProfileImage: ({ id, formData }: { id: number; formData: FormData; }) => Promise<string>
 }
 
-export const createUserSlice : StateCreator<UserSliceType> = ( set ) => ({
+export const createUserSlice : StateCreator<UserSliceType> = ( set, get ) => ({
     userProfileSearched: {
         name: "",
         lastName: "",
@@ -21,5 +22,15 @@ export const createUserSlice : StateCreator<UserSliceType> = ( set ) => ({
         set(() => ({
             userProfileSearched
         }))
+    },
+    updateProfileImage: async( { id, formData }: { id: UserSearched["id"]; formData: FormData } ) => {
+        const message = await updateProfileImage( { id, formData } );
+        await get().fetchUserProfile(id)
+        set(state => ({
+            userProfileSearched: {
+                ...state.userProfileSearched
+            }
+        }))
+        return message;
     }
 });
