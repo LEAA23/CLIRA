@@ -115,4 +115,32 @@ export class UserController {
             return res.status(500).json( { error: "Error interno del servidor" } );
         }
     }
+
+    static deleteProfileImage = async( req: Request, res: Response ) => {
+        try {
+            const userExists = await User.findOne({
+                where: { id : req.user.id, confirm: true }
+            });
+            if( !userExists  || !userExists?.confirm ) {
+                const error = new Error("El usuario no existe o accion no permitida");
+                return res.status(404).json( { error: error.message } );
+            }
+
+            //Eliminamos la imagen almacenada en el Bucket de AWS
+            await s3Client.send(
+                new DeleteObjectCommand({
+                    Bucket: process.env.AWS_BUCKET,
+                    Key: userExists.profileImage
+                })
+            );
+
+            //Eliminamos la referencia a la imagen de la base de datos
+            userExists.profileImage = "";
+            await userExists.save();
+            return res.status(200).send("Imagen eliminada correctamente");
+
+        } catch (error) {
+            return res.status(500).json( { error: "Error interno del servidor" } );
+        }
+    }
 }
