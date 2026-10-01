@@ -1,11 +1,12 @@
 import type { StateCreator } from "zustand";
 import type { UserProfile, UserSearched } from "../types";
-import { getUserById, updateProfileImage } from "../api/userApi";
+import { deleteProfileImage, getUserById, updateProfileImage } from "../api/userApi";
 
 export type UserSliceType = {
     userProfileSearched: UserProfile;
     fetchUserProfile: (id: number) => Promise<void>;
-    updateProfileImage: ({ id, formData }: { id: number; formData: FormData; }) => Promise<string>
+    updateProfileImage: ({ id, formData }: { id: number; formData: FormData; }) => Promise<string>;
+    deleteProfileImage: (id: number) => Promise<string>;
 }
 
 export const createUserSlice : StateCreator<UserSliceType> = ( set, get ) => ({
@@ -31,6 +32,16 @@ export const createUserSlice : StateCreator<UserSliceType> = ( set, get ) => ({
                 ...state.userProfileSearched
             }
         }))
+        return message;
+    },
+    deleteProfileImage: async( id: UserSearched["id"] ) => {
+        const message = await deleteProfileImage( id );
+        set(state => ({
+            userProfileSearched: {
+                ...state.userProfileSearched,
+                profileImage: null
+            }
+        }));
         return message;
     }
 });

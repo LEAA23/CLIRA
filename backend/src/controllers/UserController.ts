@@ -86,7 +86,7 @@ export class UserController {
                 );
 
                 //Si el usuario no tiene una imagen previa, entonces vamos a asignarle la imagen que acaba de enviar el usuario
-                if( userExists.profileImage === null ) {
+                if( userExists.profileImage === null || userExists.profileImage === "" ) {
                     //Actualizamos el campo de profileImage del usuario en la BD
                     userExists.profileImage = key;
                     await userExists.save();
@@ -110,8 +110,8 @@ export class UserController {
 
             return res.status(400).send("Selecciona una imagen");
 
-
         } catch (error) {
+            console.log(error)
             return res.status(500).json( { error: "Error interno del servidor" } );
         }
     }
@@ -126,7 +126,7 @@ export class UserController {
                 return res.status(404).json( { error: error.message } );
             }
 
-            if( !userExists.profileImage ) {
+            if( userExists.profileImage === null || userExists.profileImage === "" ) {
                 const error = new Error("No tienes una imagen de perfil aun");
                 return res.status(400).json( { error: error.message } );
             }

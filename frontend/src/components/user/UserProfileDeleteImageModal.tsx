@@ -1,16 +1,33 @@
 import { Transition, Dialog } from "@headlessui/react";
 import { Fragment } from "react/jsx-runtime";
 import { useShowModal } from "../../hooks/useShowModal";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { TrashIcon, XMarkIcon } from "@heroicons/react/16/solid";
+import { useAppStore } from "../../stores/useAppStore";
+import { toast } from "react-toastify";
 
 const UserProfileDeleteImageModal = () => {
     const showModal = useShowModal( "DeleteImage" );
 
     const navigate = useNavigate();
 
-    const handleDeleteProfileImage = () => {
+    const params = useParams();
+    const id = +params.id!;
 
+    const deleteProfileImage = useAppStore( state => state.deleteProfileImage );
+
+    const handleDeleteProfileImage = async( e: React.SubmitEvent<HTMLFormElement> ) => {
+        e.preventDefault();
+        try {
+            const message = await deleteProfileImage( id );
+            toast.success( message );
+            navigate(location.pathname, { replace: true });
+        } catch (error) {
+            if( error instanceof Error ) {
+                toast.error( error.message );
+
+            }
+        }
     }
 
   return (
@@ -58,7 +75,7 @@ const UserProfileDeleteImageModal = () => {
 
                                 <div className="max-w-full p-5 lg:p-0">
                                     <form
-                                        onSubmit={ handleDeleteProfileImage }
+                                        onSubmit={ (e) =>  handleDeleteProfileImage( e ) }
                                     >
                                         <input  id="groupId" name="groupId" type="hidden"/>
 
