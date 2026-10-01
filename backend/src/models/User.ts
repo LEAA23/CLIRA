@@ -55,7 +55,8 @@ User.init(
         },
         profileImage: {
             type: DataTypes.STRING,
-            defaultValue: ""
+            defaultValue: "",
+            allowNull: false
         },
         token: {
             type: DataTypes.STRING,

@@ -98,7 +98,7 @@ const UserProfileUpdateImageModal = () => {
                                             className="text-gray-600 text-2xl font-bold"
                                         >Imagen</label>
 
-                                        {userProfileSearched.profileImage !== null? (
+                                        {userProfileSearched.profileImage !== null && userProfileSearched.profileImage !== "" ? (
                                             <div className="mt-5">
                                                 <p className="text-sm text-gray-600 font-semibold mb-5">Imagen previamente seleccionada:</p>
 
