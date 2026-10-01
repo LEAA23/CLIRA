@@ -26,7 +26,7 @@ const UserProfileView = () => {
 
   return (
     <>
-      <h1 className="text-blue-500 text-center text-5xl font-bold my-10 ">Perfil de Usuario {userProfileSearched.id}</h1>
+      <h1 className="text-blue-500 text-center text-5xl font-bold my-10 ">Perfil de Usuario</h1>
 
       <section className="bg-white p-5 h- max-w-full rounded-2xl shadow">
 

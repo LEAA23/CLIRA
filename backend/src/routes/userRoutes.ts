@@ -29,4 +29,11 @@ router.patch("/:id",
     UserController.updateProfileImage
 );
 
+router.delete("/:id",
+    authenticate,
+    param("id").notEmpty().withMessage("El id del usuario es obligatorio"),
+    handleInputErrors,
+    UserController.deleteProfileImage
+);
+
 export default router;
