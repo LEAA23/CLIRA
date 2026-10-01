@@ -126,6 +126,11 @@ export class UserController {
                 return res.status(404).json( { error: error.message } );
             }
 
+            if( !userExists.profileImage ) {
+                const error = new Error("No tienes una imagen de perfil aun");
+                return res.status(400).json( { error: error.message } );
+            }
+
             //Eliminamos la imagen almacenada en el Bucket de AWS
             await s3Client.send(
                 new DeleteObjectCommand({
