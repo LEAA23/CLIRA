@@ -6,6 +6,7 @@ import UserRankingCard from "../../components/ranking/UserRankingCard";
 import { AcademicCapIcon, EnvelopeIcon, UserIcon } from "@heroicons/react/16/solid";
 import UserProfileImageOptions from "../../components/user/UserProfileImageOptions";
 import UserProfileUpdateImageModal from "../../components/user/UserProfileUpdateImageModal";
+import UserProfileDeleteImageModal from "../../components/user/UserProfileDeleteImageModal";
 
 const UserProfileView = () => {
   const params = useParams();
@@ -118,6 +119,7 @@ const UserProfileView = () => {
       </section>
 
       <UserProfileUpdateImageModal/>
+      <UserProfileDeleteImageModal/>
 
     </>
   )

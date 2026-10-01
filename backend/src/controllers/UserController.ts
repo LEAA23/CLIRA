@@ -62,8 +62,8 @@ export class UserController {
             const userExists = await User.findOne({
                 where: { id : req.user.id, confirm: true }
             });
-            if( !userExists  || !userExists?.confirm ) {
-                const error = new Error("El usuario no existe o accion no permitida");
+            if( !userExists ) {
+                const error = new Error("El usuario no existe");
                 return res.status(404).json( { error: error.message } );
             }
 
@@ -121,8 +121,8 @@ export class UserController {
             const userExists = await User.findOne({
                 where: { id : req.user.id, confirm: true }
             });
-            if( !userExists  || !userExists?.confirm ) {
-                const error = new Error("El usuario no existe o accion no permitida");
+            if( !userExists ) {
+                const error = new Error("El usuario no existe");
                 return res.status(404).json( { error: error.message } );
             }
 
