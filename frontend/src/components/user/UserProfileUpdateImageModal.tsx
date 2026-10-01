@@ -2,7 +2,7 @@ import { Transition, Dialog } from "@headlessui/react";
 import { ArrowUpTrayIcon, PencilIcon, XMarkIcon } from "@heroicons/react/16/solid";
 import { useShowModal } from "../../hooks/useShowModal";
 import { Fragment } from "react/jsx-runtime";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { useState } from "react";
 import { useAppStore } from "../../stores/useAppStore";
@@ -14,7 +14,11 @@ const UserProfileUpdateImageModal = () => {
 
     const navigate = useNavigate();
 
+    const params = useParams();
+    const id = +params.id!;
+
     const userProfileSearched = useAppStore( state => state.userProfileSearched );
+    const updateProfileImage = useAppStore( state => state.updateProfileImage );
 
     const { handleSubmit } = useForm();
 
@@ -29,7 +33,10 @@ const UserProfileUpdateImageModal = () => {
         }
 
         try {
-            
+            const message = await updateProfileImage( { id, formData: data } );
+            toast.success( message );
+            setSelectedImage(null);
+            navigate( location.pathname, { replace: true } );
         } catch (error) {
             if( error instanceof Error ) {
                 toast.error( error.message );
@@ -99,8 +106,8 @@ const UserProfileUpdateImageModal = () => {
                                                     
                                                     <div className="relative">
                                                         <img 
-                                                            key={ "" }
-                                                            src={ "" } 
+                                                            key={ userProfileSearched.profileImage }
+                                                            src={ userProfileSearched.profileImage } 
                                                             alt="Vista previa de imagen de fondo"
                                                             className="h-36" 
                                                         />

@@ -3,6 +3,7 @@ import authenticate from "../middleware/auth";
 import { handleInputErrors } from "../middleware/handleInputErrors";
 import { param, query } from "express-validator";
 import { UserController } from "../controllers/UserController";
+import { uploadFile } from "../middleware/uploadFile";
 
 const router = Router();
 
@@ -18,6 +19,14 @@ router.get("/:id",
     param("id").notEmpty().withMessage("El id del usuario es obligatorio"),
     handleInputErrors,
     UserController.getUserById
-)
+);
+
+router.patch("/:id",
+    authenticate,
+    uploadFile.single("image"),
+    param("id").notEmpty().withMessage("El id del usuario es obligatorio"),
+    handleInputErrors,
+    UserController.updateProfileImage
+);
 
 export default router;
