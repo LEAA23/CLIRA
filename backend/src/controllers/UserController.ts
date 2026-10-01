@@ -40,14 +40,18 @@ export class UserController {
                 return res.status(404).json( { error: error.message } );
             }
 
-            //Obtenemos la imagen de perfil del usuario del Bucket de AWS
-            const command = new GetObjectCommand({
-                Bucket: process.env.AWS_BUCKET,
-                Key: userExists.profileImage
-            });
-            //Creamos la URL de forma segura para que nadie pueda acceder al bucket de AWS
-            const url = await getSignedUrl( s3Client, command, { expiresIn: 60 * 60 * 24 } );
-            userExists.profileImage = url;
+            //Comprobamos si el usuario tiene una imagen de perfil para poder generar una URL
+            if(userExists.profileImage) {
+                //Obtenemos la imagen de perfil del usuario del Bucket de AWS
+                const command = new GetObjectCommand({
+                    Bucket: process.env.AWS_BUCKET,
+                    Key: userExists.profileImage
+                });
+                //Creamos la URL de forma segura para que nadie pueda acceder al bucket de AWS
+                const url = await getSignedUrl( s3Client, command, { expiresIn: 60 * 60 * 24 } );
+                userExists.profileImage = url;
+
+            }
 
             return res.status(200).json( { user: userExists } );
         } catch (error) {
@@ -86,7 +90,7 @@ export class UserController {
                 );
 
                 //Si el usuario no tiene una imagen previa, entonces vamos a asignarle la imagen que acaba de enviar el usuario
-                if( userExists.profileImage === null || userExists.profileImage === "" ) {
+                if( !userExists.profileImage ) {
                     //Actualizamos el campo de profileImage del usuario en la BD
                     userExists.profileImage = key;
                     await userExists.save();
@@ -126,7 +130,7 @@ export class UserController {
                 return res.status(404).json( { error: error.message } );
             }
 
-            if( userExists.profileImage === null || userExists.profileImage === "" ) {
+            if( !userExists.profileImage ) {
                 const error = new Error("No tienes una imagen de perfil aun");
                 return res.status(400).json( { error: error.message } );
             }
