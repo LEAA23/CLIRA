@@ -14,6 +14,9 @@ export class User extends Model< InferAttributes<User>, InferCreationAttributes<
     declare token: string | null;
     declare tokenExpiresAt: Date | null;
     declare confirm: boolean;
+
+    declare postsCount?: number;
+    declare likesCount?: number;
 }
 
 //Definimos el tipo de los atributos asi como sus caracteristicas especiales
