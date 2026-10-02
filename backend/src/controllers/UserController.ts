@@ -20,6 +20,24 @@ export class UserController {
                 return res.status(404).json( { error: error.message } );
             }
 
+
+            //Nos traemos la imagen del usuario si es que tiene
+            if ( userExists.profileImage ) {
+
+                const command = new GetObjectCommand({
+                    Bucket: process.env.AWS_BUCKET,
+                    Key: userExists.profileImage
+                });
+
+                const key = await getSignedUrl(
+                    s3Client,
+                    command,
+                    { expiresIn: 60 * 60 * 24 }
+                );
+
+                userExists.profileImage = key
+            }
+
             const { confirm, ...user } = userExists.toJSON();
             return res.status(200).json( { user } );
             

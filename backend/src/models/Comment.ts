@@ -1,5 +1,6 @@
 import { CreationOptional, DataTypes, InferAttributes, InferCreationAttributes, Model } from "sequelize";
 import db from "../config/db";
+import { User } from "./User";
 
 export class Comment extends Model< InferAttributes<Comment>, InferCreationAttributes<Comment> > {
     declare id: CreationOptional<number>
@@ -8,6 +9,8 @@ export class Comment extends Model< InferAttributes<Comment>, InferCreationAttri
     declare user_id: number;
     declare createdAt?: string;
     declare updatedAt?: string;
+
+    declare user?: User;
 }
 
 Comment.init({

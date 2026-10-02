@@ -249,6 +249,7 @@ export const getComments = async( { groupId, postId } : { groupId : Group["id"] 
     try {
         const { data: { comments } } = await api(`/groups/${groupId}/posts/${postId}/comments`);
         const response = CommentsSchema.safeParse( comments );
+        console.log(response)
         if( response.data ) {
             return response.data;
         }
