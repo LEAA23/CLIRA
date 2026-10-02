@@ -23,9 +23,9 @@ const SearchBar = ({pendingCases, filters, inputType, inputName, placeholder, fn
 
   return (
       
-    <div className="flex flex-col md:flex-row justify-center items-center md:items-stretch md:justify-start gap-x-3">
+    <div className="flex flex-col md:flex-row justify-center w-full items-center md:items-stretch md:justify-start gap-x-3">
         {filters && (
-          <div className="bg-white rounded-lg shadow mb-5 md:mb-10 w-12 md:w-auto aspect-square flex justify-center items-center cursor-pointer">
+          <div className="bg-white rounded-lg shadow mb-5 md:mb-10 w-12 aspect-square flex justify-center items-center cursor-pointer">
             <button
               onClick={handleClick}
             >
