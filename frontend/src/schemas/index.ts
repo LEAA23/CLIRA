@@ -139,8 +139,10 @@ export const CommentsSchema = z.array(
  * USER SQUEMAS
  */
 export const UserProfileSchema = UserSearchSchema.extend({
-    rol: z.string()
-})
+    rol: z.string(),
+    postsCount: z.number(),
+    likesCount: z.number()
+});
 
 /**
  *  CHART CONTAINER SCHEMA

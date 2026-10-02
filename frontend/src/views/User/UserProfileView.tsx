@@ -97,7 +97,7 @@ const UserProfileView = () => {
                   Publicaciones:
                 </span>
                 <p className="mt-5 text-2xl rounded-lg w-fit font-bold">
-                  { 2 }
+                  { userProfileSearched.postsCount }
                 </p>
               </div>
             </div>
@@ -108,7 +108,7 @@ const UserProfileView = () => {
                   Me gusta:
                 </span>
                 <p className="mt-5 text-2xl rounded-lg w-fit font-bold">
-                  { 98 }
+                  { userProfileSearched.likesCount }
                 </p>
               </div>
             </div>

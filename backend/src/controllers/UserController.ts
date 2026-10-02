@@ -4,6 +4,9 @@ import { compressImage } from "../utils/compressImage";
 import { s3Client } from "../config/services/s3";
 import { DeleteObjectCommand, GetObjectCommand, PutObjectCommand } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
+import { Post } from "../models/Post";
+import { Like } from "../models/Like";
+import { Sequelize } from "sequelize";
 
 export class UserController {
 
@@ -51,13 +54,57 @@ export class UserController {
         try {
             const userExists = await User.findOne({
                 where: { id, confirm: true },
-                attributes: [ "id", "name", "lastName", "email" , "rol", "profileImage" ]
+                attributes: [
+                    "id",
+                    "name",
+                    "lastName",
+                    "email",
+                    "rol",
+                    "profileImage",
+                    [
+                        Sequelize.fn(
+                            "COUNT",
+                            Sequelize.fn(
+                                "DISTINCT",
+                                Sequelize.col("posts.id")
+                            )
+                        ),
+                        "postsCount"
+                    ],
+
+                    [
+                        Sequelize.fn(
+                            "COUNT",
+                            Sequelize.fn(
+                                "DISTINCT",
+                                Sequelize.col("likes.id")
+                            )
+                        ),
+                        "likesCount"
+                    ]
+                ],
+                include: [
+                    {
+                        model: Post,
+                        as: "posts",
+                        attributes: [],
+                        required: false
+                    },
+                    {
+                        model: Like,
+                        as: "likes",
+                        attributes: [],
+                        required: false
+                    }
+                ],
+                group: ["User.id"]
             });
+            
             if( !userExists ) {
                 const error = new Error("El usuario no existe o no esta confirmado");
                 return res.status(404).json( { error: error.message } );
             }
-
+            
             //Comprobamos si el usuario tiene una imagen de perfil para poder generar una URL
             if(userExists.profileImage) {
                 //Obtenemos la imagen de perfil del usuario del Bucket de AWS
@@ -68,10 +115,15 @@ export class UserController {
                 //Creamos la URL de forma segura para que nadie pueda acceder al bucket de AWS
                 const url = await getSignedUrl( s3Client, command, { expiresIn: 60 * 60 * 24 } );
                 userExists.profileImage = url;
-
+                
             }
 
-            return res.status(200).json( { user: userExists } );
+            //Convertimos la cuenta de likes y de posts en numeros
+            const user = userExists?.toJSON();
+            user!.postsCount = Number( user.postsCount );
+            user!.likesCount = Number( user.likesCount );
+            
+            return res.status(200).json( { user } );
         } catch (error) {
             return res.status(500).json( { error: "Error interno del servidor" } );
         }

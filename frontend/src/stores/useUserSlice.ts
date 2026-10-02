@@ -16,7 +16,9 @@ export const createUserSlice : StateCreator<UserSliceType> = ( set, get ) => ({
         email: "",
         id: 0,
         profileImage: null,
-        rol: ""      
+        rol: "",
+        postsCount: 0,
+        likesCount: 0      
     },
     fetchUserProfile: async( id: UserProfile["id"] ) => {
         const userProfileSearched = await getUserById( id );
