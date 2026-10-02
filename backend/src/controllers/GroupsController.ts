@@ -425,11 +425,23 @@ export class GroupsControlller {
                 ]
             });
 
+
             const postsWithImages = await Promise.all( 
                 posts.map( async( post ) => {
                     const image = post.images?.[0];
-
+                    //CONSULTAR LA IMAGEN DE PERFIL DEL USUARIO
+                    const profileImage = post.user;
+                
                     if( !image?.path ) return post;
+
+                    if( profileImage?.profileImage ) {
+                        const command = new GetObjectCommand({
+                            Bucket: process.env.AWS_BUCKET,
+                            Key: profileImage.profileImage
+                        });
+                        const key = await getSignedUrl( s3Client, command, { expiresIn: 60 * 60 * 24 } );
+                        profileImage.profileImage = key;
+                    }
 
                     const command = new GetObjectCommand({
                         Bucket: process.env.AWS_BUCKET,
@@ -593,14 +605,43 @@ export class GroupsControlller {
                 attributes: ["id", "content", "post_id", "createdAt", "updatedAt"],
                 include: [ { model: User, as: "user" ,attributes: [ "id", "name", "lastName", "profileImage" ] } ]
             });
-            const formatedComments= comments.map(comment => {
-                const commentData = comment.toJSON();
-                return {
-                    ...commentData,
-                    createdAt: dateFormater( new Date(commentData.createdAt!) ),
-                    updatedAt: dateFormater( new Date( commentData.updatedAt! ) )
-                }
-            })
+
+            const formatedComments = await Promise.all(
+                comments.map(async (comment) => {
+
+                    const commentData = comment.toJSON();
+
+                    let profileURL = "";
+
+                    if (commentData.user?.profileImage) {
+
+                        const command = new GetObjectCommand({
+                            Bucket: process.env.AWS_BUCKET,
+                            Key: commentData.user.profileImage
+                        });
+
+                        profileURL = await getSignedUrl(
+                            s3Client,
+                            command,
+                            { expiresIn: 60 * 60 * 24 }
+                        );
+                    }
+
+                    return {
+                        ...commentData,
+                        user: {
+                            ...commentData.user,
+                            profileImage: profileURL
+                        },
+                        createdAt: dateFormater(
+                            new Date(commentData.createdAt!)
+                        ),
+                        updatedAt: dateFormater(
+                            new Date(commentData.updatedAt!)
+                        )
+                    };
+                })
+            );
             return res.status(200).json( { comments: formatedComments } );
         } catch (error) {
             console.log(error)
