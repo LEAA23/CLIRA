@@ -1,22 +1,43 @@
 import MedicalHistoryOptions from "../../components/simulation/MedicalHistoryOptions";
 import { ArrowUpRightIcon } from "@heroicons/react/16/solid";
+import Experience from "../../SimulationExperiences/PatientExperience/Experience";
+import { useEffect, useRef } from "react";
 
 const SimulationView = () => {
+    //Usamos useRef para hacer referencia a un elmento del HTML
+    const canvasRef = useRef<HTMLCanvasElement>(null);
+
+    useEffect(() => {
+        //Obtenemos el valor actual de la refenrencia
+        const canvas = canvasRef.current;
+        if( !canvas ) return;
+
+        //Instanciamos la simulacion del paciente
+        const patientExperience = new Experience( canvas );
+    }, [ ]);
+
   return (
     <>
         <h1 className="text-5xl text-center font-bold  my-10 text-blue-500">Titulo del Caso Medico</h1>
         
         <div className="grid grid-cols-2 gap-x-5 mb-5">
-            <div className="bg-blue-200 relative">
+
+            <div className="relative w-full">
                 <div className="bg-white shadow rounded-xl p-1 h-8 aspect-square absolute right-0 hover:shadow-2xl 
                 hover:-translate-y-1 cursor-pointer transition-all duration-200"
                 >
                     <ArrowUpRightIcon className="text-gray-400"/>
                 </div>
-                <p>simulacion 3d aqui</p>
+
+                <canvas 
+                ref={ canvasRef }
+                id="caseSimulation-webgl"
+                className="h-full w-full rounded-xl"
+                >
+                </canvas>
             </div>
 
-            <div className="bg-white shadow rounded-2xl p-5 max-w-full">
+            <div className="bg-white shadow rounded-xl p-5 max-w-full">
                 <p className="text-gray-500 font-bold">Descripcion:</p>
                 <p>
                     Lorem, ipsum dolor sit amet consectetur adipisicing elit. Maxime delectus voluptas impedit voluptate quis 
