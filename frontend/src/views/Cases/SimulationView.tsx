@@ -22,20 +22,17 @@ const SimulationView = () => {
         
         <div className="grid grid-cols-2 gap-x-5 mb-5">
 
-            <div className="relative w-full">
-                <div className="bg-white shadow rounded-xl p-1 h-8 aspect-square absolute right-0 hover:shadow-2xl 
-                hover:-translate-y-1 cursor-pointer transition-all duration-200"
-                >
-                    <ArrowUpRightIcon className="text-gray-400"/>
-                </div>
+    <div className="relative w-full min-w-0 min-h-110 overflow-hidden rounded-xl">
+        <div className="absolute top-2 right-2 z-10 bg-white shadow rounded-xl p-1 h-8 w-8 cursor-pointer">
+            <ArrowUpRightIcon className="text-gray-400" />
+        </div>
 
-                <canvas 
-                ref={ canvasRef }
-                id="caseSimulation-webgl"
-                className="h-full w-full rounded-xl"
-                >
-                </canvas>
-            </div>
+        <canvas
+            ref={canvasRef}
+            id="caseSimulation-webgl"
+            className="block w-full h-full"
+        />
+    </div>
 
             <div className="bg-white shadow rounded-xl p-5 max-w-full">
                 <p className="text-gray-500 font-bold">Descripcion:</p>

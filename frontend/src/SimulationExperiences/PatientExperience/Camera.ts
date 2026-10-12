@@ -26,7 +26,7 @@ export default class Camera {
     //Este metodo lo que hace es crear la instancia de la camara de THREE.js
     setInstance() {
         this.instance = new THREE.PerspectiveCamera( 35, this.sizes.width / this.sizes.height, 0.1, 100 );
-        this.instance.position.set( 6, 4, 8 );
+        this.instance.position.set(0, 4, 7);
         this.scene.add( this.instance );
     }
 
@@ -35,6 +35,12 @@ export default class Camera {
         this.controls = new OrbitControls( this.instance, this.canvas as HTMLElement );
         //Activamos Damping para tener un arrastre de a simulacion mas suave
         this.controls.enableDamping = true;
+
+        this.controls.target.y = 5;
+        this.controls.target.z = 1;
+
+        this.controls.minDistance = 1;
+        this.controls.maxDistance = 7;
     }
 
     //Este metodo actualiza los valores de la camara cuando ocurre el evento de resize

@@ -5,6 +5,7 @@ import Camera from "./Camera";
 import Renderer from "./Renderer";
 import World from "./world/World";
 import Resources from "./utils/Resources";
+import { GLTFLoader } from "three/examples/jsm/Addons.js";
 
 
 //Nos va a permitir verificar si ya existe una instancia de Experience, con la finalidad de aplicar singleton
@@ -45,11 +46,17 @@ export default class Experience {
 
         console.log(this.sizes.width + " " + this.sizes.height )
 
-        const mesh = new THREE.Mesh(
-            new THREE.BoxGeometry(1, 1, 1),
-            new THREE.MeshStandardMaterial()
-        )
-        this.scene.add( mesh )
+        const loader = new GLTFLoader();
+        loader.load("/charite_university_hospital_-_operating_room/scene.gltf", model => {
+            this.scene.scale.set(2, 2, 2)
+            this.scene.add( model.scene )
+        })
+
+        loader.load("/3432cedf3a711e826ceb40a81ee91322.glb", model => {
+            model.scene.position.set(0, 0, 1);
+            model.scene.scale.set(3, 3, 3)
+            this.scene.add( model.scene )
+        })
 
 
         //Escuchamos al evento de resize atraves de la clase de Size, de forma que mandamos a llamar al metodo de resize
