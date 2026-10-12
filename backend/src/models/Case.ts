@@ -8,13 +8,13 @@ export class Case extends Model< InferAttributes<Case>, InferCreationAttributes<
     declare previewImage: string;
     declare simulationModel: string;
     declare diagnosis: string;
-    declare weight: number;
-    declare height: number;
-    declare bloodPressure: number;
-    declare heartRate: number;
-    declare bodyTemperature: number;
-    declare oxygenSaturation: number;
-    declare bloodGlusose: number;
+    // declare weight: number;
+    // declare height: number;
+    // declare bloodPressure: number;
+    // declare heartRate: number;
+    // declare bodyTemperature: number;
+    // declare oxygenSaturation: number;
+    // declare bloodGlusose: number;
     declare completed: boolean;
 }
 
@@ -45,36 +45,36 @@ Case.init({
     diagnosis: {
         type: DataTypes.TEXT,
         defaultValue: "",
-        allowNull: false
+        allowNull: true
     },
-    weight: {
-        type: DataTypes.DECIMAL,
-        allowNull: false
-    },
-    height: {
-        type: DataTypes.DECIMAL,
-        allowNull: false
-    },
-    bloodPressure: {
-        type: DataTypes.INTEGER,
-        allowNull: false
-    },
-    heartRate: {
-        type: DataTypes.DECIMAL,
-        allowNull: false
-    },
-    bodyTemperature: {
-        type: DataTypes.DECIMAL,
-        allowNull: false
-    },
-    oxygenSaturation: {
-        type: DataTypes.INTEGER,
-        allowNull: false
-    },
-    bloodGlusose: {
-        type: DataTypes.INTEGER,
-        allowNull: false
-    },
+    // weight: {
+    //     type: DataTypes.DECIMAL,
+    //     allowNull: false
+    // },
+    // height: {
+    //     type: DataTypes.DECIMAL,
+    //     allowNull: false
+    // },
+    // bloodPressure: {
+    //     type: DataTypes.INTEGER,
+    //     allowNull: false
+    // },
+    // heartRate: {
+    //     type: DataTypes.DECIMAL,
+    //     allowNull: false
+    // },
+    // bodyTemperature: {
+    //     type: DataTypes.DECIMAL,
+    //     allowNull: false
+    // },
+    // oxygenSaturation: {
+    //     type: DataTypes.INTEGER,
+    //     allowNull: false
+    // },
+    // bloodGlusose: {
+    //     type: DataTypes.INTEGER,
+    //     allowNull: false
+    // },
     completed: {
         type: DataTypes.BOOLEAN,
         defaultValue: false,

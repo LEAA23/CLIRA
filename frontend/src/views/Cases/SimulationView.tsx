@@ -1,11 +1,18 @@
 import MedicalHistoryOptions from "../../components/simulation/MedicalHistoryOptions";
 import { ArrowUpRightIcon } from "@heroicons/react/16/solid";
 import Experience from "../../SimulationExperiences/PatientExperience/Experience";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
 const SimulationView = () => {
     //Usamos useRef para hacer referencia a un elmento del HTML
     const canvasRef = useRef<HTMLCanvasElement>(null);
+    const canvas = canvasRef.current;
+
+    //Tamanio de la simulacion
+    let [ windowSize, setWindowSize ] = useState<boolean>( false );
+    console.log(windowSize)
+
+
 
     useEffect(() => {
         //Obtenemos el valor actual de la refenrencia
@@ -23,14 +30,17 @@ const SimulationView = () => {
         <div className="grid grid-cols-2 gap-x-5 mb-5">
 
     <div className="relative w-full min-w-0 min-h-110 overflow-hidden rounded-xl">
-        <div className="absolute top-2 right-2 z-10 bg-white shadow rounded-xl p-1 h-8 w-8 cursor-pointer">
+        <div 
+            className="absolute top-2 right-2 z-10 bg-white shadow rounded-xl p-1 h-8 w-8 cursor-pointer"
+            onClick={ () =>  setWindowSize(prevValue => !prevValue) }
+        >
             <ArrowUpRightIcon className="text-gray-400" />
         </div>
 
         <canvas
             ref={canvasRef}
             id="caseSimulation-webgl"
-            className="block w-full h-full"
+            className="w-full h-full"
         />
     </div>
 
