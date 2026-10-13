@@ -5,6 +5,7 @@ import { handleInputErrors } from "../middleware/handleInputErrors";
 import { body } from "express-validator";
 import { uploadFile } from "../middleware/uploadFile";
 import { isUserTeacher } from "../middleware/isUserTeacher";
+import { isValidGLB } from "../middleware/isValidGLB";
 
 const router =  Router();
 
@@ -15,6 +16,7 @@ router.post("/",
         { name: "caseImage", maxCount: 1 },
         { name: "patientModel", maxCount: 1 }
     ]),
+    isValidGLB,
     body("title").notEmpty().withMessage("El titulo es obligatorio"),
     body("description").notEmpty().withMessage("La descripcion del es obligatoria"),
     handleInputErrors,

@@ -45,7 +45,7 @@ Case.init({
     diagnosis: {
         type: DataTypes.TEXT,
         defaultValue: "",
-        allowNull: true
+        allowNull: false
     },
     // weight: {
     //     type: DataTypes.DECIMAL,
