@@ -5,6 +5,10 @@ import { Media } from "./Media"
 import { UserGroup } from "./UserGroup";
 import { Like } from "./Like";
 import { Comment } from "./Comment";
+import { Case } from "./Case";
+import { Filters } from "./Filters";
+import { CasesFilters } from "./CasesFilters";
+import FilterCategories from "./FilterCategories";
 
 //LAS ASOCIACIONES EN SEQUELIZE SON LAS RELACIONES ENTRE LAS BASES DE DATOS
 
@@ -116,4 +120,35 @@ Post.hasMany(Comment, {
 Comment.belongsTo(Post, {
     foreignKey: "post_id",
     as: "post"
+});
+
+
+/**
+ * ASSOCIATIONS PARA LOS FILTROS DE LOS CASOS CLINICOS
+ */
+
+//Relaciones de n:m, donde un caso tiene muchos filtros y un filtro esta en muchos casos
+Case.belongsToMany(Filters, {
+    through: CasesFilters,
+    foreignKey: "case_id",
+    otherKey: "filter_id",
+    as: "filters"
+});
+
+Filters.belongsToMany(Case, {
+    through: CasesFilters,
+    foreignKey: "filter_id",
+    otherKey: "case_id",
+    as: "Cases"
+});
+
+//Relacion de 1:1, donde un filtro pertenece a una categoria y una categoria 
+Filters.belongsTo(FilterCategories, {
+    foreignKey: "category_id",
+    as: "category"
+});
+
+FilterCategories.hasMany(Filters, {
+    foreignKey: "category_id",
+    as: "filters"
 });
