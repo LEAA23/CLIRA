@@ -34,5 +34,6 @@ CasesFilters.init({
     }
 }, {
     sequelize: db,
-    modelName: "CaseFilter"
+    modelName: "CasesFilters",
+    tableName: "CasesFilters"
 })

@@ -7,11 +7,19 @@ import userRoutes from "./routes/userRoutes";
 import caseRoutes from "./routes/caseRoutes";
 import {authenticateConection} from "./config/db";
 import { corsOptions } from "./config/cors";
+import { seedFilters, seedFilterCategories } from "./utils/filterSeeder";
 
 const app = express();
 
 //Validamos la coneccion a la base de datos
-authenticateConection();
+const startServer = async () => {
+    await authenticateConection();
+
+    await seedFilterCategories();
+    await seedFilters();
+
+};
+startServer();
 
 //Habilitamos el envio de peticiones HTTP para los dominios permitidos
 app.use( cors( corsOptions ) );
