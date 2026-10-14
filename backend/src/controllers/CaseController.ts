@@ -3,6 +3,9 @@ import { Case } from "../models/Case";
 import { compressImage } from "../utils/compressImage";
 import { s3Client } from "../config/services/s3";
 import { PutObjectCommand } from "@aws-sdk/client-s3";
+import { CasesFilters } from "../models/CasesFilters";
+import { Filters } from "../models/Filters";
+import { Json } from "sequelize/lib/utils";
 
 export class CaseController {
 
@@ -22,6 +25,8 @@ export class CaseController {
                 diagnosis: "",
                 completed: false
             });
+
+            const filters : number[] = JSON.parse( req.body.filters )
 
             //Si el usuario mando una imagen del caso entonces la guardamos en el bucket de AWS
             if( files.caseImage ) {
@@ -60,10 +65,16 @@ export class CaseController {
                 clinicalCase.simulationModel = key;
             }
 
-            await clinicalCase.save();
+            await clinicalCase.save(), 
+                
+            filters.forEach( async(filter) => 
+                await CasesFilters.create({ case_id: clinicalCase.id, filter_id: filter }) 
+            )
+            
             return res.status(200).send( "El caso se creo correctamente" );
             
         } catch (error) {
+            console.log(error)
             return res.status(500).json( { error: "Error interno del servidor" } );
         }
     }
