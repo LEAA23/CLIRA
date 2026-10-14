@@ -19,6 +19,7 @@ router.post("/",
     isValidGLB,
     body("title").notEmpty().withMessage("El titulo es obligatorio"),
     body("description").notEmpty().withMessage("La descripcion del es obligatoria"),
+    body("filters").isLength({ min: 1 }).withMessage("Selecciona al menos un filtro"),
     handleInputErrors,
     CaseController.createCase
 );
