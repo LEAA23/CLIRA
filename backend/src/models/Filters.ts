@@ -28,5 +28,6 @@ Filters.init({
     }
 }, {
     sequelize: db,
-    modelName: "Filter"
+    modelName: "Filters",
+    tableName: "Filters"
 });
