@@ -4,8 +4,6 @@ import { compressImage } from "../utils/compressImage";
 import { s3Client } from "../config/services/s3";
 import { PutObjectCommand } from "@aws-sdk/client-s3";
 import { CasesFilters } from "../models/CasesFilters";
-import { Filters } from "../models/Filters";
-import { Json } from "sequelize/lib/utils";
 
 export class CaseController {
 
