@@ -45,15 +45,30 @@ const CreateCaseModal = () => {
     ],
 };
 
-const handleFilterChange = ( category: FilterCategory, id: number ) => {
+
+const handleFilterChange = (category: FilterCategory, id: number) => {
     setSelectedFilters((prev) => {
+        const categoryIds = filterOptions[category].map((option) => option.id);
+
+        // Si el filtro ya está seleccionado, lo deseleccionamos.
         if (prev.includes(id)) {
             return prev.filter((filterId) => filterId !== id);
         }
 
-        return [...prev, id];
+        // Extremidad permite seleccionar múltiples opciones.
+        if (category === "extremidad") {
+            return [...prev, id];
+        }
+
+        // Paciente y dificultad solo permiten una opción.
+        // Al elegir otra, se reemplaza la selección anterior de esa categoría.
+        return [
+            ...prev.filter((filterId) => !categoryIds.includes(filterId)),
+            id,
+        ];
     });
 };
+
 
 const handleSubmitCase = async( formData ) => {
     const data = new FormData();
@@ -71,7 +86,7 @@ const handleSubmitCase = async( formData ) => {
     try {
         const message = await createCase( data );
         toast.success( message );
-        
+
         navigate( location.pathname, { replace: true } );
 
         setValue("title", "");
@@ -314,12 +329,13 @@ return (
                                                 <Popover>
                                                     <PopoverButton className="block text-sm/6 font-bold text-gray-400 focus:outline-none data-active:text-blue-500 data-hover:text-blue-500">
                                                         Paciente
-                                                        {filterOptions.paciente.filter((option) =>
+                                                        {filterOptions.paciente.find((option) =>
                                                             selectedFilters.includes(option.id)
-                                                        ).length > 0 &&
-                                                            ` (${filterOptions.paciente.filter((option) =>
+                                                        )?.label && (
+                                                            ` (${filterOptions.paciente.find((option) =>
                                                                 selectedFilters.includes(option.id)
-                                                            ).length})`}
+                                                            )?.label})`
+                                                        )}
                                                     </PopoverButton>
 
                                                     <PopoverPanel
@@ -352,12 +368,13 @@ return (
                                                 <Popover>
                                                     <PopoverButton className="block text-sm/6 font-bold text-gray-400 focus:outline-none data-active:text-blue-500 data-hover:text-blue-500">
                                                         Dificultad
-                                                        {filterOptions.dificultad.filter((option) =>
+                                                        {filterOptions.dificultad.find((option) =>
                                                             selectedFilters.includes(option.id)
-                                                        ).length > 0 &&
-                                                            ` (${filterOptions.dificultad.filter((option) =>
+                                                        )?.label && (
+                                                            ` (${filterOptions.dificultad.find((option) =>
                                                                 selectedFilters.includes(option.id)
-                                                            ).length})`}
+                                                            )?.label})`
+                                                        )}
                                                     </PopoverButton>
 
                                                     <PopoverPanel
