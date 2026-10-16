@@ -8,13 +8,16 @@ import { ArrowRightStartOnRectangleIcon, ArrowUpTrayIcon, PlusIcon } from "@hero
 import { useState } from "react";
 import { Popover, PopoverButton, PopoverPanel } from "@headlessui/react";
 import { toast } from "react-toastify";
+import { useAppStore } from "../../stores/useAppStore";
 
 const CreateCaseModal = () => {
     const showModal = useShowModal( "CreateCase" );
 
     const navigate = useNavigate();
 
-    const { register, handleSubmit, formState: { errors } } = useForm();
+    const createCase = useAppStore( state => state.createCase );
+
+    const { register, handleSubmit, formState: { errors }, setValue } = useForm();
 
     const [ selectedFile, setSelectedFile ] = useState<File | null>(null);
     const [ selectedModel, setSelectedModel ]= useState<File | null>(null);
@@ -28,17 +31,17 @@ const CreateCaseModal = () => {
     
     const filterOptions: Record< FilterCategory, { id: number; label: string }[] > = {
     extremidad: [
-        { id: 4, label: "Cabeza" },
-        { id: 5, label: "Pulmones" },
+        { id: 3, label: "Cabeza" },
+        { id: 4, label: "Pulmones" },
     ],
     paciente: [
-        { id: 6, label: "Adulto" },
-        { id: 7, label: "Menor" },
+        { id: 5, label: "Adulto" },
+        { id: 6, label: "Menor" },
     ],
     dificultad: [
-        { id: 8, label: "Fácil" },
-        { id: 9, label: "Media" },
-        { id: 10, label: "Difícil" },
+        { id: 7, label: "Fácil" },
+        { id: 8, label: "Media" },
+        { id: 9, label: "Difícil" },
     ],
 };
 
@@ -52,11 +55,12 @@ const handleFilterChange = ( category: FilterCategory, id: number ) => {
     });
 };
 
-const handleSubmitCase = ( formData ) => {
+const handleSubmitCase = async( formData ) => {
     const data = new FormData();
     data.append("title", formData.title);
     data.append("description", formData.description);
     data.append("filters", JSON.stringify(selectedFilters));
+
     if(selectedFile) {
         data.append("caseImage", selectedFile);
     }
@@ -65,7 +69,16 @@ const handleSubmitCase = ( formData ) => {
     }
 
     try {
-        console.log(data)
+        const message = await createCase( data );
+        toast.success( message );
+        
+        navigate( location.pathname, { replace: true } );
+
+        setValue("title", "");
+        setValue("description", "");
+        setSelectedFile(null);
+        setSelectedModel(null);
+        setSelectedFilters([]);
     } catch (error) {
         if( error instanceof Error ) {
             toast.error( error.message );

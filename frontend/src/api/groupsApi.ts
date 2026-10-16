@@ -227,7 +227,6 @@ export const likePost = async( { groupId, postId } : { groupId: Group["id"] ; po
         }
 
     } catch (error) {
-        console.log(error)
         if( isAxiosError(error) && error.response ) {
             throw new Error( error.response.data.error );
         }
