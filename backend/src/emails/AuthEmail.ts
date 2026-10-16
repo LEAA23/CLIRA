@@ -1,7 +1,5 @@
 import { transporter } from "../config/nodeMailer";
 
-
-
 interface IEmail {
     email: string;
     name: string;
