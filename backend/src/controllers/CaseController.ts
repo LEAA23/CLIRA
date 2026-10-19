@@ -72,7 +72,15 @@ export class CaseController {
             return res.status(200).send( "El caso se creo correctamente" );
             
         } catch (error) {
-            console.log(error)
+            return res.status(500).json( { error: "Error interno del servidor" } );
+        }
+    }
+    
+    static getCases = async( req: Request, res: Response ) => {
+        try {
+            const cases = await Case.findAll();
+            return res.status(200).json( { cases } );
+        } catch (error) {
             return res.status(500).json( { error: "Error interno del servidor" } );
         }
     }
