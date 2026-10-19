@@ -9,6 +9,7 @@ import { useState } from "react";
 import { Popover, PopoverButton, PopoverPanel } from "@headlessui/react";
 import { toast } from "react-toastify";
 import { useAppStore } from "../../stores/useAppStore";
+import type { CreateCaseForm } from "../../types";
 
 const CreateCaseModal = () => {
     const showModal = useShowModal( "CreateCase" );
@@ -17,7 +18,7 @@ const CreateCaseModal = () => {
 
     const createCase = useAppStore( state => state.createCase );
 
-    const { register, handleSubmit, formState: { errors }, setValue } = useForm();
+    const { register, handleSubmit, formState: { errors }, setValue } = useForm<CreateCaseForm>();
 
     const [ selectedFile, setSelectedFile ] = useState<File | null>(null);
     const [ selectedModel, setSelectedModel ]= useState<File | null>(null);
@@ -69,8 +70,7 @@ const handleFilterChange = (category: FilterCategory, id: number) => {
     });
 };
 
-
-const handleSubmitCase = async( formData ) => {
+const handleSubmitCase = async( formData : CreateCaseForm ) => {
     const data = new FormData();
     data.append("title", formData.title);
     data.append("description", formData.description);
