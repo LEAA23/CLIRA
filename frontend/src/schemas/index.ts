@@ -159,3 +159,15 @@ export const MembersOptionSchema = z.object({
     id: z.string(),
     label: z.string()
 });
+
+/**
+ * CASES SQUEMA
+ */
+export const CaseSchema = z.object({
+    id: z.number(),
+    title: z.string(),
+    description: z.string(),
+    caseImage: z.file().or( z.null() ),
+    patientModel: z.file().or( z.null() ),
+    filters: z.array(z.number())
+});
