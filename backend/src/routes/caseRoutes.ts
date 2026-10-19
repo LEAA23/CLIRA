@@ -24,4 +24,10 @@ router.post("/",
     CaseController.createCase
 );
 
+router.get("/",
+    authenticate,
+    handleInputErrors,
+    CaseController.getCases
+);
+
 export default router;

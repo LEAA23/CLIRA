@@ -69,7 +69,7 @@ export class GroupsControlller {
                 return res.status(200).json({ groups });
             }
 
-            //El rol es de un estudiante, entonces consulatmos los grupos en donde esta dicho estudiante
+            //El rol es de un estudiante, entonces consultamos los grupos en donde esta dicho estudiante
             const student = await User.findOne({
                 where: { id: req.user.id },
                 attributes:[],
