@@ -58,4 +58,4 @@ export type MemberOptionType = z.infer<typeof MembersOptionSchema>;
  * CASES TYPES
  */
 export type Case = z.infer<typeof CaseSchema>;
-export type CreateCaseForm = Pick<Case, "title" | "description" | "caseImage" | "patientModel" >;
+export type CreateCaseForm = Pick<Case, "title" | "description" | "previewImage" | "simulationModel" >;

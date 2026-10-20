@@ -77,10 +77,10 @@ const handleSubmitCase = async( formData : CreateCaseForm ) => {
     data.append("filters", JSON.stringify(selectedFilters));
 
     if(selectedFile) {
-        data.append("caseImage", selectedFile);
+        data.append("previewImage", selectedFile);
     }
     if(selectedModel) {
-        data.append("patientModel", selectedModel);
+        data.append("simulationModel", selectedModel);
     }
 
     try {
@@ -180,15 +180,15 @@ return (
 
                                         <div className="flex flex-col">
                                             <label 
-                                                htmlFor="caseImage"
+                                                htmlFor="previewImage"
                                                 className="text-gray-600 font-bold text-xl"
                                             >Imagen del caso</label>
                                             <input 
-                                                id="caseImage"
+                                                id="previewImage"
                                                 type="file"
                                                 accept="image/*"
                                                 className="hidden"
-                                                {...register("caseImage", {
+                                                {...register("previewImage", {
                                                     onChange: e => {
                                                         const file = e.target.files[0];
                                                         setSelectedFile( file );
@@ -196,7 +196,7 @@ return (
                                                 })}
                                             />
                                             <label 
-                                                htmlFor="caseImage"
+                                                htmlFor="previewImage"
                                                 className="bg-purple-500 py-2 px-6 text-white font-bold rounded-lg mt-10 md:mt-5 
                                                 hover:cursor-pointer hover:transition-colors hover:bg-purple-600 w-full flex 
                                                 justify-center items-center gap-x-2"
@@ -204,8 +204,8 @@ return (
                                                 <ArrowUpTrayIcon className="h-6"/>
                                                 Seleccionar imagen
                                             </label>
-                                            {errors.caseImage && (
-                                                <ErrorMessage>{ String(errors.caseImage.message) }</ErrorMessage>
+                                            {errors.previewImage && (
+                                                <ErrorMessage>{ String(errors.previewImage.message) }</ErrorMessage>
                                             )}
 
                                             <div className="mt-5 items-center">
@@ -234,15 +234,15 @@ return (
 
                                         <div className="flex flex-col mt-5">
                                             <label 
-                                                htmlFor="patientModel"
+                                                htmlFor="simulationModel"
                                                 className="text-gray-600 font-bold text-xl"
                                             >Modelo 3D</label>
                                             <input 
-                                                id="patientModel"
+                                                id="simulationModel"
                                                 type="file"
                                                 accept=".glb,model/gltf-binary"
                                                 className="hidden"
-                                                {...register("patientModel", {
+                                                {...register("simulationModel", {
                                                     onChange: e => {
                                                         const file = e.target.files[0];
                                                         setSelectedModel( file );
@@ -250,7 +250,7 @@ return (
                                                 })}
                                             />
                                             <label 
-                                                htmlFor="patientModel"
+                                                htmlFor="simulationModel"
                                                 className="bg-purple-500 py-2 px-6 text-white font-bold rounded-lg mt-10 md:mt-5 
                                                 hover:cursor-pointer hover:transition-colors hover:bg-purple-600 w-full flex 
                                                 justify-center items-center gap-x-2"
@@ -258,8 +258,8 @@ return (
                                                 <ArrowUpTrayIcon className="h-6"/>
                                                 Seleccionar modelo 3D (extension .glb)
                                             </label>
-                                            {errors.patientModel && (
-                                                <ErrorMessage>{ String(errors.patientModel.message) }</ErrorMessage>
+                                            {errors.simulationModel && (
+                                                <ErrorMessage>{ String(errors.simulationModel.message) }</ErrorMessage>
                                             )}
                                             {modelInfo && (
                                                 <div className="mt-5">

@@ -4,15 +4,27 @@ import PreviewCaseModal from "../../components/cases/PreviewCaseModal";
 import SearchBar from "../../components/SearchBar";
 import { PlusIcon } from "@heroicons/react/16/solid";
 import CreateCaseModal from "../../components/cases/CreateCaseModal";
+import { useAppStore } from "../../stores/useAppStore";
+import { useEffect } from "react";
 
 const CasesView = () => {
 
   const navigate = useNavigate();
+
+  const getCases = useAppStore( state => state.getCases );
+  const cases = useAppStore( state => state.cases );
+
+  useEffect(() => {
+    const getCasesData = async() => {
+      await getCases();
+    }
+
+    getCasesData();
+  }, []);
   
   return (
     <>
       <h1 className="text-center font-bold text-5xl my-10 text-blue-500">Casos Clinicos</h1>
-
       <div className="flex justify-between items-center">
         <SearchBar
           pendingCases={false}
@@ -37,21 +49,14 @@ const CasesView = () => {
       </div>
 
       <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-5">
-        <CaseCard
-          started={false}
-        />
-        <CaseCard
-          started={false}
-        />
-        <CaseCard
-          started={false}
-        />
-        <CaseCard
-          started={false}
-        />
-        <CaseCard
-          started={false}
-        />
+        {
+          cases.map( clinicalCase => (
+            <CaseCard
+              key={ clinicalCase.id }
+              started={false}
+            />
+          ))
+        }
 
       </div>
 
