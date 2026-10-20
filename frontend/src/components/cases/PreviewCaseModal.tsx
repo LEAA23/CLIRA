@@ -1,8 +1,10 @@
 import { Dialog, Transition } from '@headlessui/react';
 import { ChartBarIcon, StarIcon, CursorArrowRaysIcon, CalendarDaysIcon, ClockIcon, CheckCircleIcon } from '@heroicons/react/16/solid';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { Fragment } from 'react/jsx-runtime';
 import { useShowModal } from '../../hooks/useShowModal';
+import { useAppStore } from '../../stores/useAppStore';
+import { useEffect } from 'react';
 
 type PreviewCaseModalProps = {
     started: boolean;
@@ -12,7 +14,19 @@ const PreviewCaseModal = ({started} : PreviewCaseModalProps) => {
     const navigate = useNavigate();
 
     const showModal = useShowModal("previewCase");
-  return (
+
+    const location = useLocation();
+    const queryParams = new URLSearchParams( location.search );
+    const caseId = queryParams.get("case");
+
+    const fetchCase = useAppStore( state => state.fetchCase );
+    const clinicalCase = useAppStore( state => state.case );
+
+    useEffect(() => {
+        if(caseId) fetchCase( +caseId );
+    }, [ caseId, fetchCase ])
+
+    if( clinicalCase ) return (
     <>
         <Transition appear show={showModal} as={Fragment}>
             <Dialog as="div" className="relative z-10" onClose={() => navigate(location.pathname, { replace: true })}>
@@ -44,13 +58,13 @@ const PreviewCaseModal = ({started} : PreviewCaseModalProps) => {
                                     as="h3"
                                     className="font-black text-4xl my-2 text-center"
                                 >
-                                    {"Titulo del caso clinico"}
+                                    {clinicalCase.title}
                                 </Dialog.Title>
                                 <div className='grid grid-cols-1 lg:grid-cols-2'>
                                     <div 
                                         className="relative w-full  aspect-square overflow-hidden rounded-lg mx-auto"
                                     >
-                                        <img loading="lazy" src="/patientExample.png" alt="Imagen simulacion numero x" className="w-full aspect-square" />
+                                        <img loading="lazy" src={ clinicalCase.previewImage?.toString() || "" } alt="Imagen simulacion numero x" className="w-full" />
                                         <div className="absolute bottom-0 left-0 w-full h-20 bg-linear-to-t from-white to-transparent"></div>
                                     </div>
 
@@ -58,23 +72,22 @@ const PreviewCaseModal = ({started} : PreviewCaseModalProps) => {
                                         <div className="border-l-4 border-blue-500 pl-5 my-2 text-xl">
                                             <p className='font-bold text-gray-500 mb-2'>Descripcion:</p>
                                             <span className="text-black font-normal">
-                                                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam quis quam placerat, 
-                                                luctus elit non, vehicula dui. Aliquam efficitur ipsum vitae sapien faucibus blandit. 
-                                                Maecenas scelerisque diam eget neque placerat tempor non nec enim. Fusce in suscipit diam. 
-                                                Proin rutrum aliquam nunc et fringilla. Nam dapibus pretium aliquam. Ut fringilla 
-                                                ullamcorper urna id mattis. Nam sodales varius facilisis. Ut volutpat facilisis magna, 
-                                                nec bibendum dui malesuada id. 
+                                                { clinicalCase.description }
                                             </span>
                                         </div>
 
                                         <div className="my-5 border-l-4 border-blue-400 pl-5">
                                             <p className="text-gray-500 font-bold text-xl mb-2">Filtros:</p>
                                             <div className="flex justify-start flex-wrap gap-2">
-                                                <p className="border border-blue-500 text-blue-500 hover:bg-blue-500 hover:border-white hover:text-white px-2 py-1 rounded-lg">Adulto</p>
-                                                <p className="border border-blue-500 text-blue-500 hover:bg-blue-500 hover:border-white hover:text-white px-2 py-1 rounded-lg">Cabeza</p>
-                                                <p className="border border-blue-500 text-blue-500 hover:bg-blue-500 hover:border-white hover:text-white px-2 py-1 rounded-lg">Hereditarias</p>
-                                                <p className="border border-blue-500 text-blue-500 hover:bg-blue-500 hover:border-white hover:text-white px-2 py-1 rounded-lg">Fiebre</p>
-                                                <p className="border border-blue-500 text-blue-500 hover:bg-blue-500 hover:border-white hover:text-white px-2 py-1 rounded-lg">Fiebre</p>
+                                                {
+                                                    clinicalCase.filters.map( filterSelected => (         
+                                                        <p key={ filterSelected.id } className="border border-blue-500 text-blue-500 hover:bg-blue-500 
+                                                        hover:border-white hover:text-white px-2 py-1 rounded-lg">
+                                                            { filterSelected.name }
+                                                        </p>
+                                                    ) )
+                                                }
+                                                
                                             </div>
                                         </div>
 
@@ -86,7 +99,7 @@ const PreviewCaseModal = ({started} : PreviewCaseModalProps) => {
                                         <div className="flex flex-wrap gap-5">
                                             <div className="flex justify-start items-end gap-x-2">
                                                 <div className="bg-green-400 rounded-lg w-8 p-1 aspect-square text-white font-bold"><ChartBarIcon/></div>
-                                                <p className="font-semibold">Dificultad fac&iacute;l</p>
+                                                <p className="font-semibold">Dificultad</p>
                                             </div>
 
                                             {started && (
