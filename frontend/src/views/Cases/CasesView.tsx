@@ -53,6 +53,11 @@ const CasesView = () => {
           cases.map( clinicalCase => (
             <CaseCard
               key={ clinicalCase.id }
+              id={ clinicalCase.id }
+              title={ clinicalCase.title }
+              description={ clinicalCase.description }
+              previewImage={ clinicalCase.previewImage?.toString() || "" }
+              filters={ clinicalCase.filters }
               started={false}
             />
           ))

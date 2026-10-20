@@ -1,5 +1,5 @@
 import z from "zod"
-import type { AuthSchema, CaseSchema, ChartOptionSchema, CommentSquema, GroupResponse, GroupShcema, GroupsSchema, MembersOptionSchema, PostImageSchema, PostSchema, PostsSchema, UserProfileSchema, UserSchema, UserSearchSchema } from "../schemas"
+import type { AuthSchema, CaseSchema, ChartOptionSchema, CommentSquema, FilterSchema, GroupResponse, GroupShcema, GroupsSchema, MembersOptionSchema, PostImageSchema, PostSchema, PostsSchema, UserProfileSchema, UserSchema, UserSearchSchema } from "../schemas"
 
 /**
  * AUTH TYPES
@@ -53,6 +53,11 @@ export type ChartOption = z.infer<typeof ChartOptionSchema>;
  * MEMBER OPTION TYPE
  */
 export type MemberOptionType = z.infer<typeof MembersOptionSchema>;
+
+/**
+ * FILTERS TYPES
+ */
+export type Filter = z.infer<typeof FilterSchema>;
 
 /**
  * CASES TYPES
