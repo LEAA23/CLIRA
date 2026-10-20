@@ -171,3 +171,5 @@ export const CaseSchema = z.object({
     patientModel: z.file().or( z.null() ),
     filters: z.array(z.number())
 });
+
+export const CasesSquema = z.array( CaseSchema );
