@@ -15,7 +15,7 @@ const CaseCard = ( { id, title, description, previewImage, filters, started } : 
     const navigate = useNavigate();
 
     const handleClick = () => {
-        navigate(location.pathname + "?previewCase=true");
+        navigate(location.pathname + `?previewCase=true&case=${ id }`);
     }
   return (
     <div 
@@ -46,8 +46,10 @@ const CaseCard = ( { id, title, description, previewImage, filters, started } : 
             <div className="flex justify-start flex-wrap gap-2">
                 {
                     filters.map( filterSelected => (
-                        <p className="border border-blue-500 text-blue-500 hover:bg-blue-500 hover:border-white hover:text-white px-2 py-1 rounded-lg">{ filterSelected.name }</p>
-
+                        <p key={filterSelected.id} className="border border-blue-500 text-blue-500 hover:bg-blue-500 hover:border-white 
+                        hover:text-white px-2 py-1 rounded-lg">
+                            { filterSelected.name }
+                        </p>
                     ) )
                 }
             </div>
