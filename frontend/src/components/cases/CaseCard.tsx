@@ -1,11 +1,17 @@
 import { CalendarDaysIcon, ChartBarIcon, CheckCircleIcon, ClockIcon, CursorArrowRaysIcon, StarIcon } from "@heroicons/react/16/solid";
 import { useNavigate } from "react-router-dom";
+import type { Filter } from "../../types";
 
 type CaseCardProps = {
+    id: number;
+    title: string;
+    description: string;
+    previewImage: string;
+    filters: Filter[];
     started: boolean;
 }
 
-const CaseCard = ( {started} : CaseCardProps ) => {
+const CaseCard = ( { id, title, description, previewImage, filters, started } : CaseCardProps ) => {
     const navigate = useNavigate();
 
     const handleClick = () => {
@@ -14,36 +20,36 @@ const CaseCard = ( {started} : CaseCardProps ) => {
   return (
     <div 
         className="bg-white p-5 max-w-full rounded-2xl shadow space-y-5 
-        hover:shadow-xl hover:-translate-y-1 transition-all duration-200 cursor-pointer"
+        hover:shadow-xl hover:-translate-y-1 transition-all duration-200 cursor-pointer flex flex-col justify-between"
         onClick={() => handleClick()}
     >
-        <h3 className="text-center text-gray-500 font-bold text-2xl">{"Titulo Caso 1"}</h3>
+        <h3 className="text-center text-gray-500 font-bold text-2xl">{ title }</h3>
 
-        <div className="relative w-full aspect-square overflow-hidden rounded-lg">
-            <img 
-                loading="lazy" 
-                src="/patientExample.png" 
-                alt="Imagen simulacion numero x" 
-                className="w-full aspect-square" 
-            />
+        <div className="relative w-full overflow-hidden rounded-lg">
+            <div className="h-60 overflow-hidden rounded-lg">
+                <img src={ previewImage } alt="Sample image" className="w-full rounded-lg" />
+            </div>
+            
             <div className="absolute bottom-0 left-0 w-full h-20 bg-linear-to-t from-white to-transparent"></div>
         </div>
 
         <div>
-        <p className="text-gray-500 font-semibold mb-1">Descripci&oacute;n:</p>
-        {"descripcion de simulacion, "}
-        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed vel nisl metus. Etiam ac purus nec massa lobortis 
-        consequat nec...
+            <p className="text-gray-500 font-semibold mb-1">Descripci&oacute;n:</p>
+            <p className="line-clamp-4">
+                { description } 
+
+            </p>
         </div>
 
         <div className="py-1">
             <p className="text-gray-500 font-semibold">Filtros:</p>
             <div className="flex justify-start flex-wrap gap-2">
-                <p className="border border-blue-500 text-blue-500 hover:bg-blue-500 hover:border-white hover:text-white px-2 py-1 rounded-lg">Adulto</p>
-                <p className="border border-blue-500 text-blue-500 hover:bg-blue-500 hover:border-white hover:text-white px-2 py-1 rounded-lg">Cabeza</p>
-                <p className="border border-blue-500 text-blue-500 hover:bg-blue-500 hover:border-white hover:text-white px-2 py-1 rounded-lg">Hereditarias</p>
-                <p className="border border-blue-500 text-blue-500 hover:bg-blue-500 hover:border-white hover:text-white px-2 py-1 rounded-lg">Fiebre</p>
-                <p className="border border-blue-500 text-blue-500 hover:bg-blue-500 hover:border-white hover:text-white px-2 py-1 rounded-lg">Fiebre</p>
+                {
+                    filters.map( filterSelected => (
+                        <p className="border border-blue-500 text-blue-500 hover:bg-blue-500 hover:border-white hover:text-white px-2 py-1 rounded-lg">{ filterSelected.name }</p>
+
+                    ) )
+                }
             </div>
         </div>
 
@@ -94,7 +100,7 @@ const CaseCard = ( {started} : CaseCardProps ) => {
             hover:transition-colors hover:bg-blue-600 md:w-auto"
             onClick={(e) => {
                     e.stopPropagation();
-                    navigate(`/simulation/${"12"}`);
+                    navigate(`/simulation/${ id }`);
                 }
             }
         >
