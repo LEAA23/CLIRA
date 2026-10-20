@@ -16,7 +16,7 @@ export const createCase = async( formData: FormData ) => {
 export const getCases = async() => {
     try {
         const { data } = await api("/cases");
-        const response = CasesSquema.safeParse( data );
+        const response = CasesSquema.safeParse( data.cases );
         if( response.data ) {
             return response.data;
         }

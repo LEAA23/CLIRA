@@ -13,8 +13,8 @@ router.post("/",
     authenticate,
     isUserTeacher,
     uploadFile.fields([
-        { name: "caseImage", maxCount: 1 },
-        { name: "patientModel", maxCount: 1 }
+        { name: "previewImage", maxCount: 1 },
+        { name: "simulationModel", maxCount: 1 }
     ]),
     isValidGLB,
     body("title").notEmpty().withMessage("El titulo es obligatorio"),
