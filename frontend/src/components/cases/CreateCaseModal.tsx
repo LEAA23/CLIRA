@@ -31,20 +31,20 @@ const CreateCaseModal = () => {
     const [selectedFilters, setSelectedFilters] = useState<number[]>([]);
     
     const filterOptions: Record< FilterCategory, { id: number; label: string }[] > = {
-    extremidad: [
-        { id: 3, label: "Cabeza" },
-        { id: 4, label: "Pulmones" },
-    ],
-    paciente: [
-        { id: 5, label: "Adulto" },
-        { id: 6, label: "Menor" },
-    ],
-    dificultad: [
-        { id: 7, label: "Fácil" },
-        { id: 8, label: "Media" },
-        { id: 9, label: "Difícil" },
-    ],
-};
+        extremidad: [
+            { id: 3, label: "Cabeza" },
+            { id: 4, label: "Pulmones" },
+        ],
+        paciente: [
+            { id: 5, label: "Adulto" },
+            { id: 6, label: "Menor" },
+        ],
+        dificultad: [
+            { id: 7, label: "Fácil" },
+            { id: 8, label: "Media" },
+            { id: 9, label: "Difícil" },
+        ],
+    };
 
 
 const handleFilterChange = (category: FilterCategory, id: number) => {
