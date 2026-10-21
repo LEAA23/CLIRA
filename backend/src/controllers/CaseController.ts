@@ -23,6 +23,7 @@ export class CaseController {
                 previewImage: "",
                 simulationModel: "",
                 diagnosis: "",
+                teacher_id: req.user.id,
                 completed: false
             });
 
@@ -65,7 +66,7 @@ export class CaseController {
                 clinicalCase.simulationModel = key;
             }
 
-            await clinicalCase.save(), 
+            await clinicalCase.save();
                 
             filters.forEach( async(filter) => 
                 await CasesFilters.create({ case_id: clinicalCase.id, filter_id: filter }) 
@@ -74,6 +75,7 @@ export class CaseController {
             return res.status(200).send( "El caso se creo correctamente" );
             
         } catch (error) {
+            console.log(error)
             return res.status(500).json( { error: "Error interno del servidor" } );
         }
     }
