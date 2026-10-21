@@ -18,6 +18,7 @@ export const createCaseSlice : StateCreator<CaseSliceType> = ((set, get) => ({
         description: "",
         previewImage: "",
         simulationModel: "",
+        teacher_id: 0,
         filters: []
     },
     createCase: async( formData: FormData ) => {
