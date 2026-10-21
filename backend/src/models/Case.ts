@@ -15,6 +15,7 @@ export class Case extends Model< InferAttributes<Case>, InferCreationAttributes<
     // declare bodyTemperature: number;
     // declare oxygenSaturation: number;
     // declare bloodGlusose: number;
+    declare teacher_id: number;
     declare completed: boolean;
 }
 
@@ -75,6 +76,14 @@ Case.init({
     //     type: DataTypes.INTEGER,
     //     allowNull: false
     // },
+    teacher_id: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        references: {
+            model: "Users",
+            key: "id"
+        }
+    },
     completed: {
         type: DataTypes.BOOLEAN,
         defaultValue: false,
