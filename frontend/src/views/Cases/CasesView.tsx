@@ -13,6 +13,8 @@ const CasesView = () => {
 
   const getCases = useAppStore( state => state.getCases );
   const cases = useAppStore( state => state.cases );
+  const fetchUserAuth = useAppStore( state => state.fetchUserAuth );
+  fetchUserAuth();
 
   useEffect(() => {
     const getCasesData = async() => {
@@ -57,6 +59,7 @@ const CasesView = () => {
               title={ clinicalCase.title }
               description={ clinicalCase.description }
               previewImage={ clinicalCase.previewImage?.toString() || "" }
+              teacher_id={ clinicalCase.teacher_id }  
               filters={ clinicalCase.filters }
               started={false}
             />

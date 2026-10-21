@@ -178,6 +178,7 @@ export const CaseSchema = z.object({
     description: z.string(),
     previewImage: z.file().or( z.null() ).or( z.string() ),
     simulationModel: z.file().or( z.null() ).or( z.string() ),
+    teacher_id: z.number(),
     filters: z.array( FilterSchema )
 });
 

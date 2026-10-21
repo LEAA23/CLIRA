@@ -1,19 +1,25 @@
 import { CalendarDaysIcon, ChartBarIcon, CheckCircleIcon, ClockIcon, CursorArrowRaysIcon, StarIcon } from "@heroicons/react/16/solid";
 import { useNavigate } from "react-router-dom";
 import type { Filter } from "../../types";
+import { useAppStore } from "../../stores/useAppStore";
+import CaseCardOptions from "./CaseCardOptions";
+import { useEffect } from "react";
 
 type CaseCardProps = {
     id: number;
     title: string;
     description: string;
     previewImage: string;
+    teacher_id: number;
     filters: Filter[];
     started: boolean;
 }
 
-const CaseCard = ( { id, title, description, previewImage, filters, started } : CaseCardProps ) => {
+const CaseCard = ( { id, title, description, previewImage, teacher_id, filters, started } : CaseCardProps ) => {
     const navigate = useNavigate();
 
+    const user = useAppStore( state => state.user );
+    
     const handleClick = () => {
         navigate(location.pathname + `?previewCase=true&case=${ id }`);
     }
@@ -23,7 +29,24 @@ const CaseCard = ( { id, title, description, previewImage, filters, started } : 
         hover:shadow-xl hover:-translate-y-1 transition-all duration-200 cursor-pointer flex flex-col justify-between"
         onClick={() => handleClick()}
     >
-        <h3 className="text-center text-gray-500 font-bold text-2xl">{ title }</h3>
+        <div className="relative p-5  flex justify-center items-center">
+
+            <h3 className="text-center text-gray-500 font-bold text-2xl">{ title }</h3>
+
+            {user.id === teacher_id && user.rol === "teacher" && (
+                <div 
+                    className="absolute right-1"
+                    onClick={ e => e.stopPropagation()}
+                >
+                    <CaseCardOptions
+                        case_id={id}
+                    />
+                    
+                </div>
+
+            )}
+
+        </div>
 
         <div className="relative w-full overflow-hidden rounded-lg">
             <div className="h-60 overflow-hidden rounded-lg">
