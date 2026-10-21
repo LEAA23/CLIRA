@@ -6,6 +6,7 @@ import { PlusIcon } from "@heroicons/react/16/solid";
 import CreateCaseModal from "../../components/cases/CreateCaseModal";
 import { useAppStore } from "../../stores/useAppStore";
 import { useEffect } from "react";
+import EditCaseModal from "../../components/cases/EditCaseModal";
 
 const CasesView = () => {
 
@@ -72,6 +73,7 @@ const CasesView = () => {
         started={false}
       />
       <CreateCaseModal/>
+      <EditCaseModal/>
     </>
   )
 }

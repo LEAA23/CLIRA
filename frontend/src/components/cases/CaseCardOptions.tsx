@@ -24,7 +24,7 @@ const CaseCardOptions = ( { case_id } : caseCardOptionsProps ) => {
                     <div 
                         className='flex justify-start gap-x-2 text-gray-400 hover:text-amber-400 cursor-pointer transition-all ease-in-out
                         duration-200'
-                        onClick={ () => navigate( location.pathname + `?EditPost=true&post=${ case_id }`) }
+                        onClick={ () => navigate( location.pathname + `?EditCase=true&case=${ case_id }`) }
                     >
                         <PencilIcon className='h-6'/>
                         <button 
