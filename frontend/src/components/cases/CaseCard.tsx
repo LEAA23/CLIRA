@@ -3,7 +3,6 @@ import { useNavigate } from "react-router-dom";
 import type { Filter } from "../../types";
 import { useAppStore } from "../../stores/useAppStore";
 import CaseCardOptions from "./CaseCardOptions";
-import { useEffect } from "react";
 
 type CaseCardProps = {
     id: number;
