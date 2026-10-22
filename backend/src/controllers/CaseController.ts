@@ -222,4 +222,60 @@ export class CaseController {
             return res.status(500).json( { error: "Error interno del servidor" } );
         }
     }
+
+    static deleteCaseImage = async( req: Request, res: Response ) => {
+        try {
+            const clinicalCase = req.clinicalCase;
+            //Si el caso tiene una imagen entonces la vamos a eliminar del bucket de aws
+            if( clinicalCase.previewImage ) {
+                await s3Client.send(
+                    new DeleteObjectCommand({
+                        Bucket: process.env.AWS_BUCKET,
+                        Key: clinicalCase.previewImage
+                    })
+                );
+
+            }
+
+            //Eliminamos la referencia de la imagen en la base de datos
+            clinicalCase.previewImage = "";
+            await clinicalCase.save();
+            return res.status(200).send( "Imagen del caso eliminada correctamente" )
+        } catch (error) {
+            return res.status(500).json( { error: "Error interno del servidor" } );
+        }
+    }
+
+    static deleteCase = async( req: Request, res: Response ) => {
+        try {
+            const clinicalCase = req.clinicalCase;
+
+            //Si el caso tiene una imagen entonces la vamos a eliminar del bucket de aws
+            if( clinicalCase.previewImage ) {
+                await s3Client.send(
+                    new DeleteObjectCommand({
+                        Bucket: process.env.AWS_BUCKET,
+                        Key: clinicalCase.previewImage
+                    })
+                );
+            }
+
+            //Si el caso tiene un modelo entonces lo vamos a eliminar tambien del bucket de AWS
+            if( clinicalCase.simulationModel ) {
+                await s3Client.send(
+                    new DeleteObjectCommand({
+                        Bucket: process.env.AWS_BUCKET,
+                        Key: clinicalCase.simulationModel
+                    })
+                );
+            }
+
+            //Eliminamos los filtros y el caso de la base de datos
+            const filters = await CasesFilters.findAll( { where: { case_id: clinicalCase.id } } );
+            await Promise.allSettled([ filters.forEach( filter => filter.destroy() ), clinicalCase.destroy() ]);
+            return res.status(200).send("Caso eliminado correctamente");
+        } catch (error) {
+            return res.status(500).json( { error: "Error interno del servidor" } );
+        }
+    }
 }

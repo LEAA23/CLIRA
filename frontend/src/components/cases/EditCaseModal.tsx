@@ -247,11 +247,11 @@ const EditCaseModal = () => {
                                         <label 
                                             htmlFor="previewImage"
                                             className="text-gray-600 text-2xl font-bold"
-                                        >Imagenes</label>
+                                        >Imagen</label>
                                         
                                         {clinicalCase.previewImage && (
                                             <div className="mt-5">
-                                                <p className="text-sm text-gray-600 font-semibold mb-5">Imagenes previamente seleccionadas:</p>
+                                                <p className="text-sm text-gray-600 font-semibold mb-5">Imagen previamente seleccionada:</p>
 
                                                 <div className="flex justify-start space-x-5 space-y-5 items-center flex-wrap">
                                                         <div className="relative">
