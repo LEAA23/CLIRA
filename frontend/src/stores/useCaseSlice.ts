@@ -1,5 +1,5 @@
 import type { StateCreator } from "zustand";
-import { createCase, getCases } from "../api/caseApi";
+import { createCase, getCases, updateCase } from "../api/caseApi";
 import type { Case } from "../types";
 
 export type CaseSliceType = {
@@ -7,7 +7,8 @@ export type CaseSliceType = {
     case: Case;
     createCase: (formData: FormData) => Promise<string | undefined>;
     getCases: () => Promise<void>;
-    fetchCase: (caseId: number) => Promise<void>
+    fetchCase: (caseId: number) => Promise<void>;
+    updateCase: ({ caseId, formData }: { caseId: number; formData: FormData; }) => Promise<string | undefined>;
 }
 
 export const createCaseSlice : StateCreator<CaseSliceType> = ((set, get) => ({
@@ -35,5 +36,28 @@ export const createCaseSlice : StateCreator<CaseSliceType> = ((set, get) => ({
         set(() => ({
             case: get().cases.find( clinicalCase => clinicalCase.id === caseId )
         }));
+    },
+    updateCase: async( { caseId, formData } : { caseId: Case["id"] ; formData: FormData } ) => {
+        const message = await updateCase( { caseId, formData } );
+        set(() => ({
+            cases: get().cases.map( clinicalCase => {
+                if( clinicalCase.id === caseId ) {
+                    const newModel = formData.get("simulationModel");
+                    const newImage = formData.get("previewImage");
+
+                    return {
+                        ...clinicalCase,
+                        title: formData.get("title") as string,
+                        description: formData.get("description") as string,
+
+                        // Si no hay archivo nuevo, conserva el anterior
+                        previewImage: newImage instanceof File? URL.createObjectURL(newImage) : clinicalCase.previewImage,
+                        simulationModel: newModel instanceof File? URL.createObjectURL(newModel) : clinicalCase.simulationModel,
+                    }
+                }
+                return clinicalCase;
+            } )
+        }))
+        return message;
     }
 }));
