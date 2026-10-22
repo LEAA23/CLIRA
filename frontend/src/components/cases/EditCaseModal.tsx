@@ -26,6 +26,7 @@ const EditCaseModal = () => {
     const fetchCase = useAppStore( state => state.fetchCase );
     const clinicalCase = useAppStore( state => state.case );
     const updateCase = useAppStore( state => state.updateCase );
+    const deleteCaseImage = useAppStore( state => state.deleteCaseImage );
 
     const initialValues : EditCaseForm = {
         title: "",
@@ -129,7 +130,7 @@ const EditCaseModal = () => {
 
     const handleDeleteCaseImage = async(  caseId: number ) => {
         try {
-            const message = ""
+            const message = await deleteCaseImage( caseId );
             toast.success( message );
         } catch (error) {
             if( error instanceof Error ) {

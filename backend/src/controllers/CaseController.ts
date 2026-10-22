@@ -140,12 +140,15 @@ export class CaseController {
                 );
 
                 //Eliminamos la imagen vieja del bucket
-                await s3Client.send(
-                    new DeleteObjectCommand({
-                        Bucket: process.env.AWS_BUCKET,
-                        Key: oldKey
-                    })
-                );
+                if( oldKey && oldKey !== key ) {
+                    await s3Client.send(
+                        new DeleteObjectCommand({
+                            Bucket: process.env.AWS_BUCKET,
+                            Key: oldKey
+                        })
+                    );
+
+                }
 
             }
 
