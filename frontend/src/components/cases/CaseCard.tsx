@@ -28,7 +28,7 @@ const CaseCard = ( { id, title, description, previewImage, teacher_id, filters, 
         hover:shadow-xl hover:-translate-y-1 transition-all duration-200 cursor-pointer flex flex-col justify-between"
         onClick={() => handleClick()}
     >
-        <div className="relative p-5  flex justify-center items-center">
+        <div className="relative px-5 flex justify-center items-center">
 
             <h3 className="text-center text-gray-500 font-bold text-2xl">{ title }</h3>
 

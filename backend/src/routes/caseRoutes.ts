@@ -48,4 +48,13 @@ router.patch("/:caseId",
     CaseController.updateCase
 );
 
+router.patch("/:caseId/deleteCaseImage",
+    authenticate,
+    isUserTeacher,
+    caseExists,
+    param( "caseId" ).notEmpty().withMessage("El id del caso es obligatorio"),
+    handleInputErrors,
+    CaseController.deleteCaseImage
+);
+
 export default router;
