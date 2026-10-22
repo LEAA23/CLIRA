@@ -1,6 +1,7 @@
 import { isAxiosError } from "axios"
 import api from "../lib/axios";
 import { CasesSquema } from "../schemas";
+import type { Case } from "../types";
 
 export const createCase = async( formData: FormData ) => {
     try {
@@ -20,6 +21,17 @@ export const getCases = async() => {
         if( response.data ) {
             return response.data;
         }
+    } catch (error) {
+        if( isAxiosError( error ) && error.response ) {
+            throw new Error( error.response.data.error );
+        }
+    }
+}
+
+export const updateCase = async( { caseId, formData } : { caseId: Case["id"] ; formData: FormData } ) => {
+    try {
+        const { data } = await api.patch<string>(`/cases/${caseId}`, formData );
+        return data;
     } catch (error) {
         if( isAxiosError( error ) && error.response ) {
             throw new Error( error.response.data.error );

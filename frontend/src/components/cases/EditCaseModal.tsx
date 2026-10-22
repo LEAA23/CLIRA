@@ -1,7 +1,7 @@
 import { Transition, Dialog } from "@headlessui/react";
 import { ArrowUpTrayIcon, EyeIcon, XMarkIcon } from "@heroicons/react/16/solid";
 import { useForm } from "react-hook-form";
-import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { Fragment } from "react/jsx-runtime";
 import { Popover, PopoverButton, PopoverPanel } from "@headlessui/react";
 import ErrorMessage from "../ErrorMessage";
@@ -18,13 +18,14 @@ const EditCaseModal = () => {
     const location = useLocation();
     const queryParams = new URLSearchParams(location.search);
     const editCase = queryParams.get("EditCase");
+    const caseId = +queryParams.get("case")!;
     const showModal = editCase? true: false;
 
-    const params = useParams();
-    const caseId = +params.case!;
+
 
     const fetchCase = useAppStore( state => state.fetchCase );
-    const clinicalCase = useAppStore( state => state.case )
+    const clinicalCase = useAppStore( state => state.case );
+    const updateCase = useAppStore( state => state.updateCase );
 
     const initialValues : EditCaseForm = {
         title: "",
@@ -144,7 +145,7 @@ const EditCaseModal = () => {
         data.append("filters", JSON.stringify(selectedFilters));
 
         if(formData.previewImage instanceof File) {
-            data.append("caseImage", formData.previewImage);
+            data.append("previewImage", formData.previewImage);
         }
 
         if(selectedModel) {
@@ -152,7 +153,7 @@ const EditCaseModal = () => {
         }
 
         try {
-            const message = ""
+            const message = await updateCase( { caseId, formData: data } );
             toast.success( message );
             navigate( location.pathname, { replace: true } );
         } catch (error) {
