@@ -2,10 +2,11 @@ import { Router } from "express";
 import authenticate from "../middleware/auth";
 import { CaseController } from "../controllers/CaseController";
 import { handleInputErrors } from "../middleware/handleInputErrors";
-import { body } from "express-validator";
+import { body, param } from "express-validator";
 import { uploadFile } from "../middleware/uploadFile";
 import { isUserTeacher } from "../middleware/isUserTeacher";
 import { isValidGLB } from "../middleware/isValidGLB";
+import { caseExists } from "../middleware/caseExists";
 
 const router =  Router();
 
@@ -28,6 +29,23 @@ router.get("/",
     authenticate,
     handleInputErrors,
     CaseController.getCases
+);
+
+router.patch("/:caseId",
+    authenticate,
+    isUserTeacher,
+    uploadFile.fields([
+        { name: "previewImage", maxCount: 1 },
+        { name: "simulationModel", maxCount: 1 }
+    ]),
+    isValidGLB,
+    caseExists,
+    param( "caseId" ).notEmpty().withMessage("El id del caso es obligatorio"),
+    body("title").notEmpty().withMessage("El titulo es obligatorio"),
+    body("description").notEmpty().withMessage("La descripcion del es obligatoria"),
+    body("filters").isLength({ min: 1 }).withMessage("Selecciona al menos un filtro"),
+    handleInputErrors,
+    CaseController.updateCase
 );
 
 export default router;

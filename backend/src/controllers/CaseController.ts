@@ -2,7 +2,7 @@ import { Request, Response } from "express"
 import { Case } from "../models/Case";
 import { compressImage } from "../utils/compressImage";
 import { s3Client } from "../config/services/s3";
-import { GetObjectCommand, PutObjectCommand } from "@aws-sdk/client-s3";
+import { DeleteObjectCommand, GetObjectCommand, PutObjectCommand } from "@aws-sdk/client-s3";
 import { CasesFilters } from "../models/CasesFilters";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { Filters } from "../models/Filters";
@@ -104,6 +104,121 @@ export class CaseController {
             )
             return res.status(200).json( { cases } );
         } catch (error) {
+            return res.status(500).json( { error: "Error interno del servidor" } );
+        }
+    }
+
+    static updateCase = async( req: Request, res: Response ) => {
+        //Obtenemos los archivos subidos por el usuario, tanto la imagen como el modelo 3D
+        const files = req.files as {
+            [fieldname: string] : Express.Multer.File[]
+        }
+        const { title, description, filters } = req.body;
+
+        try {
+            //Actualizamos la imagen del caso clinico
+            if( files.previewImage ) {
+                const oldKey = req.clinicalCase.previewImage;
+
+                //Comprimimos la nueva imagen
+                const compresedImage = await compressImage( files.previewImage[0].buffer ); 
+
+                //Creamos una nueva llave unica
+                const key = `cases/images/${ Date.now() }-${ files.previewImage[0].originalname.split(".")[0] }.webp`;
+
+                //Guardamos la referencia de la imagen en la base de datos
+                req.clinicalCase.previewImage = key;
+
+                //Guardamos la imagen en el bucket de AWS
+                await s3Client.send(
+                    new PutObjectCommand({
+                        Bucket: process.env.AWS_BUCKET,
+                        Key: key,
+                        Body: compresedImage,
+                        ContentType: "image/webp"
+                    })
+                );
+
+                //Eliminamos la imagen vieja del bucket
+                await s3Client.send(
+                    new DeleteObjectCommand({
+                        Bucket: process.env.AWS_BUCKET,
+                        Key: oldKey
+                    })
+                );
+
+            }
+
+            //Actualizamos el modelo 3d si es que el usuario escogio uno nuevo
+            if( files.simulationModel ) {
+                const oldKey = req.clinicalCase.simulationModel;
+                
+                //Creamos una nueva llave para el modelo
+                const key = `cases/models/${ Date.now() }-${ files.simulationModel[0].originalname.split(".")[0] }`;
+
+                //Guardamos la neuva referencia al modelo
+                req.clinicalCase.simulationModel = key;
+
+                //Guardamos el nuevo modelo 3d en el bucket de aws
+                await s3Client.send(
+                    new PutObjectCommand({
+                        Bucket: process.env.AWS_BUCKET,
+                        Key: key,
+                        Body: files.simulationModel[0].buffer,
+                        ContentType: "model/gltf-binary"
+                    })
+                );
+
+                //Eliminamos el antiguo modelo 3d del bucket
+                await s3Client.send(
+                    new DeleteObjectCommand({
+                        Bucket: process.env.AWS_BUCKET,
+                        Key: oldKey
+                    })
+                );
+            }
+
+            //actualizamos los filtros
+            const caseFilters = await CasesFilters.findAll({ where: { case_id: req.clinicalCase.id } });
+            const newFilters : number[] = JSON.parse( filters );
+
+            // IDs de los filtros que ya tiene el caso
+            const currentFilterIds = caseFilters.map( filterObj => filterObj.filter_id);
+
+            // Filtros que debemos eliminar
+            const filtersToDelete = currentFilterIds.filter( id => !newFilters.includes(id) );
+
+            // Filtros que debemos agregar
+            const filtersToAdd = newFilters.filter( id => !currentFilterIds.includes(id) );
+            // Eliminar filtros antiguos
+            if (filtersToDelete.length > 0) {
+                await CasesFilters.destroy({
+                    where: {
+                        case_id: req.clinicalCase.id,
+                        filter_id: filtersToDelete
+                    }
+                });
+            }
+
+            // Agregar filtros nuevos
+            if (filtersToAdd.length > 0) {
+                await CasesFilters.bulkCreate(
+                    filtersToAdd.map(filterId => ({
+                        case_id: req.clinicalCase.id,
+                        filter_id: filterId
+                    }))
+                );
+            }
+
+            //Finalmente ctualizamdo el demas contenido del caso
+            req.clinicalCase.title = title;
+            req.clinicalCase.description = description;
+            await req.clinicalCase.save();
+
+            return res.status(200).send("El caso se actualizo correctamente");
+
+        } catch (error) {
+            console.log(error)
             return res.status(500).json( { error: "Error interno del servidor" } );
         }
     }
