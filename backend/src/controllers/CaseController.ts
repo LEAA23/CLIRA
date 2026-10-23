@@ -173,12 +173,14 @@ export class CaseController {
                 );
 
                 //Eliminamos el antiguo modelo 3d del bucket
-                await s3Client.send(
-                    new DeleteObjectCommand({
-                        Bucket: process.env.AWS_BUCKET,
-                        Key: oldKey
-                    })
-                );
+                if( oldKey && oldKey !== key ) {
+                    await s3Client.send(
+                        new DeleteObjectCommand({
+                            Bucket: process.env.AWS_BUCKET,
+                            Key: oldKey
+                        })
+                    );
+                }   
             }
 
             //actualizamos los filtros
@@ -244,6 +246,29 @@ export class CaseController {
             clinicalCase.previewImage = "";
             await clinicalCase.save();
             return res.status(200).send( "Imagen del caso eliminada correctamente" )
+        } catch (error) {
+            return res.status(500).json( { error: "Error interno del servidor" } );
+        }
+    }
+
+    static deleteCaseModel = async( req: Request, res: Response ) => {
+        try {
+            const clinicalCase = req.clinicalCase;
+
+            //Si el caso tiene un modelo 3d entonces lo vamos a elimianr del bucket de aws
+            if( clinicalCase.simulationModel ) {
+                await s3Client.send(
+                    new DeleteObjectCommand({
+                        Bucket: process.env.AWS_BUCKET,
+                        Key: clinicalCase.simulationModel
+                    })
+                );
+            }
+
+            //Eliminamos la referencia del modelo de la base de datos
+            clinicalCase.simulationModel = "";
+            await clinicalCase.save();
+            return res.status(200).send("Modelo eliminado correctamente");
         } catch (error) {
             return res.status(500).json( { error: "Error interno del servidor" } );
         }
