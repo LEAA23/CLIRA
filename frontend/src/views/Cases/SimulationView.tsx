@@ -3,7 +3,7 @@ import { ArrowUpRightIcon } from "@heroicons/react/16/solid";
 import Experience from "../../SimulationExperiences/PatientExperience/Experience";
 import { useEffect, useRef, useState } from "react";
 import { useAppStore } from "../../stores/useAppStore";
-import { useParams, type Params } from "react-router-dom";
+import { useParams } from "react-router-dom";
 
 const SimulationView = () => {
     //Usamos useRef para hacer referencia a un elmento del HTML
@@ -24,27 +24,39 @@ const SimulationView = () => {
     //Obtenemos la informacion del caso
     const params = useParams();
     const caseId = +params.id!;
+    console.log(caseId)
+
+    const fetchSimulation = useAppStore( state => state.fetchSimulation );
+    const clinicalCase = useAppStore( state => state.case );
+
+    useEffect(() => {
+        const fetchData = async() => {
+            await fetchSimulation( caseId );
+        }
+        fetchData();
+        console.log(clinicalCase)
+    }, [ caseId, fetchSimulation ]);
 
   return (
     <>
-        <h1 className="text-5xl text-center font-bold  my-10 text-blue-500">Titulo del Caso Medico</h1>
+        <h1 className="text-5xl text-center font-bold  my-10 text-blue-500">Titulo del Caso Medico {clinicalCase.id}</h1>
         
         <div className="grid grid-cols-2 gap-x-5 mb-5">
 
-    <div className="relative w-full min-w-0 min-h-110 overflow-hidden rounded-xl">
-        <div 
-            className="absolute top-2 right-2 z-10 bg-white shadow rounded-xl p-1 h-8 w-8 cursor-pointer"
-            onClick={ () =>  setWindowSize(prevValue => !prevValue) }
-        >
-            <ArrowUpRightIcon className="text-gray-400" />
-        </div>
+        <div className="relative w-full min-w-0 min-h-110 overflow-hidden rounded-xl">
+            <div 
+                className="absolute top-2 right-2 z-10 bg-white shadow rounded-xl p-1 h-8 w-8 cursor-pointer"
+                onClick={ () =>  setWindowSize(prevValue => !prevValue) }
+            >
+                <ArrowUpRightIcon className="text-gray-400" />
+            </div>
 
-        <canvas
-            ref={canvasRef}
-            id="caseSimulation-webgl"
-            className="w-full h-full"
-        />
-    </div>
+            <canvas
+                ref={canvasRef}
+                id="caseSimulation-webgl"
+                className="w-full h-full"
+            />
+        </div>
 
             <div className="bg-white shadow rounded-xl p-5 max-w-full">
                 <p className="text-gray-500 font-bold">Descripcion:</p>
