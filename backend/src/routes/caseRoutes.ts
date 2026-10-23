@@ -57,4 +57,13 @@ router.patch("/:caseId/deleteCaseImage",
     CaseController.deleteCaseImage
 );
 
+router.patch("/:caseId/deleteCaseModel",
+    authenticate,
+    isUserTeacher,
+    caseExists,
+    param( "caseId" ).notEmpty().withMessage("El id del caso es obligatorio"),
+    handleInputErrors,
+    CaseController.deleteCaseModel
+);
+
 export default router;
