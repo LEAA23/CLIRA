@@ -1,5 +1,5 @@
 import type { StateCreator } from "zustand";
-import { createCase, deleteCaseImage, getCases, updateCase } from "../api/caseApi";
+import { createCase, deleteCaseImage, deleteCaseModel, getCases, updateCase } from "../api/caseApi";
 import type { Case } from "../types";
 
 export type CaseSliceType = {
@@ -10,6 +10,7 @@ export type CaseSliceType = {
     fetchCase: (caseId: number) => Promise<void>;
     updateCase: ({ caseId, formData }: { caseId: number; formData: FormData; }) => Promise<string | undefined>;
     deleteCaseImage: (caseId: number) => Promise<string | undefined>;
+    deleteCaseModel: (caseId: number) => Promise<string | undefined>;
 }
 
 export const createCaseSlice : StateCreator<CaseSliceType> = ((set, get) => ({
@@ -29,6 +30,7 @@ export const createCaseSlice : StateCreator<CaseSliceType> = ((set, get) => ({
     },
     getCases: async() => {
         const cases = await getCases();
+        console.log(cases)
         set(() => ({
             cases
         }));
@@ -66,6 +68,7 @@ export const createCaseSlice : StateCreator<CaseSliceType> = ((set, get) => ({
         set(() => ({
             cases: get().cases.map( clinicalCase => {
                 if( clinicalCase.id === caseId ) {
+                    console.log(true)
                     return {
                         ...clinicalCase,
                         previewImage: ""
@@ -78,6 +81,26 @@ export const createCaseSlice : StateCreator<CaseSliceType> = ((set, get) => ({
                 previewImage: ""
             }
         }));
+        return message;
+    },
+    deleteCaseModel: async( caseId : Case["id"] ) => {
+        const message = await deleteCaseModel( caseId );
+        set(() => ({
+            cases: get().cases.map( clinicalCase => {
+                if( clinicalCase.id === caseId ) {
+                     console.log(true)
+                    return {
+                        ...clinicalCase,
+                        simulationModel: ""
+                    }
+                }
+                return clinicalCase;
+            } ),
+            case: {
+                ...get().case,
+                simulationModel: ""
+            }
+        }))
         return message;
     }
 }));

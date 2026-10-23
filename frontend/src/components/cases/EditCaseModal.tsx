@@ -27,6 +27,7 @@ const EditCaseModal = () => {
     const clinicalCase = useAppStore( state => state.case );
     const updateCase = useAppStore( state => state.updateCase );
     const deleteCaseImage = useAppStore( state => state.deleteCaseImage );
+    const deleteCaseModel = useAppStore( state => state.deleteCaseModel );
 
     const initialValues : EditCaseForm = {
         title: "",
@@ -131,6 +132,17 @@ const EditCaseModal = () => {
     const handleDeleteCaseImage = async(  caseId: number ) => {
         try {
             const message = await deleteCaseImage( caseId );
+            toast.success( message );
+        } catch (error) {
+            if( error instanceof Error ) {
+                toast.error( error.message );
+            }
+        }
+    }
+
+    const handleDeleteCaseModel = async( caseId: number ) => {
+        try {
+            const message = await deleteCaseModel( caseId );
             toast.success( message );
         } catch (error) {
             if( error instanceof Error ) {
@@ -361,7 +373,7 @@ const EditCaseModal = () => {
                                                     <div 
                                                         className="absolute -top-2 -right-5 bg-red-400 h-8 aspect-square rounded-full
                                                                     hover:bg-red-500 cursor-pointer p-1"
-                                                        onClick={ () => 0}
+                                                        onClick={ () => handleDeleteCaseModel( clinicalCase.id ) }
                                                     >
                                                         <p className="font-bold text-white text-center">X</p>
                                                     </div>
