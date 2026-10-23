@@ -24,7 +24,6 @@ const SimulationView = () => {
     //Obtenemos la informacion del caso
     const params = useParams();
     const caseId = +params.id!;
-    console.log(caseId)
 
     const fetchSimulation = useAppStore( state => state.fetchSimulation );
     const clinicalCase = useAppStore( state => state.case );
@@ -34,7 +33,6 @@ const SimulationView = () => {
             await fetchSimulation( caseId );
         }
         fetchData();
-        console.log(clinicalCase)
     }, [ caseId, fetchSimulation ]);
 
   return (
