@@ -26,7 +26,7 @@ export default class Camera {
     //Este metodo lo que hace es crear la instancia de la camara de THREE.js
     setInstance() {
         this.instance = new THREE.PerspectiveCamera( 35, this.sizes.width / this.sizes.height, 0.1, 100 );
-        this.instance.position.set(0, 4, 7);
+        this.instance.position.set(0, 6, 15);
         this.scene.add( this.instance );
     }
 
@@ -40,7 +40,7 @@ export default class Camera {
         this.controls.target.z = 1;
 
         this.controls.minDistance = 1;
-        this.controls.maxDistance = 7;
+        this.controls.maxDistance = 13;
     }
 
     //Este metodo actualiza los valores de la camara cuando ocurre el evento de resize

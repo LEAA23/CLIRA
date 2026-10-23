@@ -59,7 +59,6 @@ export const createCaseSlice : StateCreator<CaseSliceType> = ((set, get) => ({
         set(() => ({
             cases: get().cases.map( clinicalCase => {
                 if( clinicalCase.id === caseId ) {
-                    console.log(true)
                     return {
                         ...clinicalCase,
                         previewImage: ""
