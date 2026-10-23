@@ -1,5 +1,5 @@
 import type { StateCreator } from "zustand";
-import { createCase, deleteCase, deleteCaseImage, deleteCaseModel, getCases, updateCase } from "../api/caseApi";
+import { createCase, deleteCase, deleteCaseImage, deleteCaseModel, getCases, getSimulation, updateCase } from "../api/caseApi";
 import type { Case } from "../types";
 
 export type CaseSliceType = {
@@ -13,6 +13,7 @@ export type CaseSliceType = {
     deleteCaseModel: (caseId: number) => Promise<string | undefined>;
     deleteCase: (caseId: number) => Promise<string | undefined>;
     cleanCase: () => void;
+    fetchSimulation: (caseId: number) => Promise<void>;
 }
 
 export const createCaseSlice : StateCreator<CaseSliceType> = ((set, get) => ({
@@ -40,6 +41,12 @@ export const createCaseSlice : StateCreator<CaseSliceType> = ((set, get) => ({
     fetchCase: async( caseId: Case["id"] ) => {
         set(() => ({
             case: get().cases.find( clinicalCase => clinicalCase.id === caseId )
+        }));
+    },
+    fetchSimulation: async( caseId: Case["id"] ) => {
+        const clinicalCase = await getSimulation( caseId );
+        set(() => ({
+            case: clinicalCase
         }));
     },
     updateCase: async( { caseId, formData } : { caseId: Case["id"] ; formData: FormData } ) => {

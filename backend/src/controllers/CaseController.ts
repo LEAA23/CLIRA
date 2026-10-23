@@ -109,8 +109,17 @@ export class CaseController {
     }
 
     static getCase = async( req: Request, res: Response ) => {
+        const { caseId } = req.params;
         try {
-            const clinicalCase = req.clinicalCase;
+            const clinicalCase = await Case.findOne({
+                where: { id: caseId },
+                include: [ { model: Filters, as: "filters", attributes: [ "id", "name", "category_id" ], through: { attributes: [] } } ]
+            });
+
+            if(!clinicalCase) {
+                const error = new Error("El caso no existe");
+                return res.status(404).json( { error: error.message } );
+            }
 
             if( clinicalCase.simulationModel ) {
                 const command = new GetObjectCommand({
@@ -122,8 +131,9 @@ export class CaseController {
                 clinicalCase.simulationModel = key;
             }
 
-            return res.status(200).json( { case: clinicalCase } );
+            return res.status(200).json( { clinicalCase } );
         } catch (error) {
+            console.log(error)
             return res.status(500).json( { error: "Error interno del servidor" } );
         }
     }

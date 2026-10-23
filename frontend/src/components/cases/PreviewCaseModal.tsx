@@ -156,7 +156,7 @@ const PreviewCaseModal = ({started} : PreviewCaseModalProps) => {
                                         className="bg-blue-500 py-2 px-6 w-full block mt-10 text-white font-bold rounded-lg hover:cursor-pointer 
                                         hover:transition-colors hover:bg-blue-600 md:w-auto"
                                         onClick={() => {
-                                            navigate(`/simulation/${"12"}`)
+                                            navigate(`/simulation/${ clinicalCase.id }`)
                                         }}
                                     >
                                         
