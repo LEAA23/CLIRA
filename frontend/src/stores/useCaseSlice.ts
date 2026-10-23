@@ -1,5 +1,5 @@
 import type { StateCreator } from "zustand";
-import { createCase, deleteCaseImage, deleteCaseModel, getCases, updateCase } from "../api/caseApi";
+import { createCase, deleteCase, deleteCaseImage, deleteCaseModel, getCases, updateCase } from "../api/caseApi";
 import type { Case } from "../types";
 
 export type CaseSliceType = {
@@ -11,6 +11,8 @@ export type CaseSliceType = {
     updateCase: ({ caseId, formData }: { caseId: number; formData: FormData; }) => Promise<string | undefined>;
     deleteCaseImage: (caseId: number) => Promise<string | undefined>;
     deleteCaseModel: (caseId: number) => Promise<string | undefined>;
+    deleteCase: (caseId: number) => Promise<string | undefined>;
+    cleanCase: () => void;
 }
 
 export const createCaseSlice : StateCreator<CaseSliceType> = ((set, get) => ({
@@ -102,6 +104,27 @@ export const createCaseSlice : StateCreator<CaseSliceType> = ((set, get) => ({
                 simulationModel: ""
             }
         }))
+        return message;
+    },
+    cleanCase: () => {
+        set(() => ({
+            case: {
+                id: 0,
+                title: "",
+                description: "",
+                previewImage: "",
+                simulationModel: "",
+                teacher_id: 0,
+                filters: []
+            }
+        }))
+    },
+    deleteCase: async( caseId: Case["id"] ) => {
+        const message = await deleteCase( caseId );
+        set(() => ({
+            cases: get().cases.filter( clinicalCase => clinicalCase.id !== caseId )
+        }));
+        get().cleanCase();
         return message;
     }
 }));

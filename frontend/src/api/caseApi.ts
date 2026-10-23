@@ -60,3 +60,14 @@ export const deleteCaseModel = async( caseId : Case["id"] ) => {
         }
     }
 }
+
+export const deleteCase = async( caseId : Case["id"] ) => {
+    try {
+        const { data } = await api.delete<string>(`/cases/${caseId}`);
+        return data;
+    } catch (error) {
+        if( isAxiosError( error ) && error.response ) {
+            throw new Error( error.response.data.error );
+        }
+    }
+}
