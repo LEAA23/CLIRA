@@ -39,7 +39,7 @@ const SimulationView = () => {
 
   return (
     <>
-        <h1 className="text-5xl text-center font-bold  my-10 text-blue-500">Titulo del Caso Medico {clinicalCase.id}</h1>
+        <h1 className="text-5xl text-center font-bold  my-10 text-blue-500">{ clinicalCase.title }</h1>
         
         <div className="grid grid-cols-2 gap-x-5 mb-5">
 
@@ -58,19 +58,11 @@ const SimulationView = () => {
             />
         </div>
 
-            <div className="bg-white shadow rounded-xl p-5 max-w-full">
+            <div className="bg-white shadow rounded-xl p-5 max-w-full h-fit max-h-full">
                 <p className="text-gray-500 font-bold">Descripcion:</p>
                 <p>
-                    Lorem, ipsum dolor sit amet consectetur adipisicing elit. Maxime delectus voluptas impedit voluptate quis 
-                    inventore in laboriosam id amet fuga praesentium, fugit possimus tempora dignissimos molestiae a eum 
-                    recusandae blanditiis?.
+                    {clinicalCase.description}
                 </p>
-                <p>
-                    Lorem ipsum dolor sit amet consectetur adipisicing elit. Alias, voluptate. Rerum aliquam magni 
-                    ccusantium inventore, veritatis nesciunt non sapiente animi soluta cumque quaerat unde atque quibusdam 
-                    voluptatum, hic necessitatibus assumenda!
-                </p>
-
                 <form
                     className="flex justify-between items-center gap-x-5 mt-5"
                 >
