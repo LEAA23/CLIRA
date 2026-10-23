@@ -45,25 +45,7 @@ export const createCaseSlice : StateCreator<CaseSliceType> = ((set, get) => ({
     },
     updateCase: async( { caseId, formData } : { caseId: Case["id"] ; formData: FormData } ) => {
         const message = await updateCase( { caseId, formData } );
-        set(() => ({
-            cases: get().cases.map( clinicalCase => {
-                if( clinicalCase.id === caseId ) {
-                    const newModel = formData.get("simulationModel");
-                    const newImage = formData.get("previewImage");
-
-                    return {
-                        ...clinicalCase,
-                        title: formData.get("title") as string,
-                        description: formData.get("description") as string,
-
-                        // Si no hay archivo nuevo, conserva el anterior
-                        previewImage: newImage instanceof File? URL.createObjectURL(newImage) : clinicalCase.previewImage,
-                        simulationModel: newModel instanceof File? URL.createObjectURL(newModel) : clinicalCase.simulationModel,
-                    }
-                }
-                return clinicalCase;
-            } )
-        }))
+        await get().getCases();
         return message;
     },
     deleteCaseImage: async( caseId : Case["id"] ) => {
