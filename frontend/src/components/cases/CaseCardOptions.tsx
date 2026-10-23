@@ -39,7 +39,7 @@ const CaseCardOptions = ( { case_id } : caseCardOptionsProps ) => {
                     <div 
                         className='flex justify-start gap-x-2 text-gray-400 hover:text-red-400 cursor-pointer transition-all ease-in-out
                         duration-200'
-                        onClick={ () => navigate( location.pathname + `?DeletePost=true&post=${ case_id }` ) }
+                        onClick={ () => navigate( location.pathname + `?DeleteCase=true&case=${ case_id }`) }
                     >
                         <TrashIcon className='h-6'/>
                         <button 

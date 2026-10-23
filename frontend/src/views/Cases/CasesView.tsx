@@ -7,6 +7,7 @@ import CreateCaseModal from "../../components/cases/CreateCaseModal";
 import { useAppStore } from "../../stores/useAppStore";
 import { useEffect } from "react";
 import EditCaseModal from "../../components/cases/EditCaseModal";
+import DeleteCaseModal from "../../components/cases/DeleteCaseModal";
 
 const CasesView = () => {
 
@@ -74,6 +75,7 @@ const CasesView = () => {
       />
       <CreateCaseModal/>
       <EditCaseModal/>
+      <DeleteCaseModal/>
     </>
   )
 }
