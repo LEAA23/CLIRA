@@ -15,6 +15,7 @@ const DeleteCaseModal = () => {
     const caseId = +queryParams.get("case")!;
 
     const deleteCase = useAppStore( state => state.deleteCase );
+    const cleanCase = useAppStore( state => state.cleanCase );
 
     const handleDeleteCase = async( e: React.SubmitEvent<HTMLFormElement> ) => {
         e.preventDefault();
@@ -35,6 +36,7 @@ const DeleteCaseModal = () => {
             <Dialog as="div" className="relative z-10" 
                 onClose={() => {
                     navigate(location.pathname, { replace: true });
+                    cleanCase();
                 }}
             >
                 <Transition.Child
@@ -84,6 +86,7 @@ const DeleteCaseModal = () => {
                                                 type="button"
                                                 onClick={() => {
                                                     navigate(location.pathname, { replace: true });
+                                                    cleanCase();
                                                 }}
                                                 className="bg-blue-400 py-2 px-6 w-full mt-5 text-white font-bold rounded-lg hover:cursor-pointer 
                                                 hover:transition-colors hover:bg-blue-500 md:w-auto flex md:justify-start justify-center items-center gap-x-2"

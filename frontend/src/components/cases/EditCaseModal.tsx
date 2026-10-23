@@ -28,6 +28,7 @@ const EditCaseModal = () => {
     const updateCase = useAppStore( state => state.updateCase );
     const deleteCaseImage = useAppStore( state => state.deleteCaseImage );
     const deleteCaseModel = useAppStore( state => state.deleteCaseModel );
+    const cleanCase = useAppStore( state => state.cleanCase );
 
     const initialValues : EditCaseForm = {
         title: "",
@@ -182,6 +183,7 @@ const EditCaseModal = () => {
             <Dialog as="div" className="relative z-10" 
                 onClose={() => {
                     navigate(location.pathname, { replace: true });
+                    cleanCase();
                 }}
             >
                 <Transition.Child
@@ -577,6 +579,7 @@ const EditCaseModal = () => {
                                             type="button"
                                             onClick={() => {
                                                 navigate(location.pathname, { replace: true });
+                                                cleanCase();
                                             }}
                                             className="bg-red-400 py-2 px-6 w-full mb-3 lg:mb-0 lg:mt-10 text-white font-bold rounded-lg hover:cursor-pointer 
                                             hover:transition-colors hover:bg-red-500 md:w-auto flex justify-center md:justify-start items-center gap-x-2"
