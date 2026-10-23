@@ -48,11 +48,14 @@ const CaseCard = ( { id, title, description, previewImage, teacher_id, filters, 
         </div>
 
         <div className="relative w-full overflow-hidden rounded-lg">
-            <div className="h-60 overflow-hidden rounded-lg">
-                <img src={ previewImage } alt="Sample image" className="w-full rounded-lg" />
-            </div>
+            {previewImage !== ""? (
+                <div className="h-40">
+                    <img src={ previewImage } alt="Sample image" className="w-full rounded-lg" />
+                </div>
+            ): (
+                <div className="h-40 overflow-hidden rounded-lg w-full bg-gray-100"></div>
+            )}
             
-            <div className="absolute bottom-0 left-0 w-full h-20 bg-linear-to-t from-white to-transparent"></div>
         </div>
 
         <div>
