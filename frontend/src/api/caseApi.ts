@@ -49,3 +49,14 @@ export const deleteCaseImage = async( caseId : Case["id"] ) => {
         }
     }
 }
+
+export const deleteCaseModel = async( caseId : Case["id"] ) => {
+    try {
+        const { data } = await api.patch<string>(`/cases/${caseId}/deleteCaseModel`);
+        return data;
+    } catch (error) {
+        if( isAxiosError( error ) && error.response ) {
+            throw new Error( error.response.data.error );
+        }
+    }
+}

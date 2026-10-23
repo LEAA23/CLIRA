@@ -89,7 +89,7 @@ export class CaseController {
             await Promise.all(
                 cases.map(async (clinicalCase) => {
 
-                    if(clinicalCase.previewImage === null) return;
+                    if(clinicalCase.previewImage === "") return;
 
                     const command = new GetObjectCommand({
                         Bucket: process.env.AWS_BUCKET,
