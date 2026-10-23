@@ -2,17 +2,15 @@ import MedicalHistoryOptions from "../../components/simulation/MedicalHistoryOpt
 import { ArrowUpRightIcon } from "@heroicons/react/16/solid";
 import Experience from "../../SimulationExperiences/PatientExperience/Experience";
 import { useEffect, useRef, useState } from "react";
+import { useAppStore } from "../../stores/useAppStore";
+import { useParams, type Params } from "react-router-dom";
 
 const SimulationView = () => {
     //Usamos useRef para hacer referencia a un elmento del HTML
     const canvasRef = useRef<HTMLCanvasElement>(null);
-    const canvas = canvasRef.current;
 
     //Tamanio de la simulacion
     let [ windowSize, setWindowSize ] = useState<boolean>( false );
-    console.log(windowSize)
-
-
 
     useEffect(() => {
         //Obtenemos el valor actual de la refenrencia
@@ -21,7 +19,11 @@ const SimulationView = () => {
 
         //Instanciamos la simulacion del paciente
         const patientExperience = new Experience( canvas );
-    }, [ ]);
+    }, []);
+
+    //Obtenemos la informacion del caso
+    const params = useParams();
+    const caseId = +params.id!;
 
   return (
     <>

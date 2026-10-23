@@ -31,6 +31,15 @@ router.get("/",
     CaseController.getCases
 );
 
+
+router.get("/:caseId",
+    authenticate,
+    caseExists,
+    param( "caseId" ).notEmpty().withMessage("El id del caso es obligatorio"),
+    handleInputErrors,
+    CaseController.getCase
+);
+
 router.patch("/:caseId",
     authenticate,
     isUserTeacher,
