@@ -26,6 +26,7 @@ export const createCaseSlice : StateCreator<CaseSliceType> = ((set, get) => ({
     },
     createCase: async( formData: FormData ) => {
         const message = await createCase( formData );
+        await get().getCases();
         return message;
     },
     getCases: async() => {
