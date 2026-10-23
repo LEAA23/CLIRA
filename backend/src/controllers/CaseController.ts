@@ -108,6 +108,26 @@ export class CaseController {
         }
     }
 
+    static getCase = async( req: Request, res: Response ) => {
+        try {
+            const clinicalCase = req.clinicalCase;
+
+            if( clinicalCase.simulationModel ) {
+                const command = new GetObjectCommand({
+                    Bucket: process.env.AWS_BUCKET,
+                    Key: clinicalCase.simulationModel
+                })
+
+                const key = await getSignedUrl( s3Client, command, {  expiresIn: 60 * 60 * 24 } );
+                clinicalCase.simulationModel = key;
+            }
+
+            return res.status(200).json( { case: clinicalCase } );
+        } catch (error) {
+            return res.status(500).json( { error: "Error interno del servidor" } );
+        }
+    }
+
     static updateCase = async( req: Request, res: Response ) => {
         //Obtenemos los archivos subidos por el usuario, tanto la imagen como el modelo 3D
         const files = req.files as {
