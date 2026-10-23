@@ -66,4 +66,13 @@ router.patch("/:caseId/deleteCaseModel",
     CaseController.deleteCaseModel
 );
 
+router.delete("/:caseId",
+    authenticate,
+    isUserTeacher,
+    caseExists,
+    param( "caseId" ).notEmpty().withMessage("El id del caso es obligatorio"),
+    handleInputErrors,
+    CaseController.deleteCase
+);
+
 export default router;
