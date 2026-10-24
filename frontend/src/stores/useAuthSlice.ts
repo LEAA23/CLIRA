@@ -31,6 +31,13 @@ export const createAuthSlice : StateCreator<AuthSliceType> = ( set ) => ({
     },
     login: async( formData : UserLoginForm ) => {
         const message = await loginAccount( formData );
+        const user = await getUserAuth();
+        if (!user) {
+        throw new Error(
+            "No se pudieron obtener los datos del usuario."
+        );
+        }
+        set({ user });
         return message;
     },
     forgotPassword: async( formData : UserForgotPasswordForm ) => {

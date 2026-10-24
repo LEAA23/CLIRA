@@ -35,7 +35,7 @@ const authenticate = async ( req: Request, res: Response, next: NextFunction ) =
             //Buscamos al usuario en la DB y extrameos los attributos necesarios
             const user = await User.findOne( { 
                 where: { id : decodedData.id }, 
-                attributes : ["id", "name", "lastName", "email" , "rol"]
+                attributes : ["id", "name", "lastName", "email" , "rol", "password"]
             } );
 
             //Verificamos is el usuario exite en la BD

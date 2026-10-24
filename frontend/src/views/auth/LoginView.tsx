@@ -4,10 +4,12 @@ import ErrorMessage from "../../components/ErrorMessage";
 import type { UserLoginForm } from "../../types";
 import { useAppStore } from "../../stores/useAppStore";
 import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
 
 const LoginView = () => {
   //Extraemos la funcion desde el authStore que le permite al usuario hacer el login
   const loginAccount = useAppStore( (state) => state.login );
+  const navigate = useNavigate();
 
   //Variable con los valores iniciales de los campos del formulario
   const initialValues : UserLoginForm = {
@@ -21,6 +23,7 @@ const LoginView = () => {
   const handleLogin = async ( formData : UserLoginForm ) => {
     try {
       await loginAccount( formData );
+      navigate("/");
     } catch (error) {
       if( error instanceof Error ) {
         toast.error(error.message);
@@ -56,8 +59,8 @@ const LoginView = () => {
               {...register("email", {
                 required: "El email es obligatorio",
                 pattern: {
-                  value:  /\S+@\S+\.\S+/,
-                  message: "E-mail no valido"
+                  value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+                  message: "Introduce un correo electrónico válido"
                 }
               })}
             />
@@ -93,14 +96,13 @@ const LoginView = () => {
             <Link to="/auth/forgot-password" className="text-blue-500 hover:text-blue-800"> &iquest;Olvidaste tu contrase&ntilde;a?</Link>
           </div>
 
-          <input 
-            type="submit"
-            value="Iniciar sesión"
-            className="bg-blue-500 py-2 px-6 w-full block mx-auto text-white font-bold rounded-lg hover:cursor-pointer 
-            hover:transition-colors hover:bg-blue-600 md:w-auto"
-          />
+         <button
+          type="submit"
+          className="bg-blue-500 py-2 px-6 w-full block mx-auto text-white font-bold rounded-lg cursor-pointer transition-colors hover:bg-blue-600 md:w-auto"
+        >
+          Iniciar sesión
+        </button>
         </form>
-
         <div className="bg-[url(/login.png)] bg-no-repeat bg-cover"></div>
       </div>
     </>
