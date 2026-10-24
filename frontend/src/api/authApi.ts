@@ -99,3 +99,25 @@ export const getUserAuth = async() => {
         }
     }
 }
+
+export const changePasswordAccount = async (data: {
+    currentPassword: string;
+    newPassword: string;
+}) => {
+    try {
+        const { data: response } = await api.post<{
+            message: string;
+        }>("/auth/change-password", data);
+
+        return response.message;
+    } catch (error) {
+        if (isAxiosError(error) && error.response) {
+            throw new Error(
+                error.response.data.error ??
+                "No se pudo cambiar la contraseña."
+            );
+        }
+
+        throw error;
+    }
+};
