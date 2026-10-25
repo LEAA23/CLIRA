@@ -1,1 +1,116 @@
 @import "tailwindcss";
+
+/* Permite activar el modo oscuro manualmente con la clase .dark */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* Colores generales */
+.dark,
+.dark body {
+  color-scheme: dark;
+  background-color: #020617;
+  color: #e2e8f0;
+}
+
+/* Fondos claros comunes de Tailwind */
+.dark .bg-white {
+  background-color: #0f172a !important;
+}
+
+.dark .bg-gray-50,
+.dark .bg-slate-50 {
+  background-color: #111827 !important;
+}
+
+.dark .bg-gray-100,
+.dark .bg-slate-100 {
+  background-color: #1e293b !important;
+}
+
+.dark .bg-gray-200,
+.dark .bg-slate-200 {
+  background-color: #334155 !important;
+}
+
+/* Textos oscuros */
+.dark .text-gray-900,
+.dark .text-slate-900,
+.dark .text-gray-800,
+.dark .text-slate-800,
+.dark .text-gray-700,
+.dark .text-slate-700 {
+  color: #e2e8f0 !important;
+}
+
+.dark .text-gray-600,
+.dark .text-slate-600,
+.dark .text-gray-500,
+.dark .text-slate-500 {
+  color: #cbd5e1 !important;
+}
+
+.dark .text-gray-400,
+.dark .text-slate-400 {
+  color: #94a3b8 !important;
+}
+
+/* Bordes */
+.dark .border-gray-100,
+.dark .border-gray-200,
+.dark .border-gray-300,
+.dark .border-slate-100,
+.dark .border-slate-200,
+.dark .border-slate-300 {
+  border-color: #334155 !important;
+}
+
+/* Campos de formularios */
+.dark input:not([type="checkbox"]):not([type="radio"]),
+.dark textarea,
+.dark select {
+  background-color: #1e293b;
+  color: #f1f5f9;
+  border-color: #475569;
+}
+
+.dark input::placeholder,
+.dark textarea::placeholder {
+  color: #94a3b8;
+}
+
+/* Paneles y tarjetas */
+.dark .shadow,
+.dark .shadow-md,
+.dark .shadow-lg,
+.dark .shadow-xl {
+  --tw-shadow-color: rgb(0 0 0 / 20%);
+}
+
+/* Tablas */
+.dark table {
+  color: #e2e8f0;
+}
+
+.dark th,
+.dark td {
+  border-color: #334155;
+}
+
+/* Menús y superficies emergentes */
+.dark [role="dialog"],
+.dark [role="menu"],
+.dark [role="listbox"] {
+  color: #e2e8f0;
+}
+
+/* Transición visual */
+body,
+header,
+aside,
+main,
+section,
+footer {
+  transition:
+    background-color 200ms ease,
+    color 200ms ease,
+    border-color 200ms ease;
+}

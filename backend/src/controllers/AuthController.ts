@@ -198,9 +198,68 @@ export class AuthController {
     //Metodo para obtener el usuario que actualemnte esta logeado
     static getUser = async( req: Request, res: Response ) => {
         try {
-            return res.status(200).json( { user : req.user } );
+            const user = req.user;
+            return res.status(200).json({
+                user: {
+                    id: user.id,
+                    name: user.name,
+                    lastName: user.lastName,
+                    email: user.email,
+                    rol: user.rol
+                }
+            });
         } catch (error) {
             return res.status(500).json( { error: "Error interno del servidor" } );
         }
     }
+    static changePassword = async (req: Request, res: Response) => {
+    const { currentPassword, newPassword } = req.body;
+
+    try {
+        // El usuario lo proporciona el middleware authenticate.
+        const user = req.user;
+
+        if (!currentPassword || !newPassword) {
+            return res.status(400).json({
+                error: "Debes completar todos los campos."
+            });
+        }
+
+        if (newPassword.length < 8) {
+            return res.status(400).json({
+                error: "La nueva contraseña debe tener al menos 8 caracteres."
+            });
+        }
+
+        if (currentPassword === newPassword) {
+            return res.status(400).json({
+                error: "La nueva contraseña debe ser diferente a la actual."
+            });
+        }
+
+        // Verificar la contraseña actual contra su hash.
+        const isPasswordCorrect = await checkPassword(
+            currentPassword,
+            user.password
+        );
+
+        if (!isPasswordCorrect) {
+            return res.status(400).json({
+                error: "La contraseña actual es incorrecta."
+            });
+        }
+
+        // Guardar la nueva contraseña cifrada.
+        user.password = await hashPassword(newPassword);
+        await user.save();
+
+        return res.status(200).json({
+            message: "La contraseña se cambió correctamente."
+        });
+    } catch (error) {
+        return res.status(500).json({
+            error: "Error interno del servidor."
+        });
+    }
+};
 }
