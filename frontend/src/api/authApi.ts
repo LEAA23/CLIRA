@@ -114,7 +114,7 @@ export const changePasswordAccount = async (data: {
         if (isAxiosError(error) && error.response) {
             throw new Error(
                 error.response.data.error ??
-                "No se pudo cambiar la contraseña."
+                "No se pudo cambiar la contraseña"
             );
         }
 
