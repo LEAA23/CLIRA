@@ -40,7 +40,6 @@ const StudentLayout = () => {
       <ToastContainer
         pauseOnFocusLoss={false}
         pauseOnHover={false}
-        theme="colored"
       />
     </div>
   );
