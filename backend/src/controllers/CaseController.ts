@@ -6,6 +6,7 @@ import { DeleteObjectCommand, GetObjectCommand, PutObjectCommand } from "@aws-sd
 import { CasesFilters } from "../models/CasesFilters";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { Filters } from "../models/Filters";
+import { CaseCompletion } from "../models/CaseCompletion";
 
 export class CaseController {
 
@@ -336,4 +337,65 @@ export class CaseController {
             return res.status(500).json( { error: "Error interno del servidor" } );
         }
     }
-}
+    static completeCase = async (req: Request, res: Response) => {
+        const caseId = Number(req.params.caseId);
+        const userId = req.user.id;
+
+        if (!Number.isInteger(caseId) || caseId <= 0) {
+            return res.status(400).json({
+                error: "El ID del caso no es válido"
+            });
+        }
+
+        try {
+            const clinicalCase = await Case.findByPk(caseId);
+
+            if (!clinicalCase) {
+                return res.status(404).json({
+                    error: "El caso no existe"
+                });
+            }
+
+            await CaseCompletion.findOrCreate({
+                where: {
+                    user_id: userId,
+                    case_id: caseId
+                },
+                defaults: {
+                    user_id: userId,
+                    case_id: caseId,
+                    is_correct: null
+                }
+            });
+
+        const completedCount = await CaseCompletion.count({
+            where: { user_id: userId }
+        });
+
+        return res.status(200).json({
+            message: "Caso registrado como completado",
+            completedCount
+        });
+        } catch (error) {
+            console.error(error);
+            return res.status(500).json({
+                error: "No se pudo registrar la finalización del caso"
+            });
+        }
+    };
+
+    static getCompletedCases = async (req: Request, res: Response) => {
+        try {
+            const completedCount = await CaseCompletion.count({
+                where: { user_id: req.user.id }
+            });
+
+            return res.status(200).json({ completedCount });
+        } catch (error) {
+            console.error(error);
+            return res.status(500).json({
+                error: "No se pudieron consultar los casos completados"
+            });
+        }
+    }
+};

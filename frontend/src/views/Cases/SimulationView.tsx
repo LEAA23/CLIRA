@@ -2,95 +2,197 @@ import MedicalHistoryOptions from "../../components/simulation/MedicalHistoryOpt
 import { ArrowUpRightIcon } from "@heroicons/react/16/solid";
 import Experience from "../../SimulationExperiences/PatientExperience/Experience";
 import { useEffect, useRef, useState } from "react";
+import type { FormEvent } from "react";
 import { useAppStore } from "../../stores/useAppStore";
 import { useParams } from "react-router-dom";
+import { completeCase } from "../../api/caseApi";
 
 const SimulationView = () => {
-    //Usamos useRef para hacer referencia a un elmento del HTML
+    // Referencia al canvas de la simulación
     const canvasRef = useRef<HTMLCanvasElement>(null);
 
-    //Tamanio de la simulacion
-    let [ windowSize, setWindowSize ] = useState<boolean>( false );
+    // Control del tamaño de la simulación
+    const [windowSize, setWindowSize] = useState(false);
 
+    // Estados del diagnóstico
+    const [diagnosis, setDiagnosis] = useState("");
+    const [savingDiagnosis, setSavingDiagnosis] = useState(false);
+    const [diagnosisMessage, setDiagnosisMessage] = useState("");
+
+    // Obtenemos el ID del caso desde la URL
+    const params = useParams();
+    const caseId = Number(params.id);
+
+    // Obtenemos los datos y la función para cargar el caso
+    const fetchSimulation = useAppStore(
+        (state) => state.fetchSimulation
+    );
+
+    const clinicalCase = useAppStore(
+        (state) => state.case
+    );
+
+    // Inicializamos la simulación del paciente
     useEffect(() => {
-        //Obtenemos el valor actual de la refenrencia
         const canvas = canvasRef.current;
-        if( !canvas ) return;
 
-        //Instanciamos la simulacion del paciente
-        const patientExperience = new Experience( canvas );
+        if (!canvas) return;
+
+        const patientExperience = new Experience(canvas);
+
+        // Evita dejar una instancia sin limpiar si el componente se desmonta
+        return () => {
+            // Agrega aquí la limpieza de Experience si tu clase la implementa.
+            void patientExperience;
+        };
     }, []);
 
-    //Obtenemos la informacion del caso
-    const params = useParams();
-    const caseId = +params.id!;
-
-    const fetchSimulation = useAppStore( state => state.fetchSimulation );
-    const clinicalCase = useAppStore( state => state.case );
-
+    // Cargamos la información del caso
     useEffect(() => {
-        const fetchData = async() => {
-            await fetchSimulation( caseId );
-        }
+        const fetchData = async () => {
+            if (!Number.isInteger(caseId) || caseId <= 0) {
+                return;
+            }
+
+            await fetchSimulation(caseId);
+        };
+
         fetchData();
-    }, [ caseId, fetchSimulation ]);
+    }, [caseId, fetchSimulation]);
 
-  return (
-    <>
-        <h1 className="text-5xl text-center font-bold  my-10 text-blue-500">{ clinicalCase.title }</h1>
-        
-        <div className="grid grid-cols-2 gap-x-5 mb-5">
+    // Enviamos el diagnóstico y registramos el caso como completado
+    const handleDiagnosisSubmit = async (
+        event: FormEvent<HTMLFormElement>
+    ) => {
+        event.preventDefault();
 
-        <div className="relative w-full min-w-0 min-h-110 overflow-hidden rounded-xl">
-            <div 
-                className="absolute top-2 right-2 z-10 bg-white shadow rounded-xl p-1 h-8 w-8 cursor-pointer"
-                onClick={ () =>  setWindowSize(prevValue => !prevValue) }
-            >
-                <ArrowUpRightIcon className="text-gray-400" />
+        if (!diagnosis.trim()) {
+            setDiagnosisMessage(
+                "Escribe tu diagnóstico antes de continuar."
+            );
+            return;
+        }
+
+        if (!Number.isInteger(caseId) || caseId <= 0) {
+            setDiagnosisMessage("El ID del caso no es válido.");
+            return;
+        }
+
+        setSavingDiagnosis(true);
+        setDiagnosisMessage("");
+
+        try {
+            await completeCase(caseId);
+
+            setDiagnosisMessage(
+                "Diagnóstico enviado y caso registrado como completado."
+            );
+
+            setDiagnosis("");
+        } catch (error) {
+            setDiagnosisMessage(
+                error instanceof Error
+                    ? error.message
+                    : "No se pudo registrar el caso."
+            );
+        } finally {
+            setSavingDiagnosis(false);
+        }
+    };
+
+    return (
+        <>
+            <h1 className="text-5xl text-center font-bold my-10 text-blue-500">
+                {clinicalCase?.title ?? "Cargando caso..."}
+            </h1>
+
+            <div className="grid grid-cols-2 gap-x-5 mb-5">
+                {/* Simulación del paciente */}
+                <div className="relative w-full min-w-0 min-h-110 overflow-hidden rounded-xl">
+                    <div
+                        className="absolute top-2 right-2 z-10 bg-white shadow rounded-xl p-1 h-8 w-8 cursor-pointer"
+                        onClick={() =>
+                            setWindowSize((prevValue) => !prevValue)
+                        }
+                    >
+                        <ArrowUpRightIcon className="text-gray-400" />
+                    </div>
+
+                    <canvas
+                        ref={canvasRef}
+                        id="caseSimulation-webgl"
+                        className={`w-full h-full ${
+                            windowSize ? "min-h-screen" : ""
+                        }`}
+                    />
+                </div>
+
+                {/* Información del caso y formulario */}
+                <div className="bg-white shadow rounded-xl p-5 max-w-full h-fit max-h-full">
+                    <p className="text-gray-500 font-bold">
+                        Descripción:
+                    </p>
+
+                    <p>
+                        {clinicalCase?.description ??
+                            "Cargando descripción..."}
+                    </p>
+
+                    <form
+                        onSubmit={handleDiagnosisSubmit}
+                        className="flex flex-col gap-3 mt-5"
+                    >
+                        <input
+                            type="text"
+                            value={diagnosis}
+                            onChange={(event) =>
+                                setDiagnosis(event.target.value)
+                            }
+                            className="border border-gray-400 p-2 w-full rounded-lg"
+                            placeholder="Coloca tu diagnóstico final aquí"
+                            disabled={savingDiagnosis}
+                        />
+
+                        <input
+                            type="submit"
+                            value={
+                                savingDiagnosis
+                                    ? "Guardando..."
+                                    : "Diagnosticar"
+                            }
+                            disabled={savingDiagnosis}
+                            className="bg-blue-500 py-2 px-6 text-white font-bold rounded-lg hover:cursor-pointer hover:transition-colors hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed"
+                        />
+
+                        {diagnosisMessage && (
+                            <p
+                                className="text-sm text-gray-600"
+                                role="status"
+                            >
+                                {diagnosisMessage}
+                            </p>
+                        )}
+                    </form>
+                </div>
             </div>
 
-            <canvas
-                ref={canvasRef}
-                id="caseSimulation-webgl"
-                className="w-full h-full"
-            />
-        </div>
+            {/* Opciones de historial médico */}
+            <div className="flex justify-between">
+                <MedicalHistoryOptions />
+            </div>
 
-            <div className="bg-white shadow rounded-xl p-5 max-w-full h-fit max-h-full">
-                <p className="text-gray-500 font-bold">Descripcion:</p>
-                <p>
-                    {clinicalCase.description}
+            {/* Recursos disponibles */}
+            <div className="bg-white shadow rounded-2xl p-5 max-w-full mt-5 hover:shadow-xl hover:-translate-y-1 transition-all duration-200">
+                <p className="text-gray-500 font-bold">
+                    Recursos disponibles:
                 </p>
-                <form
-                    className="flex justify-between items-center gap-x-5 mt-5"
-                >
-                    <input 
-                        type="text"
-                        className="border border-gray-400 p-2 my-3 w-full rounded-lg"
-                        placeholder="Coloca tu diagnostico final aqui"
-                    />
-                    <input 
-                        type="submit"
-                        value="Diagnosticar"
-                        className="bg-blue-500 py-2 px-6 w-full block mx-auto text-white font-bold rounded-lg hover:cursor-pointer 
-                        hover:transition-colors hover:bg-blue-600 md:w-auto"
-                    />
-                </form>
+
+                <div className="flex justify-start gap-x-5 mt-5">
+                    {/* Aquí puedes agregar los recursos disponibles */}
+                </div>
             </div>
-        </div>
+        </>
+    );
+};
 
-        <div className="flex justify-between">
-            <MedicalHistoryOptions/>
-        </div>
-
-        <div className="bg-white shadow rounded-2xl p-5 max-w-full mt-5 hover:shadow-xl hover:-translate-y-1 transition-all duration-200">
-            <p className="text-gray-500 font-bold">Recursos disponibles:</p>
-            <div className="flex justify-start gap-x-5 mt-5">
-
-            </div>
-        </div>
-    </>
-  )
-}
-
-export default SimulationView
+export default SimulationView;
