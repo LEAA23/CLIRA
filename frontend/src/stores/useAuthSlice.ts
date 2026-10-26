@@ -11,6 +11,7 @@ export type AuthSliceType = {
     updatePasswordAccount: ( data : UserUpdatePassword ) => Promise<string>;
     validateTokenAccount: ( token: UserValidateToken["token"] ) => Promise<string>;
     fetchUserAuth: () => Promise<void>;
+    logout: () => void;
 }
 
 //StateCreator nos ayuda a tipar de mejor forma nuestros slides ademas de tipar a set y get
@@ -57,5 +58,17 @@ export const createAuthSlice : StateCreator<AuthSliceType> = ( set ) => ({
         set(() => ({
             user
         }));
+    },
+    logout: () => {
+        localStorage.removeItem("AUTH_TOKEN");
+        set({
+            user: {
+                name: "",
+                lastName: "",
+                email: "",
+                id: null,
+                rol: ""
+            }
+        });
     }
 });

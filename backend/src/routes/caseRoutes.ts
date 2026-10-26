@@ -31,6 +31,20 @@ router.get("/",
     CaseController.getCases
 );
 
+router.get(
+    "/progress/completed",
+    authenticate,
+    CaseController.getCompletedCases
+);
+
+router.post(
+    "/:caseId/complete",
+    authenticate,
+    param("caseId").isInt({ min: 1 })
+        .withMessage("El ID del caso no es válido"),
+    handleInputErrors,
+    CaseController.completeCase
+);
 
 router.get("/:caseId",
     authenticate,

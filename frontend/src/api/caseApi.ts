@@ -85,3 +85,40 @@ export const getSimulation = async( caseId: Case["id"] ) => {
         }
     }
 }
+
+export const completeCase = async (caseId: number) => {
+    try {
+        const { data } = await api.post<{ completedCount: number }>(
+            `/cases/${caseId}/complete`
+        );
+
+        return data;
+    } catch (error) {
+        if (isAxiosError(error) && error.response) {
+            throw new Error(
+                error.response.data.error || "No se pudo completar el caso"
+            );
+        }
+
+        throw error;
+    }
+};
+
+export const getCompletedCases = async (): Promise<number> => {
+    try {
+        const { data } = await api.get<{ completedCount: number }>(
+            "/cases/progress/completed"
+        );
+
+        return data.completedCount;
+    } catch (error) {
+        if (isAxiosError(error) && error.response) {
+            throw new Error(
+                error.response.data.error ||
+                "No se pudieron consultar los casos completados"
+            );
+        }
+
+        throw error;
+    }
+};

@@ -18,8 +18,22 @@ const DEFAULT_PREFERENCES: Preferences = {
 const SettingsView = () => {
   const user = useAppStore((state) => state.user);
 
-  const [preferences, setPreferences] =
-    useState<Preferences>(DEFAULT_PREFERENCES);
+  const [preferences, setPreferences] = useState<Preferences>(() => {
+  try {
+    const stored = localStorage.getItem("CLIRA_PREFERENCES");
+
+    if (stored) {
+      return {
+        ...DEFAULT_PREFERENCES,
+        ...JSON.parse(stored),
+      };
+    }
+  } catch (error) {
+    console.error("Error al cargar las preferencias:", error);
+  }
+
+  return DEFAULT_PREFERENCES;
+  });
 
   const [saved, setSaved] = useState(false);
   const [showPasswordForm, setShowPasswordForm] = useState(false);
@@ -360,11 +374,6 @@ const SettingsView = () => {
                   required
                   className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
                 />
-
-                <p className="text-xs text-amber-700 dark:text-amber-400">
-                  El cambio de contraseña todavía necesita conectarse
-                  al backend.
-                </p>
 
                 <button
                   type="submit"
