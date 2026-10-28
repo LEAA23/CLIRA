@@ -1,4 +1,6 @@
+
 import "react-circular-progressbar/dist/styles.css";
+import { useEffect, useState } from "react";
 
 import CorrectvsIncorrectChart from "../../components/dashboard/charts/CorrectvsIncorrectChart";
 import DiagnosticAccuracyChart from "../../components/dashboard/charts/DiagnosticAccuracyChart";
@@ -12,23 +14,36 @@ import {
   TrophyIcon,
 } from "@heroicons/react/16/solid";
 
-import { useEffect, useState } from "react";
-import { getCompletedCases } from "../../api/caseApi";
+import { getCases, getCompletedCases } from "../../api/caseApi";
 
 const DashBoardView = () => {
   const [completedCount, setCompletedCount] = useState<number | null>(null);
+  const [pendingCount, setPendingCount] = useState<number | null>(null);
 
   useEffect(() => {
-    const fetchCompletedCases = async () => {
+    const loadCaseProgress = async () => {
       try {
-        const count = await getCompletedCases();
-        setCompletedCount(count);
+        const [cases, completed] = await Promise.all([
+          getCases(),
+          getCompletedCases(),
+        ]);
+
+        if (!cases) {
+          throw new Error("No se pudieron consultar los casos disponibles");
+        }
+
+        const totalCases = cases.length;
+
+        setCompletedCount(completed);
+        setPendingCount(Math.max(0, totalCases - completed));
       } catch (error) {
-        console.error("Error al cargar los casos completados:", error);
+        console.error("Error al cargar el progreso de los casos:", error);
+        setCompletedCount(null);
+        setPendingCount(null);
       }
     };
 
-    fetchCompletedCases();
+    loadCaseProgress();
   }, []);
 
   return (
@@ -37,8 +52,8 @@ const DashBoardView = () => {
         Dashboard
       </h1>
 
-      <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-x-5 mb-5">
-        {/* Casos completados */}
+      {/* Métricas principales */}
+      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-x-5 mb-5">
         <div className="bg-white p-5 max-w-full rounded-2xl shadow mt-5">
           <h3 className="flex items-center font-bold text-gray-500">
             <CheckCircleIcon className="h-6 mr-3" />
@@ -50,7 +65,6 @@ const DashBoardView = () => {
           </p>
         </div>
 
-        {/* Casos pendientes */}
         <div className="bg-white p-5 max-w-full rounded-2xl shadow mt-5">
           <h3 className="flex items-center font-bold text-gray-500">
             <ClockIcon className="h-6 mr-3" />
@@ -58,11 +72,10 @@ const DashBoardView = () => {
           </h3>
 
           <p className="text-7xl font-bold text-center bg-linear-to-r from-blue-500 to-blue-50 bg-clip-text text-transparent">
-            {"1"}
+            {pendingCount ?? "—"}
           </p>
         </div>
 
-        {/* Ranking */}
         <div className="bg-white p-5 max-w-full rounded-2xl shadow mt-5">
           <h3 className="flex items-center font-bold text-gray-500">
             <TrophyIcon className="h-6 mr-3" />
@@ -71,17 +84,6 @@ const DashBoardView = () => {
 
           <p className="text-7xl font-bold text-center bg-linear-to-r from-blue-500 to-blue-50 bg-clip-text text-transparent">
             {"4"}
-          </p>
-        </div>
-
-        {/* Total de casos completados */}
-        <div className="bg-white p-5 max-w-full rounded-2xl shadow mt-5">
-          <h3 className="text-2xl font-bold text-gray-500">
-            Casos completados
-          </h3>
-
-          <p className="text-7xl font-bold text-center bg-linear-to-r from-blue-500 to-blue-50 bg-clip-text text-transparent">
-            {completedCount ?? "—"}
           </p>
         </div>
       </div>
@@ -95,7 +97,7 @@ const DashBoardView = () => {
         <div className="grid space-y-10 md:grid-cols-2 lg:grid-cols-3 lg:space-y-0 items-center justify-center text-center">
           <DiagnosticAccuracyChart />
 
-          <div className="flex flex-col">
+          <div className="flex flex-col items-center">
             <ClockIcon className="h-15 text-gray-500" />
 
             <h3 className="text-5xl font-bold text-gray-600">
@@ -112,7 +114,7 @@ const DashBoardView = () => {
         </div>
       </div>
 
-      {/* Gráficas de rendimiento */}
+      {/* Métricas de desempeño */}
       <div className="grid md:grid-cols-2 gap-x-5">
         <div className="bg-white p-5 max-w-full rounded-2xl shadow mt-5">
           <h3 className="text-2xl font-bold mb-5 text-gray-500">
@@ -131,7 +133,6 @@ const DashBoardView = () => {
         </div>
       </div>
 
-      {/* Mejora en rendimiento */}
       <div className="bg-white p-5 max-w-full rounded-2xl shadow mt-5">
         <h3 className="text-2xl font-bold mb-5 text-gray-500">
           Mejora en rendimiento

@@ -7,6 +7,7 @@ import { CasesFilters } from "../models/CasesFilters";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { Filters } from "../models/Filters";
 import { CaseCompletion } from "../models/CaseCompletion";
+import FilterCategories from "../models/FilterCategories";
 
 export class CaseController {
 
@@ -395,6 +396,30 @@ export class CaseController {
             console.error(error);
             return res.status(500).json({
                 error: "No se pudieron consultar los casos completados"
+            });
+        }
+    }
+    static getFilterCategories = async (_req: Request, res: Response) => {
+        try {
+            const categories = await FilterCategories.findAll({
+                attributes: ["id", "name"],
+                include: [
+                    {
+                        model: Filters,
+                        as: "filters",
+                        attributes: ["id", "name", "category_id"],
+                        required: false
+                    }
+                ],
+                order: [["name", "ASC"]]
+            });
+
+            return res.status(200).json({ categories });
+        } catch (error) {
+        console.error("Error al consultar las categorías:", error);
+
+            return res.status(500).json({
+                error: "No se pudieron consultar las categorías de filtros"
             });
         }
     }
