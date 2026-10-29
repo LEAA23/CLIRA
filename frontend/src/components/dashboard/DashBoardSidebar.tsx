@@ -7,7 +7,7 @@ const DashBoardSidebar = () => {
 
   return (
     <aside className=
-      {`hidden md:block bg-blue-700 transform transition-all duration-500 ease-in-out relative 
+      {`hidden md:block bg-blue-700 transform transition-all duration-500 ease-in-out relative
         ${isHidden? "w-0 p-0" : "w-55 p-7"}`
       }
     >

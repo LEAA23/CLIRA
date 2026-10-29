@@ -24,24 +24,21 @@ const StudentLayout = () => {
   }, []);
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-800 dark:bg-slate-950 dark:text-slate-100">
-      <DashBoardHeader />
-
-      <main className="flex min-h-screen">
-        <DashBoardSidebar />
-
-        <section className="container mx-auto flex min-w-0 flex-1 flex-col overflow-y-auto bg-slate-50 px-4 pb-10 dark:bg-slate-950 md:px-10">
-          <Outlet />
+    <>
+          <DashBoardHeader/>
+      <main className="flex h-screen">
+        <DashBoardSidebar/>
+        <section className="container mx-auto px-10 pb-10 flex flex-col overflow-y-scroll">
+          <Outlet/>
         </section>
       </main>
-
-      <DashBoardFooter />
+      <DashBoardFooter/>
 
       <ToastContainer
         pauseOnFocusLoss={false}
         pauseOnHover={false}
       />
-    </div>
+    </>
   );
 };
 
