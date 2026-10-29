@@ -14,6 +14,12 @@ router.get("/",
     UserController.getUser
 );
 
+router.get(
+    "/ranking",
+    authenticate,
+    UserController.getRanking
+);
+
 router.get("/:id",
     authenticate,
     param("id").notEmpty().withMessage("El id del usuario es obligatorio"),

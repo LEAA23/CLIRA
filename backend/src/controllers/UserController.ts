@@ -7,6 +7,7 @@ import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { Post } from "../models/Post";
 import { Like } from "../models/Like";
 import { Sequelize } from "sequelize";
+import { CaseCompletion } from "../models/CaseCompletion";
 
 export class UserController {
 
@@ -48,6 +49,119 @@ export class UserController {
             return res.status(500).json( { error: "Error interno del servidor" } );
         }
     }
+
+    static getRanking = async (_req: Request, res: Response) => {
+        try {
+            // Obtener los estudiantes confirmados, incluida su foto.
+            const users = await User.findAll({
+                where: {
+                    confirm: true,
+                    rol: "student"
+                },
+                attributes: [
+                    "id",
+                    "name",
+                    "lastName",
+                    "email",
+                    "profileImage"
+                ]
+            });
+            // Contar los casos completados por usuario.
+            const completedRows = await CaseCompletion.findAll({
+                attributes: [
+                    "user_id",
+                    [
+                        Sequelize.fn("COUNT", Sequelize.col("case_id")),
+                        "completedCount"
+                    ]
+                ],
+                group: ["user_id"],
+                raw: true
+            });
+            type CompletedCountRow = {
+                user_id: number;
+                completedCount: number | string;
+            };
+            const counts = new Map<number, number>(
+                (completedRows as unknown as CompletedCountRow[]).map(
+                    (row) => [
+                        Number(row.user_id),
+                        Number(row.completedCount)
+                    ]
+                )
+            );
+            // Asignar 100 puntos por caso completado.
+            const ranking = users
+                .map((user) => {
+                    const completedCount = counts.get(user.id) ?? 0;
+                    return {
+                        id: user.id,
+                        name: user.name,
+                        lastName: user.lastName,
+                        email: user.email,
+                        profileImage: user.profileImage || "",
+                        completedCount,
+                        points: completedCount * 100
+                    };
+                })
+                .sort(
+                    (a, b) =>
+                        b.points - a.points ||
+                        a.name.localeCompare(b.name) ||
+                        a.lastName.localeCompare(b.lastName)
+                )
+                .map((user, index) => ({
+                    ...user,
+                    position: index + 1
+                }));
+            // Convertir la clave de S3 en una URL temporal para mostrar la foto.
+            const rankingWithImages = await Promise.all(
+                ranking.map(async (entry) => {
+                    if (!entry.profileImage) {
+                        return {
+                            ...entry,
+                            profileImage: null
+                        };
+                    }
+                try {
+                    const command = new GetObjectCommand({
+                        Bucket: process.env.AWS_BUCKET,
+                        Key: entry.profileImage
+                    });
+                    const imageUrl = await getSignedUrl(
+                        s3Client,
+                        command,
+                        { expiresIn: 60 * 60 }
+                    );
+                    return {
+                        ...entry,
+                        profileImage: imageUrl
+                    };
+                } catch (imageError) {
+                    console.error(
+                        `No se pudo obtener la foto del usuario ${entry.id}:`,
+                        imageError
+                    );
+                    return {
+                        ...entry,
+                        profileImage: null
+                    };
+                }
+            })
+        );
+
+        return res.status(200).json({
+            ranking: rankingWithImages
+        });
+        } catch (error) {
+        console.error("Error al consultar el ranking:", error);
+
+        return res.status(500).json({
+            error: "No se pudo consultar el ranking"
+        });
+        }
+    };
+
 
     static getUserById = async( req: Request, res: Response ) => {
         const { id } = req.params;
