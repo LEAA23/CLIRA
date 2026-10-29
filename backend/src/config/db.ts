@@ -26,7 +26,7 @@ export const authenticateConection = async() => {
     try {
         await db.authenticate();
         //Creamos las tablas en la base de datos si es que no existen
-        await db.sync();
+        await db.sync({ alter: true });
         console.log( colors.bgGreen("La conexion a la base de datos ha sido exitosa") );
     } catch (error) {
         console.log( colors.bgRed("Hubo un error al conectarse a la base de datos") );
