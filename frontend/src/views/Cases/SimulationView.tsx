@@ -4,12 +4,15 @@ import Experience from "../../SimulationExperiences/PatientExperience/Experience
 import { useEffect, useRef, useState } from "react";
 import type { FormEvent } from "react";
 import { useAppStore } from "../../stores/useAppStore";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { completeCase } from "../../api/caseApi";
 
 const SimulationView = () => {
     // Referencia al canvas de la simulación
     const canvasRef = useRef<HTMLCanvasElement>(null);
+
+    // Navegación entre vistas
+    const navigate = useNavigate();
 
     // Control del tamaño de la simulación
     const [windowSize, setWindowSize] = useState(false);
@@ -60,6 +63,12 @@ const SimulationView = () => {
         fetchData();
     }, [caseId, fetchSimulation]);
 
+    // Abandonamos la simulación y regresamos al menú de casos clínicos
+    // No se registra el caso como completado.
+    const handleAbandonSimulation = () => {
+        navigate("/clinical-cases");
+    };
+
     // Enviamos el diagnóstico y registramos el caso como completado
     const handleDiagnosisSubmit = async (
         event: FormEvent<HTMLFormElement>
@@ -102,11 +111,22 @@ const SimulationView = () => {
 
     return (
         <>
-            <h1 className="text-5xl text-center font-bold my-10 text-blue-500">
-                {clinicalCase?.title ?? "Cargando caso..."}
-            </h1>
+            {/* Encabezado y botón para abandonar */}
+            <div className="relative flex items-center justify-center my-10">
+                <button
+                    type="button"
+                    onClick={handleAbandonSimulation}
+                    className="absolute left-0 bg-red-600 dark:bg-purple-600 py-2 px-4 text-white font-bold rounded-lg hover:bg-red-700 dark:hover:bg-purple-700 transition-colors"
+                >
+                    ← Abandonar simulación
+                </button>
 
-            <div className="grid grid-cols-2 gap-x-5 mb-5">
+                <h1 className="text-5xl text-center font-bold text-blue-500">
+                    {clinicalCase?.title ?? "Cargando caso..."}
+                </h1>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-5">
                 {/* Simulación del paciente */}
                 <div className="relative w-full min-w-0 min-h-110 overflow-hidden rounded-xl">
                     <div

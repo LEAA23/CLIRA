@@ -46,6 +46,12 @@ router.post(
     CaseController.completeCase
 );
 
+router.get(
+    "/filters/categories",
+    authenticate,
+    CaseController.getFilterCategories
+);
+
 router.get("/:caseId",
     authenticate,
     param( "caseId" ).notEmpty().withMessage("El id del caso es obligatorio"),

@@ -1,7 +1,7 @@
 import { isAxiosError } from "axios"
 import api from "../lib/axios";
 import { CaseSchema, CasesSquema } from "../schemas";
-import type { Case } from "../types";
+import type { Case, Filter } from "../types";
 
 export const createCase = async( formData: FormData ) => {
     try {
@@ -116,6 +116,31 @@ export const getCompletedCases = async (): Promise<number> => {
             throw new Error(
                 error.response.data.error ||
                 "No se pudieron consultar los casos completados"
+            );
+        }
+
+        throw error;
+    }
+}
+
+export type FilterCategory = {
+    id: number;
+    name: string;
+    filters: Filter[];
+};
+
+export const getFilterCategories = async (): Promise<FilterCategory[]> => {
+    try {
+        const { data } = await api.get<{ categories: FilterCategory[] }>(
+            "/cases/filters/categories"
+        );
+
+        return data.categories;
+    } catch (error) {
+        if (isAxiosError(error) && error.response) {
+            throw new Error(
+                error.response.data.error ||
+                "No se pudieron obtener las categorías"
             );
         }
 
