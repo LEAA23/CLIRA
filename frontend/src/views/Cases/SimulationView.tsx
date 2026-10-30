@@ -1,5 +1,5 @@
 import MedicalHistoryOptions from "../../components/simulation/MedicalHistoryOptions";
-import { ArrowUpRightIcon } from "@heroicons/react/16/solid";
+import { ArrowLeftIcon } from "@heroicons/react/16/solid";
 import Experience from "../../SimulationExperiences/PatientExperience/Experience";
 import { useEffect, useRef, useState } from "react";
 import type { FormEvent } from "react";
@@ -13,9 +13,6 @@ const SimulationView = () => {
 
     // Navegación entre vistas
     const navigate = useNavigate();
-
-    // Control del tamaño de la simulación
-    const [windowSize, setWindowSize] = useState(false);
 
     // Estados del diagnóstico
     const [diagnosis, setDiagnosis] = useState("");
@@ -112,38 +109,31 @@ const SimulationView = () => {
     return (
         <>
             {/* Encabezado y botón para abandonar */}
-            <div className="relative flex items-center justify-center my-10">
+            <div className="relative flex items-center justify-center mt-10 mb-5">
                 <button
                     type="button"
                     onClick={handleAbandonSimulation}
-                    className="absolute left-0 bg-red-600 dark:bg-purple-600 py-2 px-4 text-white font-bold rounded-lg hover:bg-red-700 dark:hover:bg-purple-700 transition-colors"
+                    className="absolute left-0 bg-red-400 dark:bg-purple-600 py-2 px-4 text-white font-bold rounded-lg 
+                    hover:bg-red-500 dark:hover:bg-purple-700 transition-colors duration-200 ease-in-out flex items-center gap-x-2 cursor-pointer"
                 >
-                    ← Abandonar simulación
+                    <ArrowLeftIcon className="h-6 aspect-square"/>
+                    Abandonar simulación
                 </button>
 
-                <h1 className="text-5xl text-center font-bold text-blue-500">
-                    {clinicalCase?.title ?? "Cargando caso..."}
-                </h1>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-5">
+            <h1 className="text-5xl text-center font-bold text-blue-500 mb-5">
+                {clinicalCase?.title ?? "Cargando caso..."}
+            </h1>
+
+            <div className="grid grid-cols-1 mb-5">
                 {/* Simulación del paciente */}
-                <div className="relative w-full min-w-0 min-h-110 overflow-hidden rounded-xl">
-                    <div
-                        className="absolute top-2 right-2 z-10 bg-white shadow rounded-xl p-1 h-8 w-8 cursor-pointer"
-                        onClick={() =>
-                            setWindowSize((prevValue) => !prevValue)
-                        }
-                    >
-                        <ArrowUpRightIcon className="text-gray-400" />
-                    </div>
+                <div className="relative w-full min-w-0 min-h-110 overflow-hidden rounded-xl mb-5">
 
                     <canvas
                         ref={canvasRef}
                         id="caseSimulation-webgl"
-                        className={`w-full h-full ${
-                            windowSize ? "min-h-screen" : ""
-                        }`}
+                        className="w-full h-full"
                     />
                 </div>
 
