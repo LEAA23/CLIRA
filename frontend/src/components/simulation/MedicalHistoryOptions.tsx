@@ -16,6 +16,7 @@ const MedicalHistoryOptions = () => {
 
             <PopoverPanel
             transition
+            
             anchor="bottom"
             className="divide-y divide-white/5 rounded-xl bg-white border border-blue-500 mt-5 shadow-2xl text-sm/6 transition duration-200 ease-in-out 
             [--anchor-gap:--spacing(5)] data-closed:-translate-y-1 data-closed:opacity-0"
