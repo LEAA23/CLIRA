@@ -151,7 +151,7 @@ const CasesView = () => {
                         type="button"
                         onClick={() => setShowFilters(value => !value)}
                         aria-expanded={showFilters}
-                        className="shrink-0 rounded-lg border border-gray-300 bg-white px-4 py-3 font-semibold text-gray-700 hover:bg-gray-100 dark:border-gray-700 dark:bg-gray-800 dark:text-white dark:hover:bg-gray-700"
+                        className="shrink-0 rounded-lg border cursor-pointer border-gray-300 bg-white px-4 py-3 font-semibold text-gray-700 hover:bg-gray-100 dark:border-gray-700 dark:bg-gray-800 dark:text-white dark:hover:bg-gray-700"
                     >
                         {showFilters ? "Ocultar filtros" : "Filtros"}
                         {selectedFilters.length > 0 &&
@@ -164,7 +164,7 @@ const CasesView = () => {
                         onChange={event => setSearch(event.target.value)}
                         placeholder="Ej. cabeza, facil, menor"
                         aria-label="Buscar casos clínicos"
-                        className="min-w-0 flex-1 rounded-lg border border-gray-300 bg-white px-4 py-3 text-gray-800 outline-none focus:border-blue-500 dark:border-gray-700 dark:bg-gray-800 dark:text-white"
+                        className="min-w-0 flex-1 rounded-lg border border-gray-300 bg-white px-4 py-3 text-blue-500 outline-none focus:border-blue-500 dark:border-gray-700 dark:bg-gray-800 dark:text-white"
                     />
                 </div>
 
