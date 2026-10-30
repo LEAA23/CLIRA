@@ -25,7 +25,7 @@ const StudentLayout = () => {
 
   return (
     <>
-          <DashBoardHeader/>
+      <DashBoardHeader/>
       <main className="flex h-screen">
         <DashBoardSidebar/>
         <section className="container mx-auto px-10 pb-10 flex flex-col overflow-y-scroll">
