@@ -32,20 +32,21 @@ const SimulationView = () => {
         (state) => state.case
     );
 
-    // Inicializamos la simulación del paciente
+    // Inicializamos la simulación cuando el caso esté cargado
     useEffect(() => {
         const canvas = canvasRef.current;
 
-        if (!canvas) return;
+        // Esperamos a que exista un caso clínico válido
+        if (!canvas || !clinicalCase.id) return;
 
         const patientExperience = new Experience(canvas);
 
-        // Evita dejar una instancia sin limpiar si el componente se desmonta
         return () => {
-            // Agrega aquí la limpieza de Experience si tu clase la implementa.
             void patientExperience;
         };
-    }, []);
+
+    }, [clinicalCase.id, clinicalCase.simulationModel]);
+
 
     // Cargamos la información del caso
     useEffect(() => {
@@ -125,7 +126,7 @@ const SimulationView = () => {
             <h1 className="text-5xl text-center font-bold text-blue-500 mb-5">
                 {clinicalCase?.title ?? "Cargando caso..."}
             </h1>
-
+            
             <div className="grid grid-cols-1 mb-5">
                 {/* Simulación del paciente */}
                 <div className="relative w-full min-w-0 min-h-110 overflow-hidden rounded-xl mb-5">
@@ -144,9 +145,17 @@ const SimulationView = () => {
                     </p>
 
                     <p>
-                        {clinicalCase?.description ??
-                            "Cargando descripción..."}
+                        {clinicalCase?.description ?? "Cargando descripción..."}
                     </p>
+                    <div className="flex flex-wrap justify-start gap-2 mt-5">
+                        {clinicalCase.filters.map(filter => (
+                            <p key={filter.id} className="border border-blue-500 text-blue-500 hover:bg-blue-500 hover:border-white 
+                            hover:text-white px-2 py-1 rounded-lg">
+                                { filter.name }
+                            </p>
+                        ))}
+
+                    </div>
 
                     <form
                         onSubmit={handleDiagnosisSubmit}
@@ -187,7 +196,7 @@ const SimulationView = () => {
             </div>
 
             {/* Opciones de historial médico */}
-            <div className="flex justify-between">
+            <div className="flex justify-between gap-5">
                 <MedicalHistoryOptions />
             </div>
 
