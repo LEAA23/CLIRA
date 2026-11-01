@@ -38,7 +38,7 @@ const CaseCard = ( { id, title, description, previewImage, teacher_id, filters, 
     >
         <div className="relative px-5 flex justify-center items-center">
 
-            <h3 className="text-center text-gray-500 font-bold text-2xl">{ title }</h3>
+            <h3 className="text-center text-gray-500 font-bold text-2xl line-clamp-2">{ title }</h3>
 
             {user.id === teacher_id && user.rol === "teacher" && (
                 <div 
@@ -155,7 +155,7 @@ const CaseCard = ( { id, title, description, previewImage, teacher_id, filters, 
         <button
             type="button"
             className="bg-blue-500 py-2 px-6 w-full block mx-auto text-white font-bold rounded-lg hover:cursor-pointer 
-            hover:transition-colors hover:bg-blue-600 md:w-auto"
+            hover:transition-colors hover:bg-blue-600"
             onClick={(e) => {
                     e.stopPropagation();
                     navigate(`/simulation/${ id }`);
