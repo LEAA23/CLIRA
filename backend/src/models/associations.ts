@@ -152,3 +152,15 @@ FilterCategories.hasMany(Filters, {
     foreignKey: "category_id",
     as: "filters"
 });
+
+// Cada caso pertenece al maestro que lo creó.
+Case.belongsTo(User, {
+    foreignKey: "teacher_id",
+    as: "creator"
+});
+
+// Un maestro puede crear varios casos clínicos.
+User.hasMany(Case, {
+    foreignKey: "teacher_id",
+    as: "createdCases"
+});

@@ -176,10 +176,18 @@ export const CaseSchema = z.object({
     id: z.number(),
     title: z.string(),
     description: z.string(),
-    previewImage: z.file().or( z.null() ).or( z.string() ),
-    simulationModel: z.file().or( z.null() ).or( z.string() ),
+    previewImage: z.file().or(z.null()).or(z.string()),
+    simulationModel: z.file().or(z.null()).or(z.string()),
     teacher_id: z.number(),
-    filters: z.array( FilterSchema )
+
+    creator: z.object({
+        id: z.number(),
+        name: z.string(),
+        lastName: z.string(),
+        email: z.string()
+    }).nullable().optional(),
+
+    filters: z.array(FilterSchema)
 });
 
 export const CasesSquema = z.array( CaseSchema );

@@ -4,6 +4,13 @@ import type { Filter } from "../../types";
 import { useAppStore } from "../../stores/useAppStore";
 import CaseCardOptions from "./CaseCardOptions";
 
+type CaseCreator = {
+    id: number;
+    name: string;
+    lastName: string;
+    email: string;
+};
+
 type CaseCardProps = {
     id: number;
     title: string;
@@ -12,9 +19,10 @@ type CaseCardProps = {
     teacher_id: number;
     filters: Filter[];
     started: boolean;
+    creator?: CaseCreator | null;
 }
 
-const CaseCard = ( { id, title, description, previewImage, teacher_id, filters, started } : CaseCardProps ) => {
+const CaseCard = ( { id, title, description, previewImage, teacher_id, filters, started, creator } : CaseCardProps ) => {
     const navigate = useNavigate();
 
     const user = useAppStore( state => state.user );
@@ -65,6 +73,29 @@ const CaseCard = ( { id, title, description, previewImage, teacher_id, filters, 
 
             </p>
         </div>
+
+        {creator && (
+            <div className="flex items-center gap-3 rounded-xl border border-gray-100 bg-gray-50 p-3 dark:border-gray-700 dark:bg-gray-800">
+                <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-blue-100 text-sm font-bold text-blue-700 dark:bg-blue-900 dark:text-blue-200">
+                    {creator.name.charAt(0)}
+                    {creator.lastName.charAt(0)}
+                </div>
+
+                <div className="min-w-0 flex-1">
+                    <p className="text-xs font-medium text-gray-500 dark:text-gray-400">
+                        Caso creado por
+                    </p>
+
+                    <p className="break-words text-sm font-bold text-gray-800 dark:text-white">
+                        {creator.name} {creator.lastName}
+                    </p>
+
+                    <p className="break-all text-xs text-gray-500 dark:text-gray-400">
+                        {creator.email}
+                    </p>
+                </div>
+            </div>
+        )}
 
         <div className="py-1">
             <p className="text-gray-500 font-semibold">Filtros:</p>
