@@ -224,6 +224,7 @@ export class CaseController {
                 INNER JOIN "CaseEmbeddings" ce
                     ON ce.case_record_id = cr.id
                 WHERE cr.patient_id = $2
+                AND ce.embedding <=> $1::vector < 0.80
                 ORDER BY distance ASC
                 LIMIT 5;
                 `,
@@ -233,12 +234,22 @@ export class CaseController {
                 }
             );
 
+            //Si no hay coincidencias suficientemente similares
+            if (records.length === 0) {
+                return res.status(200).json({
+                    success: true,
+                    records: [],
+                    answer: "¿Podrias ser mas especifico?, porfavor."
+                });
+            }
+
             return res.status(200).json({
                 success: true,
                 records
             });
 
         } catch (error) {
+            console.log(error)
             return res.status(500).json( { error: "Error interno del servidor" } );
         }
     }
