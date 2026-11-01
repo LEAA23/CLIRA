@@ -9,6 +9,8 @@ import { Case } from "./Case";
 import { Filters } from "./Filters";
 import { CasesFilters } from "./CasesFilters";
 import FilterCategories from "./FilterCategories";
+import { CaseRecord } from "./CaseRecord";
+import { CaseEmbedding } from "./CaseEmbedding";
 
 //LAS ASOCIACIONES EN SEQUELIZE SON LAS RELACIONES ENTRE LAS BASES DE DATOS
 
@@ -163,4 +165,25 @@ Case.belongsTo(User, {
 User.hasMany(Case, {
     foreignKey: "teacher_id",
     as: "createdCases"
+});
+
+//Assosiations para sintomas y embeddings del paciente
+Case.hasMany(CaseRecord, {
+    foreignKey: "patient_id",
+    as: "symptomsAndHistory"
+});
+
+CaseRecord.belongsTo(Case, {
+    foreignKey: "patient_id",
+    as: "case"
+});
+
+CaseRecord.hasOne(CaseEmbedding, {
+    foreignKey: "case_record_id",
+    as: "embedding"
+});
+
+CaseEmbedding.belongsTo(CaseRecord, {
+    foreignKey: "case_record_id",
+    as: "record"
 });
