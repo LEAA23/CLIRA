@@ -177,7 +177,7 @@ const CasesView = () => {
                             `${location.pathname}?CreateCase=true`
                         )
                     }
-                    className="flex items-center justify-center gap-x-2 whitespace-nowrap rounded-lg bg-purple-600 px-6 py-3 font-bold text-white hover:bg-purple-700"
+                    className="flex items-center justify-center gap-x-2 whitespace-nowrap rounded-lg bg-blue-500 px-6 py-3 font-bold text-white hover:bg-blue-600 cursor-pointer"
                 >
                     <PlusIcon className="h-6" />
                     Crear caso clínico

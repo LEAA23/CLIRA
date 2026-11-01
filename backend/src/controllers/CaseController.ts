@@ -10,6 +10,10 @@ import { CaseCompletion } from "../models/CaseCompletion";
 import FilterCategories from "../models/FilterCategories";
 import { User } from "../models/User";
 import "../models/associations";
+import { CaseRecord } from "../models/CaseRecord";
+import { CaseEmbedding } from "../models/CaseEmbedding";
+import axios from "axios";
+import { formatEmbedding } from "../utils/formatEmbedding";
 
 export class CaseController {
 
@@ -31,7 +35,13 @@ export class CaseController {
                 completed: false
             });
 
-            const filters : number[] = JSON.parse( req.body.filters )
+            const filters : number[] = JSON.parse( req.body.filters );
+
+            type CaseFeature = {
+                type: string;
+                content: string;
+            };
+            const symptomsAndHistory : CaseFeature[] = JSON.parse( req.body.symptomsAndHistory );
 
             //Si el usuario mando una imagen del caso entonces la guardamos en el bucket de AWS
             if( files.previewImage ) {
@@ -71,10 +81,46 @@ export class CaseController {
             }
 
             await clinicalCase.save();
-                
-            filters.forEach( async(filter) => 
-                await CasesFilters.create({ case_id: clinicalCase.id, filter_id: filter }) 
-            )
+                            
+            // Guardamos los filtros asociados al caso
+            await Promise.all(
+                filters.map(filter =>
+                    CasesFilters.create({
+                        case_id: clinicalCase.id,
+                        filter_id: filter
+                    })
+                )
+            );
+
+            // Procesamos los sintomas y antecedentes
+            for (const feature of symptomsAndHistory) {
+
+                // Creamos el registro clínico
+                const record = await CaseRecord.create({
+                    type: feature.type,
+                    content: feature.content.trim(),
+                    patient_id: clinicalCase.id
+                });
+
+                // Solicitamos a Python la generación del embedding
+                const response = await axios.post(`${process.env.AI_SERVICE_URL}/embeddings/generate`,{
+                    text: feature.content
+                });
+
+                const embedding = response.data.embedding;
+
+                // Validamos que el vector tenga las dimensiones esperadas
+                if (!Array.isArray(embedding) || embedding.length !== 384) {
+                    throw new Error("El embedding generado no tiene 384 dimensiones");
+                }
+
+                // Guardamos el embedding relacionado con el registro clínico
+                await CaseEmbedding.create({
+                    embedding: formatEmbedding( embedding ) as any,
+                    model: "all-MiniLM-L6-v2",
+                    case_record_id: record.id
+                });
+            }
             
             return res.status(200).send( "El caso se creo correctamente" );
             
@@ -87,7 +133,11 @@ export class CaseController {
     static getCases = async( req: Request, res: Response ) => {
         try {
             const cases = await Case.findAll({
-                include: [ { model: Filters, as: "filters", attributes: [ "id", "name", "category_id" ], through: { attributes: [] } }, { model: User, as: "creator", attributes: [ "id", "name", 'lastName', 'email' ] } ]
+                include: [ 
+                    { model: Filters, as: "filters", attributes: [ "id", "name", "category_id" ], through: { attributes: [] } }, 
+                    { model: User, as: "creator", attributes: [ "id", "name", 'lastName', 'email' ] },
+                    { model: CaseRecord, as: "symptomsAndHistory", attributes: ["type", "content"] }
+                ]
             });
 
             await Promise.all(
@@ -118,7 +168,11 @@ export class CaseController {
         try {
             const clinicalCase = await Case.findOne({
                 where: { id: caseId },
-                include: [ { model: Filters, as: "filters", attributes: [ "id", "name", "category_id" ], through: { attributes: [] } }, { model: User, as: "creator", attributes: [ "id", "name", 'lastName', 'email' ] } ]
+                include: [ 
+                    { model: Filters, as: "filters", attributes: [ "id", "name", "category_id" ], through: { attributes: [] } }, 
+                    { model: User, as: "creator", attributes: [ "id", "name", 'lastName', 'email' ] },
+                    { model: CaseRecord, as: "symptomsAndHistory", attributes: ["type", "content"] } 
+                ]
             });
 
             if(!clinicalCase) {

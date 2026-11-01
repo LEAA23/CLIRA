@@ -4,7 +4,7 @@ import { useShowModal } from "../../hooks/useShowModal";
 import { useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import ErrorMessage from "../ErrorMessage";
-import { ArrowRightStartOnRectangleIcon, ArrowUpTrayIcon, PlusIcon } from "@heroicons/react/16/solid";
+import { ArrowRightStartOnRectangleIcon, ArrowUpTrayIcon, HeartIcon, PlusIcon } from "@heroicons/react/16/solid";
 import { useState } from "react";
 import { Popover, PopoverButton, PopoverPanel } from "@headlessui/react";
 import { toast } from "react-toastify";
@@ -46,62 +46,108 @@ const CreateCaseModal = () => {
         ],
     };
 
+    const handleFilterChange = (category: FilterCategory, id: number) => {
+        setSelectedFilters((prev) => {
+            const categoryIds = filterOptions[category].map((option) => option.id);
 
-const handleFilterChange = (category: FilterCategory, id: number) => {
-    setSelectedFilters((prev) => {
-        const categoryIds = filterOptions[category].map((option) => option.id);
+            // Si el filtro ya está seleccionado, lo deseleccionamos.
+            if (prev.includes(id)) {
+                return prev.filter((filterId) => filterId !== id);
+            }
 
-        // Si el filtro ya está seleccionado, lo deseleccionamos.
-        if (prev.includes(id)) {
-            return prev.filter((filterId) => filterId !== id);
+            // Extremidad permite seleccionar múltiples opciones.
+            if (category === "extremidad") {
+                return [...prev, id];
+            }
+
+            // Paciente y dificultad solo permiten una opción.
+            // Al elegir otra, se reemplaza la selección anterior de esa categoría.
+            return [
+                ...prev.filter((filterId) => !categoryIds.includes(filterId)),
+                id,
+            ];
+        });
+    };
+
+    const handleSubmitCase = async( formData : CreateCaseForm ) => {
+
+        // Validar registros clínicos
+        const invalidRecords = records.some(
+            record => !record.type.trim() || !record.content.trim()
+        );
+
+        if (invalidRecords) {
+            toast.error("Todos los registros clínicos deben tener un contenido");
+            return;
         }
 
-        // Extremidad permite seleccionar múltiples opciones.
-        if (category === "extremidad") {
-            return [...prev, id];
+        const data = new FormData();
+        data.append("title", formData.title);
+        data.append("description", formData.description);
+        data.append("filters", JSON.stringify(selectedFilters));
+        data.append("symptomsAndHistory", JSON.stringify( records ));
+
+        if(selectedFile) {
+            data.append("previewImage", selectedFile);
+        }
+        if(selectedModel) {
+            data.append("simulationModel", selectedModel);
         }
 
-        // Paciente y dificultad solo permiten una opción.
-        // Al elegir otra, se reemplaza la selección anterior de esa categoría.
-        return [
-            ...prev.filter((filterId) => !categoryIds.includes(filterId)),
-            id,
-        ];
-    });
-};
+        try {
+            const message = await createCase( data );
+            toast.success( message );
 
-const handleSubmitCase = async( formData : CreateCaseForm ) => {
-    const data = new FormData();
-    data.append("title", formData.title);
-    data.append("description", formData.description);
-    data.append("filters", JSON.stringify(selectedFilters));
+            navigate( location.pathname, { replace: true } );
 
-    if(selectedFile) {
-        data.append("previewImage", selectedFile);
-    }
-    if(selectedModel) {
-        data.append("simulationModel", selectedModel);
-    }
-
-    try {
-        const message = await createCase( data );
-        toast.success( message );
-
-        navigate( location.pathname, { replace: true } );
-
-        setValue("title", "");
-        setValue("description", "");
-        setSelectedFile(null);
-        setSelectedModel(null);
-        setSelectedFilters([]);
-    } catch (error) {
-        if( error instanceof Error ) {
-            toast.error( error.message );
+            setValue("title", "");
+            setValue("description", "");
+            setSelectedFile(null);
+            setSelectedModel(null);
+            setSelectedFilters([]);
+        } catch (error) {
+            if( error instanceof Error ) {
+                toast.error( error.message );
+            }
         }
     }
-}
 
-return (
+    //Sintomas
+    interface CaseRecordInput {
+        type: string;
+        content: string;
+    }
+
+    const [records, setRecords] = useState<CaseRecordInput[]>([
+        { type: "symptom", content: "" }
+    ]);
+
+    const addRecord = () => {
+        setRecords(prev => [
+            ...prev,
+            { type: "symptom", content: "" }
+        ]);
+    };
+
+    const removeRecord = (index: number) => {
+        setRecords(prev => prev.filter((_, i) => i !== index));
+    };
+
+    const updateRecord = (
+        index: number,
+        field: keyof CaseRecordInput,
+        value: string
+    ) => {
+        setRecords(prev =>
+            prev.map((record, i) =>
+                i === index
+                    ? { ...record, [field]: value }
+                    : record
+            )
+        );
+    };
+
+    return (
     <>
         <Transition appear show={showModal} as={Fragment}>
             <Dialog as="div" className="relative z-10" onClose={() => navigate(location.pathname, { replace: true })}>
@@ -176,6 +222,65 @@ return (
                                             {errors.description && (
                                                 <ErrorMessage>{ String(errors.description.message) }</ErrorMessage>
                                             )}
+                                        </div>
+
+                                        <div className="my-5 flex flex-col">
+                                            
+                                            <label
+                                                className="text-gray-600 font-bold text-xl"
+                                            >
+                                                Registros clinicos del paciente
+                                            </label>
+
+                                            {records.map((record, index) => (
+                                                <div key={index}>
+                                                    <p className="text-gray-500">
+                                                        Registro clinico {index + 1}
+                                                    </p>
+
+                                                    <div className="flex justify-start items-center gap-2">
+                                                        <select
+                                                            value={record.type}
+                                                            onChange={e =>
+                                                                updateRecord(index, "type", e.target.value)
+                                                            }
+                                                            className="bg-blue-500 px-3 py-2 rounded-lg text-white font-semibold cursor-pointer"
+                                                        >
+                                                            <option value="symptom">Síntoma</option>
+                                                            <option value="history">Antecedente médico</option>
+                                                        </select>
+
+                                                        <input
+                                                            value={record.content}
+                                                            onChange={e =>
+                                                                updateRecord(index, "content", e.target.value)
+                                                            }
+                                                            className="border border-gray-400 p-2 my-3 rounded-lg"
+                                                        />
+
+                                                        <button 
+                                                            onClick={() => removeRecord(index)}
+                                                            type="button"
+                                                            className="px-3 py-2 bg-red-400 hover:bg-red-500 cursor-pointer text-white font-bold rounded-lg"
+                                                        >
+                                                            Eliminar
+                                                        </button>
+
+                                                    </div>
+
+                                                </div>
+                                            ))}
+
+                                            <button 
+                                                onClick={addRecord}
+                                                type="button"
+                                                className="bg-purple-500 py-2 px-6 text-white font-bold rounded-lg mt-10 md:mt-5 
+                                                hover:cursor-pointer hover:transition-colors hover:bg-purple-600 w-full flex 
+                                                justify-center items-center gap-x-2"                                            >
+                                                <HeartIcon className="h-6 aspect-square"
+                                            />
+                                                Agregar registro clinico
+                                            </button>
                                         </div>
 
                                         <div className="flex flex-col">
