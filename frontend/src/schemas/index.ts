@@ -197,3 +197,6 @@ export const CaseSchema = z.object({
 });
 
 export const CasesSquema = z.array( CaseSchema );
+
+//Symptoms Squema
+export const SymptomSquema = z.string();

@@ -60,6 +60,14 @@ router.get("/:caseId",
     CaseController.getCase
 );
 
+router.post("/:caseId/askQuestion",
+    authenticate,
+    param( "caseId" ).notEmpty().withMessage("El id del caso es obligatorio"),
+    body( "question" ).notEmpty().withMessage("La pregunta es obligatoria"),
+    handleInputErrors,
+    CaseController.askQuestion
+);
+
 router.patch("/:caseId",
     authenticate,
     isUserTeacher,
