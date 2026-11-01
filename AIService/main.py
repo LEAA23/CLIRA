@@ -6,12 +6,20 @@ from pathlib import Path
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 
+from embeddings.search import router as embeddings_router
+
 
 #Inicializamos la API
 app = FastAPI(
     title="CLIRA AI Service",
     description="Servicio de predicción de diagnósticos",
     version="1.0.0"
+)
+
+app.include_router(
+    embeddings_router,
+    prefix="/embeddings",
+    tags=["Embeddings"]
 )
 
 #Cargar el modelo que hemos entrenado anteriormente

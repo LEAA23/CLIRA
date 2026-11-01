@@ -1,5 +1,5 @@
 import { GLTFLoader, RGBELoader, type GLTF } from "three/examples/jsm/Addons.js";
-import sources from "../sources";
+import getSources from "../sources";
 import EventEmitter from "./EventEmitter";
 import { DataTexture, Texture, TextureLoader, type TextureEventMap } from "three";
 
@@ -27,7 +27,7 @@ export default class Resources extends EventEmitter {
         super();
 
         //En este atributo vamos a almacenar todos los recursos como texturas, etc.
-        this.sources = sources;
+        this.sources = getSources();
         this.items = {};
         //En este almacenamos la cantidad de recursos que vamos a cargar
         this.toLoad = this.sources.length;

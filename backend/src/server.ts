@@ -5,6 +5,7 @@ import authRoutes from "./routes/authRoutes";
 import groupsRoutes from "./routes/groupRoutes";
 import userRoutes from "./routes/userRoutes";
 import caseRoutes from "./routes/caseRoutes";
+import aiRoutes from "./routes/aiRoutes";
 import {authenticateConection} from "./config/db";
 import { corsOptions } from "./config/cors";
 import { seedFilters, seedFilterCategories } from "./utils/filterSeeder";
@@ -33,6 +34,7 @@ app.use( express.json() );
 app.use("/api/auth", authRoutes);
 app.use("/api/groups", groupsRoutes);
 app.use("/api/users", userRoutes);
-app.use("/api/cases", caseRoutes)
+app.use("/api/cases", caseRoutes);
+app.use("/api/ai", aiRoutes);
 
 export default app;
