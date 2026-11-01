@@ -33,6 +33,7 @@ User.init(
         },    
         lastName: {
             type: DataTypes.STRING,
+            field: "lastName",
             allowNull: false
         },    
         rol: {

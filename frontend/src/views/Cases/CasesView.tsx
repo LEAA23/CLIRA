@@ -27,6 +27,7 @@ const CasesView = () => {
     const getCases = useAppStore(state => state.getCases);
     const cases = useAppStore(state => state.cases);
     const fetchUserAuth = useAppStore(state => state.fetchUserAuth);
+    const user = useAppStore(state => state.user);
 
     const [search, setSearch] = useState("");
     const [categories, setCategories] = useState<FilterCategory[]>([]);
@@ -65,10 +66,7 @@ const CasesView = () => {
     };
 
     const filteredCases = useMemo(() => {
-        // Permite búsquedas como:
-        // "cabeza, facil, menor"
-        // "pulmones medio"
-        // "fácil, adulto"
+        // Permite búsquedas con múltiples términos separados por espacios o comas.
         const searchTerms = normalizeText(search)
             .split(/[,\s]+/)
             .filter(Boolean);
@@ -127,6 +125,9 @@ const CasesView = () => {
                 [
                     clinicalCase.title,
                     clinicalCase.description,
+                    clinicalCase.creator?.name ?? "",
+                    clinicalCase.creator?.lastName ?? "",
+                    clinicalCase.creator?.email ?? "",
                     ...clinicalCase.filters.map(filter => filter.name),
                     ...categoryNames
                 ].join(" ")
@@ -168,6 +169,7 @@ const CasesView = () => {
                     />
                 </div>
 
+                {user.rol === "teacher" && (
                 <button
                     type="button"
                     onClick={() =>
@@ -180,6 +182,7 @@ const CasesView = () => {
                     <PlusIcon className="h-6" />
                     Crear caso clínico
                 </button>
+                )}
             </div>
 
             {showFilters && (
@@ -219,6 +222,7 @@ const CasesView = () => {
                             }
                             teacher_id={clinicalCase.teacher_id}
                             filters={clinicalCase.filters}
+                            creator={clinicalCase.creator}
                             started={false}
                         />
                     ))}
@@ -244,7 +248,7 @@ const CasesView = () => {
             )}
 
             <PreviewCaseModal started={false} />
-            <CreateCaseModal />
+            {user.rol === "teacher" && <CreateCaseModal />}
             <EditCaseModal />
             <DeleteCaseModal />
         </>

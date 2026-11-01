@@ -8,6 +8,8 @@ import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { Filters } from "../models/Filters";
 import { CaseCompletion } from "../models/CaseCompletion";
 import FilterCategories from "../models/FilterCategories";
+import { User } from "../models/User";
+import "../models/associations";
 
 export class CaseController {
 
@@ -85,7 +87,7 @@ export class CaseController {
     static getCases = async( req: Request, res: Response ) => {
         try {
             const cases = await Case.findAll({
-                include: [ { model: Filters, as: "filters", attributes: [ "id", "name", "category_id" ], through: { attributes: [] } } ]
+                include: [ { model: Filters, as: "filters", attributes: [ "id", "name", "category_id" ], through: { attributes: [] } }, { model: User, as: "creator", attributes: [ "id", "name", 'lastName', 'email' ] } ]
             });
 
             await Promise.all(
@@ -106,6 +108,7 @@ export class CaseController {
             )
             return res.status(200).json( { cases } );
         } catch (error) {
+            console.error("ERROR AL CONSULTAR LOS CASOS:", error);
             return res.status(500).json( { error: "Error interno del servidor" } );
         }
     }
@@ -115,7 +118,7 @@ export class CaseController {
         try {
             const clinicalCase = await Case.findOne({
                 where: { id: caseId },
-                include: [ { model: Filters, as: "filters", attributes: [ "id", "name", "category_id" ], through: { attributes: [] } } ]
+                include: [ { model: Filters, as: "filters", attributes: [ "id", "name", "category_id" ], through: { attributes: [] } }, { model: User, as: "creator", attributes: [ "id", "name", 'lastName', 'email' ] } ]
             });
 
             if(!clinicalCase) {

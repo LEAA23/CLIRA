@@ -3,6 +3,8 @@ import {
     buildStyles,
 } from "react-circular-progressbar";
 
+import "react-circular-progressbar/dist/styles.css";
+
 const DiagnosticAccuracyChart = () => {
     const accuracy: number = 50;
     const isPerfect = accuracy === 100;

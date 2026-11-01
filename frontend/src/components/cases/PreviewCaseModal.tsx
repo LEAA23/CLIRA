@@ -76,6 +76,36 @@ const PreviewCaseModal = ({started} : PreviewCaseModalProps) => {
                                             </span>
                                         </div>
 
+                                    {clinicalCase.creator && (
+                                        <div className="my-5 rounded-xl border border-blue-100 bg-blue-50/70 p-4 dark:border-slate-700 dark:bg-slate-800">
+                                            <p className="mb-3 text-sm font-bold text-blue-700 dark:text-blue-300">
+                                                Información del creador
+                                            </p>
+
+                                            <div className="flex items-center gap-3">
+                                                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-blue-600 text-sm font-bold text-white">
+                                                    {clinicalCase.creator.name.charAt(0)}
+                                                    {clinicalCase.creator.lastName.charAt(0)}
+                                                </div>
+
+                                                <div className="min-w-0">
+                                                    <p className="break-words font-bold text-gray-800 dark:text-white">
+                                                        {clinicalCase.creator.name}{" "}
+                                                        {clinicalCase.creator.lastName}
+                                                    </p>
+
+                                                    <p className="break-all text-sm text-gray-500 dark:text-gray-300">
+                                                        {clinicalCase.creator.email}
+                                                    </p>
+
+                                                    <p className="mt-1 text-xs text-blue-600 dark:text-blue-300">
+                                                        Maestro / Doctor
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    )}
+
                                         <div className="my-5 border-l-4 border-blue-400 pl-5">
                                             <p className="text-gray-500 font-bold text-xl mb-2">Filtros:</p>
                                             <div className="flex justify-start flex-wrap gap-2">
