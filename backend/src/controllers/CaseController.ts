@@ -14,6 +14,8 @@ import { CaseRecord } from "../models/CaseRecord";
 import { CaseEmbedding } from "../models/CaseEmbedding";
 import axios from "axios";
 import { formatEmbedding } from "../utils/formatEmbedding";
+import db from "../config/db";
+import { QueryTypes } from "sequelize";
 
 export class CaseController {
 
@@ -193,6 +195,50 @@ export class CaseController {
             return res.status(200).json( { clinicalCase } );
         } catch (error) {
             console.log(error)
+            return res.status(500).json( { error: "Error interno del servidor" } );
+        }
+    }
+
+    static askQuestion = async( req: Request, res: Response ) => {
+        const { question } = req.body;
+        const { caseId } = req.params;
+        try {
+            // Solicitamos a Python la generación del embedding
+            const response = await axios.post(`${process.env.AI_SERVICE_URL}/embeddings/generate`,{
+                text: question
+            });
+
+            const embedding = response.data.embedding;
+
+            // 2. Buscar registros similares del caso seleccionado
+            const embeddingString = `[${embedding.join(",")}]`;
+
+            const records = await db.query(
+                `
+                SELECT
+                    cr.id,
+                    cr.type,
+                    cr.content,
+                    ce.embedding <=> $1::vector AS distance
+                FROM "CaseRecords" cr
+                INNER JOIN "CaseEmbeddings" ce
+                    ON ce.case_record_id = cr.id
+                WHERE cr.patient_id = $2
+                ORDER BY distance ASC
+                LIMIT 5;
+                `,
+                {
+                    bind: [embeddingString, caseId],
+                    type: QueryTypes.SELECT
+                }
+            );
+
+            return res.status(200).json({
+                success: true,
+                records
+            });
+
+        } catch (error) {
             return res.status(500).json( { error: "Error interno del servidor" } );
         }
     }

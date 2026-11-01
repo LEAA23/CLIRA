@@ -1,7 +1,24 @@
 import { Popover, PopoverButton, PopoverPanel } from "@headlessui/react";
 import { QuestionMarkCircleIcon, ChartPieIcon, BeakerIcon } from "@heroicons/react/16/solid";
+import { useForm } from "react-hook-form";
+import type { Symptom } from "../../types";
+import ErrorMessage from "../ErrorMessage";
+import { toast } from "react-toastify";
 
 const MedicalHistoryOptions = () => {
+
+
+    const { register, formState: { errors }, handleSubmit } = useForm<{ question: Symptom }>( { defaultValues: { question: "" } } );
+
+    const handleAskQuestion = async( question : { question: Symptom } ) => {
+        try {
+            const answer = await
+        } catch (error) {
+            if( error instanceof Error ) {
+                toast.error( error.message );
+            }
+        }
+    }
   return (
     <>
         <Popover>
@@ -21,24 +38,39 @@ const MedicalHistoryOptions = () => {
             [--anchor-gap:--spacing(5)] data-closed:-translate-y-1 data-closed:opacity-0"
             >
             <div className="p-3">
-                <a className="block rounded-lg px-3 py-2 transition hover:bg-white/5" href="#">
-                <p className="font-semibold text-gray-400">Insights</p>
-                <p className="text-black">Measure actions your users take</p>
-                </a>
-                <a className="block rounded-lg px-3 py-2 transition hover:bg-white/5" href="#">
-                <p className="font-semibold text-gray-400">Automations</p>
-                <p className="text-black">Create your own targeted content</p>
-                </a>
-                <a className="block rounded-lg px-3 py-2 transition hover:bg-white/5" href="#">
-                <p className="font-semibold text-gray-400">Reports</p>
-                <p className="text-black">Keep track of your growth</p>
-                </a>
-            </div>
-            <div className="p-3">
-                <a className="block rounded-lg px-3 py-2 transition hover:bg-white/5" href="#">
-                <p className="font-semibold text-gray-400">Documentation</p>
-                <p className="text-black">Start integrating products and tools</p>
-                </a>
+                <form
+                    onSubmit={ handleSubmit( handleAskQuestion ) }
+                >
+                    <div className="flex flex-col">
+                        <label
+                            htmlFor="question"
+                            className="text-gray-600 text-xl font-bold"
+                        >
+                            Pregunta sintomas o antecedentes
+                        </label>
+                        <input 
+                            type="text" 
+                            id="question"
+                            placeholder="Escribe tu pregunta por sintomas o antecedentes clinicos del paciente"
+                            className="border border-gray-400 p-2 my-3 w-full rounded-lg"
+                            {...register("question", {
+                                required: "La pregunta es obligatoria"
+                            })}
+                        />
+                        {errors.question && (
+                            <ErrorMessage>{ String(errors.question.message) }</ErrorMessage>
+                        )}
+
+                    </div>
+
+                    <button
+                        type="submit"
+                        className="bg-blue-500 py-2 px-6 w-full text-white font-bold rounded-lg hover:cursor-pointer 
+                        hover:transition-colors hover:bg-blue-600 text-center"
+                    >
+                        Preguntar
+                    </button>  
+                </form>
             </div>
             </PopoverPanel>
         </Popover>
