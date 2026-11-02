@@ -84,6 +84,9 @@ const CreateCaseModal = () => {
         const data = new FormData();
         data.append("title", formData.title);
         data.append("description", formData.description);
+        data.append("height", String(formData.height) );
+        data.append("weight", String(formData.weight) );
+        data.append("bloodPreassure", String(formData.bloodPreassure) );
         data.append("filters", JSON.stringify(selectedFilters));
         data.append("symptomsAndHistory", JSON.stringify( records ));
 
@@ -93,6 +96,8 @@ const CreateCaseModal = () => {
         if(selectedModel) {
             data.append("simulationModel", selectedModel);
         }
+
+        console.log(formData)
 
         try {
             const message = await createCase( data );
@@ -225,7 +230,6 @@ const CreateCaseModal = () => {
                                         </div>
 
                                         <div className="my-5 flex flex-col">
-                                            
                                             <label
                                                 className="text-gray-600 font-bold text-xl"
                                             >
@@ -248,6 +252,7 @@ const CreateCaseModal = () => {
                                                         >
                                                             <option value="symptom">Síntoma</option>
                                                             <option value="history">Antecedente médico</option>
+                                                            <option value="age">Edad</option>
                                                         </select>
 
                                                         <input
@@ -281,6 +286,58 @@ const CreateCaseModal = () => {
                                             />
                                                 Agregar registro clinico
                                             </button>
+                                        </div>
+                                        
+                                        <div className="my-5 flex flex-col">
+                                            <p className="text-gray-600 font-bold text-xl">
+                                                Metricas corporales del paciente
+                                            </p>
+
+                                            <div>
+                                                <label htmlFor="height" className="text-gray-500">
+                                                    Altura
+                                                </label>
+                                                <input 
+                                                    id="height"
+                                                    type="number"
+                                                    {...register("height")}
+                                                    min="100"
+                                                    max="300"
+                                                    placeholder="Ingresa la altura del paciente en cm"
+                                                    className="border border-gray-400 p-2 mb-3 w-full rounded-lg"
+                                                />
+
+                                            </div>
+
+                                            <div>
+                                                <label htmlFor="weight" className="text-gray-500">
+                                                    Peso
+                                                </label>
+                                                <input 
+                                                    id="weight"
+                                                    type="number"
+                                                    {...register("weight")}
+                                                    min="1"
+                                                    max="300"
+                                                    placeholder="Ingresa el peso del paciente en kg"
+                                                    className="border border-gray-400 p-2 mb-3 w-full rounded-lg"
+                                                />
+
+                                            </div>
+
+                                            <div>
+                                                <label htmlFor="bloodPreassure" className="text-gray-500">
+                                                    Presi&oacute;n Sanguinea
+                                                </label>
+                                                <input 
+                                                    id="bloodPreassure"
+                                                    type="text"
+                                                    {...register("bloodPreassure")}
+                                                    placeholder="Ingresa la presion sanguinea del paciente, Ej. 120/80"
+                                                    className="border border-gray-400 p-2 mb-3 w-full rounded-lg"
+                                                />
+
+                                            </div>
                                         </div>
 
                                         <div className="flex flex-col">

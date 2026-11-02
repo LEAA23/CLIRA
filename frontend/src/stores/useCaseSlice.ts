@@ -1,5 +1,5 @@
 import type { StateCreator } from "zustand";
-import { createCase, deleteCase, deleteCaseImage, deleteCaseModel, getCases, getSimulation, updateCase } from "../api/caseApi";
+import { createCase, deleteCase, deleteCaseImage, deleteCaseModel, getCases, getCorporalMetrics, getSimulation, updateCase } from "../api/caseApi";
 import type { Case, Symptom } from "../types";
 import { askPatientSymptomsAndHistory } from "../api/simulationApi";
 
@@ -9,7 +9,8 @@ export type CaseSliceType = {
     createCase: (formData: FormData) => Promise<string | undefined>;
     getCases: () => Promise<void>;
     fetchCase: (caseId: number) => Promise<void>;
-    askQuestion: ({ caseId, question }: { caseId: number; question: string; }) => Promise<void>
+    askQuestion: ({ caseId, question }: { caseId: number; question: string; }) => Promise<void>;
+    fetchCorporalMetrics: ({ caseId, metricsSelected }: { caseId: number; metricsSelected: string[]; }) => Promise<void>;
     updateCase: ({ caseId, formData }: { caseId: number; formData: FormData; }) => Promise<string | undefined>;
     deleteCaseImage: (caseId: number) => Promise<string | undefined>;
     deleteCaseModel: (caseId: number) => Promise<string | undefined>;
@@ -25,6 +26,9 @@ export const createCaseSlice : StateCreator<CaseSliceType> = ((set, get) => ({
         title: "",
         description: "",
         symptomsAndHistory: [],
+        height: 0,
+        weight: 0,
+        bloodPreassure: "",
         previewImage: "",
         simulationModel: "",
         teacher_id: 0,
@@ -55,6 +59,35 @@ export const createCaseSlice : StateCreator<CaseSliceType> = ((set, get) => ({
                 symptomsAndHistory
             }
         }));
+    },
+    fetchCorporalMetrics: async ({ caseId, metricsSelected }) => {
+
+        const corporalMetrics = await getCorporalMetrics({
+            caseId,
+            metricsSelected
+        });
+
+        set(state => {
+            const updatedCase = { ...state.case };
+
+            corporalMetrics!.forEach(metric => {
+
+                if (metric.type === "height") {
+                    updatedCase.height = +metric.value;
+                }
+
+                if (metric.type === "weight") {
+                    updatedCase.weight = +metric.value;
+                }
+
+                if (metric.type === "bloodPreassure") {
+                    updatedCase.bloodPreassure = metric.value as string;
+                }
+
+            });
+
+            return { case: updatedCase };
+        });
     },
     fetchSimulation: async( caseId: Case["id"] ) => {
         const clinicalCase = await getSimulation( caseId );
@@ -112,6 +145,9 @@ export const createCaseSlice : StateCreator<CaseSliceType> = ((set, get) => ({
                 title: "",
                 description: "",
                 symptomsAndHistory: [],
+                height: 0,
+                weight: 0,
+                bloodPreassure: "",
                 previewImage: "",
                 simulationModel: "",
                 teacher_id: 0,

@@ -21,6 +21,9 @@ router.post("/",
     body("title").notEmpty().withMessage("El titulo es obligatorio"),
     body("description").notEmpty().withMessage("La descripcion del es obligatoria"),
     body("symptomsAndHistory"),
+    body("height"),
+    body("weight"),
+    body("bloodPreassure"),
     body("filters").isLength({ min: 1 }).withMessage("Selecciona al menos un filtro"),
     handleInputErrors,
     CaseController.createCase
@@ -71,6 +74,16 @@ router.post("/:caseId/askQuestion",
     body( "question" ).notEmpty().withMessage("La pregunta es obligatoria"),
     handleInputErrors,
     CaseController.askQuestion
+);
+
+router.post("/:caseId/corporalMetrics",
+    authenticate,
+    caseExists,
+    param( "caseId" ).notEmpty().withMessage("El id del caso es obligatorio"),
+    body("metricsSelected.*").isIn(["height", "weight", "bloodPreassure"]).withMessage("Una de las métricas seleccionadas no es válida"),
+    body( "metricsSelected" ).isArray().withMessage("Debes seleccionar al menos una metrica"),
+    handleInputErrors,
+    CaseController.getCorporalMetrics
 );
 
 router.patch("/:caseId",

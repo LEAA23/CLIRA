@@ -7,6 +7,9 @@ export class Case extends Model< InferAttributes<Case>, InferCreationAttributes<
     declare description: string;
     declare previewImage: string;
     declare simulationModel: string;
+    declare height: number | null;
+    declare weight: number | null;
+    declare bloodPreassure: string | null;
     declare diagnosis: string;
     // declare weight: number;
     // declare height: number;
@@ -43,6 +46,21 @@ Case.init({
         type: DataTypes.STRING,
         defaultValue: "",
         allowNull: false
+    },
+    height: {
+        type: DataTypes.NUMBER,
+        defaultValue: null,
+        allowNull: true
+    },
+    weight: {
+        type: DataTypes.NUMBER,
+        defaultValue: null,
+        allowNull: true
+    },
+    bloodPreassure: {
+        type: DataTypes.STRING,
+        defaultValue: null,
+        allowNull: true
     },
     diagnosis: {
         type: DataTypes.TEXT,

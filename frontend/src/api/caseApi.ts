@@ -1,6 +1,6 @@
 import { isAxiosError } from "axios"
 import api from "../lib/axios";
-import { CaseSchema, CasesSquema } from "../schemas";
+import { CaseSchema, CasesSquema, MetricsSquema } from "../schemas";
 import type { Case, Filter } from "../types";
 
 export const createCase = async( formData: FormData ) => {
@@ -99,6 +99,22 @@ export const getSimulation = async( caseId: Case["id"] ) => {
     try {
         const { data: { clinicalCase } } = await api.get(`/cases/${caseId}`);
         const response = CaseSchema.safeParse( clinicalCase );
+        if( response.data ) {
+            return response.data;
+        }
+    } catch (error) {
+        if( isAxiosError( error ) && error.response ) {
+            throw new Error( error.response.data.error );
+        }
+    }
+}
+
+export const getCorporalMetrics = async( { caseId, metricsSelected } : { caseId: Case["id"] ; metricsSelected: string[] } ) => {
+    try {
+        const { data: { metrics } } = await api.post(`/cases/${caseId}/corporalMetrics`, { caseId, metricsSelected } );
+        console.log(metrics)
+        const response = MetricsSquema.safeParse( metrics );
+        console.log(response)
         if( response.data ) {
             return response.data;
         }

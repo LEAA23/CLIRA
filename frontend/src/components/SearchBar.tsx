@@ -48,7 +48,7 @@ const SearchBar = ({
 
     return (
         <div className="flex w-full flex-col gap-3">
-            <div className="flex w-full flex-col items-stretch gap-3 sm:flex-row">
+            <div className="flex w-full flex-col justify-between items-center  gap-3 sm:flex-row">
                 {filters && (
                     <button
                         type="button"
@@ -61,9 +61,9 @@ const SearchBar = ({
                                 ? "Ocultar filtros"
                                 : "Mostrar filtros"
                         }
-                        className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-gray-200 bg-white shadow-sm transition hover:border-blue-400 hover:text-blue-600 dark:border-gray-700 dark:bg-gray-800 dark:text-white"
+                        className="flex h-12 w-12 cursor-pointer shrink-0 items-center justify-center rounded-xl border border-gray-200 bg-white shadow-sm transition hover:border-blue-400 hover:text-blue-600 dark:border-gray-700 dark:bg-gray-800 dark:text-white"
                     >
-                        <AdjustmentsHorizontalIcon className="h-7 w-7" />
+                        <AdjustmentsHorizontalIcon className="h-7 w-7 text-gray-500" />
                     </button>
                 )}
 
