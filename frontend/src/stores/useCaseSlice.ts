@@ -1,6 +1,7 @@
 import type { StateCreator } from "zustand";
 import { createCase, deleteCase, deleteCaseImage, deleteCaseModel, getCases, getSimulation, updateCase } from "../api/caseApi";
-import type { Case } from "../types";
+import type { Case, Symptom } from "../types";
+import { askPatientSymptomsAndHistory } from "../api/simulationApi";
 
 export type CaseSliceType = {
     cases: Case[];
@@ -8,6 +9,7 @@ export type CaseSliceType = {
     createCase: (formData: FormData) => Promise<string | undefined>;
     getCases: () => Promise<void>;
     fetchCase: (caseId: number) => Promise<void>;
+    askQuestion: ({ caseId, question }: { caseId: number; question: string; }) => Promise<void>
     updateCase: ({ caseId, formData }: { caseId: number; formData: FormData; }) => Promise<string | undefined>;
     deleteCaseImage: (caseId: number) => Promise<string | undefined>;
     deleteCaseModel: (caseId: number) => Promise<string | undefined>;
@@ -42,6 +44,16 @@ export const createCaseSlice : StateCreator<CaseSliceType> = ((set, get) => ({
     fetchCase: async( caseId: Case["id"] ) => {
         set(() => ({
             case: get().cases.find( clinicalCase => clinicalCase.id === caseId )
+        }));
+    },
+    askQuestion: async( { caseId, question } : { caseId: Case["id"] ; question: Symptom } ) => {
+        const records = await askPatientSymptomsAndHistory( { caseId, question } );
+        const symptomsAndHistory = [...records!.records];
+        set(() => ({
+            case: {
+                ...get().case,
+                symptomsAndHistory
+            }
         }));
     },
     fetchSimulation: async( caseId: Case["id"] ) => {
