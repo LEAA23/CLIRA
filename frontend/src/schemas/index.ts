@@ -200,3 +200,15 @@ export const CasesSquema = z.array( CaseSchema );
 
 //Symptoms Squema
 export const SymptomSquema = z.string();
+
+export const askQuestionResponse = z.object({
+    success: z.boolean(),
+    records: z.array(
+        z.object({
+            id: z.number(),
+            type: z.string(),
+            content: z.string(),
+            distance: z.number()
+        })
+    )
+});

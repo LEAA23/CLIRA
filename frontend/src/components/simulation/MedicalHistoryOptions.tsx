@@ -4,15 +4,24 @@ import { useForm } from "react-hook-form";
 import type { Symptom } from "../../types";
 import ErrorMessage from "../ErrorMessage";
 import { toast } from "react-toastify";
+import { useAppStore } from "../../stores/useAppStore";
+import { useParams } from "react-router-dom";
 
 const MedicalHistoryOptions = () => {
 
+    const params = useParams();
+    const caseId = +params.id!;
+
+    const clinicalCase = useAppStore( state => state.case );
+    const question = clinicalCase.symptomsAndHistory[0];
+
+    const askQuestion = useAppStore( state => state.askQuestion );
 
     const { register, formState: { errors }, handleSubmit } = useForm<{ question: Symptom }>( { defaultValues: { question: "" } } );
 
     const handleAskQuestion = async( question : { question: Symptom } ) => {
         try {
-            const answer = await
+            await askQuestion( { caseId, question: question.question } );
         } catch (error) {
             if( error instanceof Error ) {
                 toast.error( error.message );
@@ -38,6 +47,7 @@ const MedicalHistoryOptions = () => {
             [--anchor-gap:--spacing(5)] data-closed:-translate-y-1 data-closed:opacity-0"
             >
             <div className="p-3">
+
                 <form
                     onSubmit={ handleSubmit( handleAskQuestion ) }
                 >
@@ -71,6 +81,17 @@ const MedicalHistoryOptions = () => {
                         Preguntar
                     </button>  
                 </form>
+
+                {clinicalCase.symptomsAndHistory.length > 0 && (
+                    <div className="mt-5">
+                        <p className="font-bold text-gray-800">Respuesta del paciente:</p>
+                        <ul className="list-disc p-2">
+                            {clinicalCase.symptomsAndHistory.filter(feature => feature.type === question.type).map(feature => (
+                                <li key={feature.type} className="text-gray-700">{feature.content}</li>
+                            ))}
+                        </ul>
+                    </div>
+                )}
             </div>
             </PopoverPanel>
         </Popover>

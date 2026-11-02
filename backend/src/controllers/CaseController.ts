@@ -172,8 +172,7 @@ export class CaseController {
                 where: { id: caseId },
                 include: [ 
                     { model: Filters, as: "filters", attributes: [ "id", "name", "category_id" ], through: { attributes: [] } }, 
-                    { model: User, as: "creator", attributes: [ "id", "name", 'lastName', 'email' ] },
-                    { model: CaseRecord, as: "symptomsAndHistory", attributes: ["type", "content"] } 
+                    { model: User, as: "creator", attributes: [ "id", "name", 'lastName', 'email' ] }
                 ]
             });
 
@@ -192,7 +191,10 @@ export class CaseController {
                 clinicalCase.simulationModel = key;
             }
 
-            return res.status(200).json( { clinicalCase } );
+            const caseData = clinicalCase.toJSON();
+            caseData.symptomsAndHistory = [];
+
+            return res.status(200).json( { clinicalCase: caseData } );
         } catch (error) {
             console.log(error)
             return res.status(500).json( { error: "Error interno del servidor" } );
@@ -234,12 +236,20 @@ export class CaseController {
                 }
             );
 
-            //Si no hay coincidencias suficientemente similares
+            console.log(records)
+
+            //Si no hay coincidencias suficientemente similares respondemos con un mensaje prederetermindo
             if (records.length === 0) {
                 return res.status(200).json({
                     success: true,
-                    records: [],
-                    answer: "¿Podrias ser mas especifico?, porfavor."
+                    records: [
+                        {
+                            id: 0,
+                            type: "unknow",
+                            distance: 1,
+                            content: "¿Podrias ser mas especifico?, porfavor."
+                        }
+                    ]
                 });
             }
 
