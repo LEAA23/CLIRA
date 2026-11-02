@@ -16,7 +16,6 @@ const AuthLayout = () => {
         pauseOnFocusLoss={false}
         pauseOnHover={false}
       />
-
     </>
   )
 }

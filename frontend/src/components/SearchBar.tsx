@@ -1,83 +1,116 @@
-import { AdjustmentsHorizontalIcon, MagnifyingGlassIcon } from "@heroicons/react/16/solid";
-import { useState } from "react";
-import FilterOptions from "./FilterOptions";
+import {
+    AdjustmentsHorizontalIcon,
+    MagnifyingGlassIcon,
+} from "@heroicons/react/16/solid";
+import { useState, type ReactNode } from "react";
 import { useForm } from "react-hook-form";
+
+import FilterOptions from "./FilterOptions";
 import ErrorMessage from "./ErrorMessage";
 
 type SearchBarProps = {
-  pendingCases: boolean;
-  filters: boolean;
-  inputType: string;
-  inputName: string;
-  placeholder: string;
-  fn: (formData: any) => void;
-}
+    pendingCases: boolean;
+    filters: boolean;
+    inputType: string;
+    inputName: string;
+    placeholder: string;
+    fn: (formData: Record<string, string>) => void;
+    filtersContent?: ReactNode;
+};
 
-const SearchBar = ({pendingCases, filters, inputType, inputName, placeholder, fn} : SearchBarProps) => {
-    //State local para identificar cuando el filter esta activo y asi poder desplegarlo
+const SearchBar = ({
+    pendingCases,
+    filters,
+    inputType,
+    inputName,
+    placeholder,
+    fn,
+    filtersContent,
+}: SearchBarProps) => {
     const [isFiltersActive, setIsFiltersActive] = useState(false);
 
-    const handleClick = () => setIsFiltersActive( prevValue => !prevValue );
+    const {
+        register,
+        formState: { errors },
+        handleSubmit,
+    } = useForm<Record<string, string>>();
 
-    const { register, formState: { errors }, handleSubmit } = useForm();
+    const validationRules =
+        inputType === "email"
+            ? {
+                  required: "El email es obligatorio",
+                  pattern: {
+                      value: /\S+@\S+\.\S+/,
+                      message: "E-mail no válido",
+                  },
+              }
+            : {};
 
-  return (
-      
-    <div className="flex flex-col md:flex-row justify-center w-full items-center md:items-stretch md:justify-start gap-x-3">
-        {filters && (
-          <div className="bg-white rounded-lg shadow mb-5 md:mb-10 w-12 aspect-square flex justify-center items-center cursor-pointer">
-            <button
-              onClick={handleClick}
-            >
-              <AdjustmentsHorizontalIcon
-                className="text-gray-400 w-8 hover:text-blue-500 cursor-pointer"
-              />
-            </button>
-          </div>
-        )}
-        {isFiltersActive && (
-          <div className="bg-white rounded-lg shadow mb-10 p-5">
-            <FilterOptions
-              startedFilters={pendingCases}
-            />
-          </div>
-        )}
+    return (
+        <div className="flex w-full flex-col gap-3">
+            <div className="flex w-full flex-col items-stretch gap-3 sm:flex-row">
+                {filters && (
+                    <button
+                        type="button"
+                        onClick={() =>
+                            setIsFiltersActive((value) => !value)
+                        }
+                        aria-expanded={isFiltersActive}
+                        aria-label={
+                            isFiltersActive
+                                ? "Ocultar filtros"
+                                : "Mostrar filtros"
+                        }
+                        className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-gray-200 bg-white shadow-sm transition hover:border-blue-400 hover:text-blue-600 dark:border-gray-700 dark:bg-gray-800 dark:text-white"
+                    >
+                        <AdjustmentsHorizontalIcon className="h-7 w-7" />
+                    </button>
+                )}
 
-        <div className={`bg-white ${filters? "md:max-w-1/4" : "w-full"} rounded-lg shadow mb-10`}>
-          <form
-            className="flex justify-between items-center"
-            noValidate
-            onSubmit={ handleSubmit(fn) }
-          >
-            <input 
-              type={ inputType }
-              placeholder={ placeholder }
-              className="focus:outline-none p-5 w-full"
-              {...register(inputName, {
-                required: "El email es obligatorio",
-                pattern: {
-                  value:  /\S+@\S+\.\S+/,
-                  message: "E-mail no valido"
-                }
-              })}
-            />
-            <button
-              type="submit" 
-              className="mx-5 cursor-pointer"
-            >
-              <MagnifyingGlassIcon 
-                className="w-8 text-gray-400 hover:text-blue-500 transition-all ease-in-out duration-200"
-              />
-            </button>
-          </form>
-          
-          {errors[inputName] && (
-            <ErrorMessage>{errors[inputName].message?.toString()}</ErrorMessage>
-          )}
+                <div className="min-w-0 flex-1 rounded-xl border border-gray-200 bg-white shadow-sm dark:border-gray-700 dark:bg-gray-800">
+                    <form
+                        className="flex w-full items-center"
+                        noValidate
+                        onSubmit={handleSubmit(fn)}
+                    >
+                        <input
+                            type={inputType}
+                            placeholder={placeholder}
+                            aria-label={placeholder}
+                            className="w-full min-w-0 rounded-xl bg-transparent p-4 text-gray-800 outline-none placeholder:text-gray-400 dark:text-white"
+                            {...register(inputName, validationRules)}
+                        />
+
+                        <button
+                            type="submit"
+                            aria-label="Buscar"
+                            className="mx-4 shrink-0 text-gray-400 transition hover:text-blue-500"
+                        >
+                            <MagnifyingGlassIcon className="h-7 w-7" />
+                        </button>
+                    </form>
+
+                    {errors[inputName] && (
+                        <div className="px-4 pb-3">
+                            <ErrorMessage>
+                                {errors[inputName].message?.toString()}
+                            </ErrorMessage>
+                        </div>
+                    )}
+                </div>
+            </div>
+
+            {isFiltersActive && filters && (
+                <div className="w-full rounded-xl border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-700 dark:bg-gray-800">
+                    {filtersContent ?? (
+                        <FilterOptions
+                            startedFilters={pendingCases}
+                        />
+                    )}
+                </div>
+            )}
         </div>
-
-    </div>
-  )
-}
+    );
+};
 
 export default SearchBar;

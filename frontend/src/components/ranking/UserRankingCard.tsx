@@ -37,7 +37,7 @@ const UserRankingCard = ({ entry }: UserRankingCardProps) => {
             </p>
 
             <div className="grid grid-cols-2 gap-3 mt-5 w-full max-w-sm">
-                <div className="bg-blue-50 rounded-xl p-4 text-center">
+                <div className="ranking-stat rounded-xl border border-transparent p-4 text-center">
                     <div className="flex justify-center items-center gap-2">
                         <TrophyIcon className="text-blue-500 h-6 w-6" />
                         <span className="text-2xl font-bold">
@@ -50,7 +50,7 @@ const UserRankingCard = ({ entry }: UserRankingCardProps) => {
                     </p>
                 </div>
 
-                <div className="bg-blue-50 rounded-xl p-4 text-center">
+                <div className="ranking-stat rounded-xl border border-transparent p-4 text-center">
                     <div className="flex justify-center items-center gap-2">
                         <SparklesIcon className="text-blue-500 h-6 w-6" />
                         <span className="text-2xl font-bold">

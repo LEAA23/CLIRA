@@ -28,6 +28,29 @@ export const getCases = async() => {
     }
 }
 
+export const getPublicCases = async (): Promise<Case[]> => {
+    try {
+        const { data } = await api.get("/cases/public");
+
+        const response = CasesSquema.safeParse(data.cases);
+
+        if (!response.success) {
+            throw new Error("Los datos de los casos no tienen un formato válido");
+        }
+
+        return response.data;
+    } catch (error) {
+        if (isAxiosError(error) && error.response) {
+            throw new Error(
+                error.response.data.error ||
+                "No se pudieron cargar los casos clínicos"
+            );
+        }
+
+        throw error;
+    }
+};
+
 export const updateCase = async( { caseId, formData } : { caseId: Case["id"] ; formData: FormData } ) => {
     try {
         const { data } = await api.patch<string>(`/cases/${caseId}`, formData );
