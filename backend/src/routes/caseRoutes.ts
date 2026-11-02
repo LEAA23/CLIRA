@@ -38,6 +38,11 @@ router.get(
     CaseController.getCompletedCases
 );
 
+router.get(
+    "/public",
+    CaseController.getPublicCases
+);
+
 router.post(
     "/:caseId/complete",
     authenticate,
