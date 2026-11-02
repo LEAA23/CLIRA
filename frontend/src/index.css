@@ -1,7 +1,17 @@
+@import url('https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@400;500;600;700;800&family=Poppins:wght@500;600;700;800&display=swap');
 @import "tailwindcss";
 
 /* Permite activar el modo oscuro manualmente con la clase .dark */
 @custom-variant dark (&:where(.dark, .dark *));
+
+
+body {
+  font-family: 'Nunito Sans', sans-serif;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Poppins', sans-serif;
+}
 
 /* Colores generales */
 .dark,
@@ -113,4 +123,15 @@ footer {
     background-color 200ms ease,
     color 200ms ease,
     border-color 200ms ease;
+}
+
+.dark .ranking-surface {
+  background-color: #302044 !important;
+  border-color: #49345f !important;
+}
+
+/* Tarjetas de estadísticas del usuario */
+.dark .ranking-stat {
+  background-color: #392650 !important;
+  border-color: #52396b !important;
 }

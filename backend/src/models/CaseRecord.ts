@@ -33,5 +33,6 @@ CaseRecord.init({
     }
 }, {
     sequelize: db,
-    modelName: "CaseRecord"
+    modelName: "CaseRecord",
+    tableName: "CaseRecord"
 });

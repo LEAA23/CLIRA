@@ -1,4 +1,5 @@
-import { useEffect, useState, type FormEvent } from "react";
+
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Switch } from "@headlessui/react";
 import {
@@ -9,7 +10,9 @@ import {
 
 import RankingCard from "../../components/ranking/RankingCard";
 import UserRankingCard from "../../components/ranking/UserRankingCard";
-import useConfetti, {
+import SearchBar from "../../components/SearchBar";
+
+import launchConfetti, {
     type confettiType,
 } from "../../hooks/useConfetti";
 
@@ -23,7 +26,6 @@ const RankingView = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
 
-    const [searchTerm, setSearchTerm] = useState("");
     const [submittedSearch, setSubmittedSearch] = useState("");
     const [selectedUser, setSelectedUser] =
         useState<RankingEntry | null>(null);
@@ -31,12 +33,13 @@ const RankingView = () => {
     const [searchOpen, setSearchOpen] = useState(false);
     const [confettiEnabled, setConfettiEnabled] = useState(true);
 
-    // Obtener el ranking real del backend.
+    // Obtener el ranking desde el backend.
     useEffect(() => {
         let active = true;
 
         const loadRanking = async () => {
             try {
+                setLoading(true);
                 setError("");
 
                 const data = await getRanking();
@@ -68,11 +71,11 @@ const RankingView = () => {
         };
     }, []);
 
-    // Conservar el efecto de confeti existente.
+    // Efecto de confeti.
     useEffect(() => {
         if (!confettiEnabled) return;
 
-        const interval = setInterval(() => {
+        const interval = window.setInterval(() => {
             const settings: confettiType = {
                 particleRatio: 1,
                 opts: {
@@ -87,13 +90,13 @@ const RankingView = () => {
                 },
             };
 
-            useConfetti(settings);
+            launchConfetti(settings);
         }, 4000);
 
-        return () => clearInterval(interval);
+        return () => window.clearInterval(interval);
     }, [confettiEnabled]);
 
-    // Buscar estudiantes por correo.
+    // Buscar estudiantes por correo electrónico.
     const matchingUsers = submittedSearch
         ? ranking.filter((user) =>
               user.email
@@ -102,9 +105,21 @@ const RankingView = () => {
           )
         : [];
 
-    // Mantener la disposición: tercero, primero y segundo.
-    // Si hay menos de tres estudiantes, las tarjetas restantes
-    // se centran igualmente.
+    // Manejar la búsqueda del componente SearchBar.
+    const handleSearch = (formData: Record<string, string>) => {
+        const search = (formData.search || "")
+            .trim()
+            .toLowerCase();
+
+        setSubmittedSearch(search);
+        setSelectedUser(null);
+    };
+
+    // Obtener iniciales cuando no existe fotografía.
+    const getInitials = (entry: RankingEntry) =>
+        `${entry.name.charAt(0)}${entry.lastName.charAt(0)}`.toUpperCase();
+
+    // Podio: tercero, primero y segundo.
     const podium = [
         {
             entry: ranking[2],
@@ -134,16 +149,6 @@ const RankingView = () => {
             isWinner: boolean;
         } => Boolean(item.entry)
     );
-
-    const handleSearch = (event: FormEvent<HTMLFormElement>) => {
-        event.preventDefault();
-
-        setSubmittedSearch(searchTerm.trim().toLowerCase());
-        setSelectedUser(null);
-    };
-
-    const getInitials = (entry: RankingEntry) =>
-        `${entry.name.charAt(0)}${entry.lastName.charAt(0)}`.toUpperCase();
 
     return (
         <>
@@ -175,18 +180,21 @@ const RankingView = () => {
                 </Switch>
             </div>
 
+            {/* Cargando */}
             {loading && (
                 <p className="py-8 text-center text-gray-500">
                     Cargando ranking...
                 </p>
             )}
 
+            {/* Error */}
             {error && (
                 <div
                     role="alert"
                     className="my-5 rounded-xl bg-red-50 p-4 text-red-700"
                 >
                     {error}
+
                     <button
                         type="button"
                         onClick={() => window.location.reload()}
@@ -197,6 +205,7 @@ const RankingView = () => {
                 </div>
             )}
 
+            {/* Ranking vacío */}
             {!loading && !error && ranking.length === 0 && (
                 <p className="py-8 text-center text-gray-500">
                     Todavía no hay estudiantes para mostrar.
@@ -205,7 +214,7 @@ const RankingView = () => {
 
             {!loading && !error && ranking.length > 0 && (
                 <>
-                    {/* Podio centrado con fotografías reales */}
+                    {/* Podio */}
                     <section className="mx-auto w-full max-w-5xl">
                         <div className="flex w-full flex-wrap items-end justify-center gap-3 sm:gap-6">
                             {podium.map((item) => {
@@ -274,9 +283,10 @@ const RankingView = () => {
                         </div>
                     </section>
 
-                    {/* Clasificación y búsqueda de estudiantes */}
+                    {/* Clasificación y búsqueda */}
                     <div className="mt-7 grid grid-cols-1 items-start gap-5 lg:grid-cols-2">
-                        {/* Lista de puestos restantes */}
+
+                        {/* Clasificación general */}
                         <section className="min-w-0">
                             <div className="mb-3 flex items-center justify-between gap-3">
                                 <h2 className="text-xl font-bold">
@@ -297,13 +307,12 @@ const RankingView = () => {
                                 ))
                             ) : (
                                 <div className="rounded-xl border border-gray-100 bg-white p-5 text-center text-sm text-gray-500">
-                                    Los puestos restantes aparecerán aquí
-                                    cuando haya más estudiantes.
+                                    Los puestos restantes aparecerán aquí cuando haya más estudiantes.
                                 </div>
                             )}
                         </section>
 
-                        {/* Buscador desplegable en la misma pantalla */}
+                        {/* Buscador desplegable */}
                         <section className="min-w-0 rounded-2xl border border-gray-100 bg-white p-4 shadow-sm sm:p-5">
                             <button
                                 type="button"
@@ -346,29 +355,17 @@ const RankingView = () => {
                                         : "pointer-events-none max-h-0 opacity-0"
                                 }`}
                             >
-                                <form
-                                    onSubmit={handleSearch}
-                                    className="flex flex-col gap-2 sm:flex-row"
-                                >
-                                    <input
-                                        type="search"
-                                        value={searchTerm}
-                                        onChange={(event) =>
-                                            setSearchTerm(event.target.value)
-                                        }
-                                        placeholder="Correo del estudiante"
-                                        aria-label="Correo del estudiante"
-                                        className="w-full min-w-0 rounded-xl border border-gray-200 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-400"
-                                    />
+                                {/* SearchBar compartido */}
+                                <SearchBar
+                                    pendingCases={false}
+                                    filters={false}
+                                    inputType="text"
+                                    inputName="search"
+                                    placeholder="Correo del estudiante"
+                                    fn={handleSearch}
+                                />
 
-                                    <button
-                                        type="submit"
-                                        className="shrink-0 rounded-xl bg-blue-600 px-5 py-3 font-semibold text-white transition hover:bg-blue-700"
-                                    >
-                                        Buscar
-                                    </button>
-                                </form>
-
+                                {/* Resultados */}
                                 {submittedSearch && (
                                     <div className="mt-4">
                                         <p className="mb-2 text-sm text-gray-500">
@@ -422,15 +419,13 @@ const RankingView = () => {
                                             </div>
                                         ) : (
                                             <p className="py-3 text-sm text-gray-500">
-                                                No se encontraron estudiantes
-                                                con ese correo.
+                                                No se encontraron estudiantes con ese correo.
                                             </p>
                                         )}
                                     </div>
                                 )}
 
-                                {/* El perfil y las gráficas se mantienen
-                                    dentro del panel desplegable. */}
+                                {/* Tarjeta del estudiante seleccionado */}
                                 {selectedUser && (
                                     <div className="mt-5 border-t border-gray-100 pt-4">
                                         <UserRankingCard entry={selectedUser} />

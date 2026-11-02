@@ -222,7 +222,7 @@ export class CaseController {
                     cr.type,
                     cr.content,
                     ce.embedding <=> $1::vector AS distance
-                FROM "CaseRecords" cr
+                FROM "CaseRecord" cr
                 INNER JOIN "CaseEmbeddings" ce
                     ON ce.case_record_id = cr.id
                 WHERE cr.patient_id = $2
@@ -547,4 +547,52 @@ export class CaseController {
             });
         }
     }
+
+    static getPublicCases = async (_req: Request, res: Response) => {
+        try {
+            const cases = await Case.findAll({
+                include: [
+                    {
+                        model: Filters,
+                        as: "filters",
+                        attributes: ["id", "name", "category_id"],
+                        through: { attributes: [] }
+                    },
+                    {
+                        model: CaseRecord,
+                        as: "symptomsAndHistory",
+                        attributes: ["type", "content"]
+                    }
+                ],
+                order: [["createdAt", "DESC"]]
+            });
+
+            await Promise.all(
+                cases.map(async (clinicalCase) => {
+                    if (!clinicalCase.previewImage) return;
+
+                    const command = new GetObjectCommand({
+                        Bucket: process.env.AWS_BUCKET,
+                        Key: clinicalCase.previewImage
+                    });
+
+                    const imageUrl = await getSignedUrl(
+                        s3Client,
+                        command,
+                        { expiresIn: 60 * 60 * 24 }
+                    );
+
+                    clinicalCase.previewImage = imageUrl;
+                })
+            );
+
+            return res.status(200).json({ cases });
+        } catch (error) {
+            console.error("ERROR AL CONSULTAR EL CATÁLOGO PÚBLICO:", error);
+
+            return res.status(500).json({
+                error: "No se pudo cargar el catálogo de casos clínicos"
+            });
+        }
+    };
 };
