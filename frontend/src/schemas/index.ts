@@ -182,6 +182,9 @@ export const CaseSchema = z.object({
             content: z.string()
         })
     ),
+    height: z.number(),
+    weight: z.number(),
+    bloodPreassure: z.string(),
     previewImage: z.file().or(z.null()).or(z.string()),
     simulationModel: z.file().or(z.null()).or(z.string()),
     teacher_id: z.number(),
@@ -212,3 +215,10 @@ export const askQuestionResponse = z.object({
         })
     )
 });
+
+export const MetricsSquema = z.array(
+    z.object({
+        type: z.string(),
+        value: z.number().or( z.string() )
+    })
+)

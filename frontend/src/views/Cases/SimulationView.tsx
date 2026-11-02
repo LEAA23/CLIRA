@@ -1,4 +1,3 @@
-import MedicalHistoryOptions from "../../components/simulation/MedicalHistoryOptions";
 import { ArrowLeftIcon } from "@heroicons/react/16/solid";
 import Experience from "../../SimulationExperiences/PatientExperience/Experience";
 import { useEffect, useRef, useState } from "react";
@@ -6,6 +5,8 @@ import type { FormEvent } from "react";
 import { useAppStore } from "../../stores/useAppStore";
 import { useNavigate, useParams } from "react-router-dom";
 import { completeCase } from "../../api/caseApi";
+import SymptomsAndHistory from "../../components/simulation/SymptomsAndHistory";
+import CorporalMetrics from "../../components/simulation/CorporalMetrics";
 
 const SimulationView = () => {
     // Referencia al canvas de la simulación
@@ -197,7 +198,8 @@ const SimulationView = () => {
 
             {/* Opciones de historial médico */}
             <div className="flex justify-between gap-5">
-                <MedicalHistoryOptions />
+                <SymptomsAndHistory />
+                <CorporalMetrics />
             </div>
 
             {/* Recursos disponibles */}
