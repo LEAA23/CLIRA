@@ -46,13 +46,6 @@ const LoginView = () => {
       {/* Contenedor general */}
       <div className="relative w-full flex items-center justify-center px-4">
 
-        {/* Squirtle izquierdo */}
-        <img
-          src="/gifs/baile-insano-squirtle.gif"
-          alt="Squirtle bailando a la izquierda"
-          className="hidden lg:block absolute left-0 xl:left-6 bottom-5 w-32 xl:w-44 object-contain z-0"
-        />
-
         {/* Tarjeta del login */}
         <div className="relative z-10 bg-white mx-auto max-w-5xl w-full md:grid md:grid-cols-2 rounded-2xl overflow-hidden shadow md:h-102.5">
 
@@ -146,13 +139,6 @@ const LoginView = () => {
           {/* Imagen original del login */}
           <div className="bg-[url(/login.png)] bg-no-repeat bg-cover"></div>
         </div>
-
-        {/* Squirtle derecho */}
-        <img
-          src="/gifs/baile-insano-squirtle.gif"
-          alt="Squirtle bailando a la derecha"
-          className="hidden lg:block absolute right-0 xl:right-6 bottom-5 w-32 xl:w-44 object-contain z-0"
-        />
 
       </div>
     </>

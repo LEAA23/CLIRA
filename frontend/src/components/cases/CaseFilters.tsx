@@ -27,7 +27,7 @@ const CaseFilters = ({
     }
 
     return (
-        <section className="w-full rounded-xl p-5 border border-gray-200 bg-white shadow ">
+        <section className="w-full rounded-xl p-5">
             <div className="mb-3 flex items-center justify-between">
                 <h2 className="font-bold text-2xl text-gray-700 dark:text-white">
                     Filtrar casos

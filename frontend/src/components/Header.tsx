@@ -13,13 +13,13 @@ const Header = () => {
     }`;
 
   return (
-    <header className="relative z-20 bg-gradient-to-r from-blue-700 via-blue-600 to-blue-500 shadow-lg">
+    <header className="relative z-20 bg-blue-600 pb-2 mb-5">
       <div className="mx-auto flex w-full items-center justify-between px-6 py-5 lg:px-10">
 
         {/* LOGO A LA IZQUIERDA */}
         <Link to="/" className="shrink-0">
-          <h3 className="text-3xl font-extrabold uppercase tracking-wider text-white">
-            Clira<span className="text-cyan-200">.</span>
+          <h3 className="text-4xl font-bold uppercase tracking-wider text-white">
+            Clira
           </h3>
         </Link>
 
