@@ -222,7 +222,7 @@ export class CaseController {
                     cr.type,
                     cr.content,
                     ce.embedding <=> $1::vector AS distance
-                FROM "CaseRecord" cr
+                FROM "CaseRecords" cr
                 INNER JOIN "CaseEmbeddings" ce
                     ON ce.case_record_id = cr.id
                 WHERE cr.patient_id = $2
