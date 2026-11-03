@@ -222,3 +222,12 @@ export const MetricsSquema = z.array(
         value: z.number().or( z.string() )
     })
 )
+
+export const LaboratoryStudySquema = z.object({
+    id: z.number(),
+    name: z.string()
+})
+
+export const laboratoryStudiesSchema = z.array(
+    LaboratoryStudySquema
+)
