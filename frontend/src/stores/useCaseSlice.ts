@@ -28,6 +28,7 @@ export const createCaseSlice : StateCreator<CaseSliceType> = ((set, get) => ({
         title: "",
         description: "",
         symptomsAndHistory: [],
+        laboratoryStudyResults: [],
         height: 0,
         weight: 0,
         bloodPreassure: "",
@@ -97,7 +98,12 @@ export const createCaseSlice : StateCreator<CaseSliceType> = ((set, get) => ({
     },
     fetchPatientLaboratoryStudies: async( { caseId, laboratoryStudies } : { caseId: Case["id"] ; laboratoryStudies : number[] } ) => {
         const patientLaboratoryStudies = await getPatientLaboratorystudies( { caseId, patientlaboratoryStudies: laboratoryStudies } );
-        console.log(patientLaboratoryStudies)
+        set(() => ({
+            case: {
+                ...get().case,
+                laboratoryStudyResults: patientLaboratoryStudies
+            }
+        }))
     },
     fetchSimulation: async( caseId: Case["id"] ) => {
         const clinicalCase = await getSimulation( caseId );
@@ -155,6 +161,7 @@ export const createCaseSlice : StateCreator<CaseSliceType> = ((set, get) => ({
                 title: "",
                 description: "",
                 symptomsAndHistory: [],
+                laboratoryStudyResults: [],
                 height: 0,
                 weight: 0,
                 bloodPreassure: "",

@@ -21,6 +21,7 @@ export class Case extends Model< InferAttributes<Case>, InferCreationAttributes<
     declare teacher_id: number;
     declare completed: boolean;
     declare symptomsAndHistory?: [];
+    declare laboratoryStudyResults?: []; 
 }
 
 Case.init({

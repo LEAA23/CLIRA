@@ -170,6 +170,7 @@ export class CaseController {
 
                     caseData.height = 0;
                     caseData.weight = 0;
+                    caseData.symptomsAndHistory = [];
 
                     if (caseData.previewImage !== "") {
                         const command = new GetObjectCommand({
@@ -227,6 +228,7 @@ export class CaseController {
             caseData.height = 0;
             caseData.weight = 0;
             caseData.bloodPreassure = "";
+            caseData.laboratoryStudyResults = [];
 
             return res.status(200).json( { clinicalCase: caseData } );
         } catch (error) {

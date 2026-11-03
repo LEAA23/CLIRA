@@ -114,6 +114,27 @@ const LaboratoryStudies = () => {
                         </button>
 
                     </form>
+
+                    {clinicalCase.laboratoryStudyResults.length > 0 && (
+                        <div className="mt-1">
+                            <p className="font-bold text-gray-800">
+                                Resultados de los estudios:
+                            </p>
+
+                            <ul className="list-disc p-2">
+                                {clinicalCase.laboratoryStudyResults.map(labStudy => (
+                                    <li key={labStudy.id} className="text-gray-700 font-semibold">
+                                        {laboratorystudiesOptions!.find( study => study.id === labStudy.id)?.name}:
+                                        <span className="font-normal">
+                                            {labStudy.value !== null
+                                                ? ` ${labStudy.value}`
+                                                : " Sin resultado"}
+                                        </span>
+                                    </li>
+                                ))}
+                            </ul>
+                        </div>
+                    )}
                 </div>
             </PopoverPanel>
         </Popover>

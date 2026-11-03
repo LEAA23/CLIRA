@@ -182,6 +182,12 @@ export const CaseSchema = z.object({
             content: z.string()
         })
     ),
+    laboratoryStudyResults: z.array(
+        z.object({
+            id: z.number(),
+            value: z.number().or( z.null() )
+        })
+    ),
     height: z.number(),
     weight: z.number(),
     bloodPreassure: z.string(),
