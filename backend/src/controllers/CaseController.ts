@@ -171,6 +171,7 @@ export class CaseController {
                     caseData.height = 0;
                     caseData.weight = 0;
                     caseData.symptomsAndHistory = [];
+                    caseData.laboratoryStudyResults = [];
 
                     if (caseData.previewImage !== "") {
                         const command = new GetObjectCommand({
