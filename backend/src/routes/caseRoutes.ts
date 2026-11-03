@@ -93,6 +93,15 @@ router.post("/:caseId/corporalMetrics",
     CaseController.getCorporalMetrics
 );
 
+router.post("/:caseId/laboratoryStudies",
+    authenticate,
+    caseExists,
+    param( "caseId" ).notEmpty().withMessage("El id del caso es obligatorio"),
+    body( "laboratoryStudies" ).isArray().withMessage("Debes seleccionar al menos un estudio"),
+    handleInputErrors,
+    CaseController.getPatientLaboratoryStudies
+);
+
 router.patch("/:caseId",
     authenticate,
     isUserTeacher,

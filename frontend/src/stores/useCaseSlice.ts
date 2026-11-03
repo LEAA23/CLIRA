@@ -1,5 +1,5 @@
 import type { StateCreator } from "zustand";
-import { createCase, deleteCase, deleteCaseImage, deleteCaseModel, getCases, getCorporalMetrics, getLaboratorystudies, getSimulation, updateCase } from "../api/caseApi";
+import { createCase, deleteCase, deleteCaseImage, deleteCaseModel, getCases, getCorporalMetrics, getLaboratorystudies, getPatientLaboratorystudies, getSimulation, updateCase } from "../api/caseApi";
 import type { Case, Symptom } from "../types";
 import { askPatientSymptomsAndHistory } from "../api/simulationApi";
 
@@ -12,6 +12,7 @@ export type CaseSliceType = {
     getLaboratorystudies: () => Promise<{ id: number; name: string; }[] | undefined>;
     askQuestion: ({ caseId, question }: { caseId: number; question: string; }) => Promise<void>;
     fetchCorporalMetrics: ({ caseId, metricsSelected }: { caseId: number; metricsSelected: string[]; }) => Promise<void>;
+    fetchPatientLaboratoryStudies: ({ caseId, laboratoryStudies }: { caseId: number; laboratoryStudies: number[]; }) => Promise<void>;
     updateCase: ({ caseId, formData }: { caseId: number; formData: FormData; }) => Promise<string | undefined>;
     deleteCaseImage: (caseId: number) => Promise<string | undefined>;
     deleteCaseModel: (caseId: number) => Promise<string | undefined>;
@@ -53,7 +54,7 @@ export const createCaseSlice : StateCreator<CaseSliceType> = ((set, get) => ({
     },
     getLaboratorystudies: async() => {
         const laboratoryStudies = await getLaboratorystudies();
-        return laboratoryStudies
+        return laboratoryStudies;
     },
     askQuestion: async( { caseId, question } : { caseId: Case["id"] ; question: Symptom } ) => {
         const records = await askPatientSymptomsAndHistory( { caseId, question } );
@@ -93,6 +94,10 @@ export const createCaseSlice : StateCreator<CaseSliceType> = ((set, get) => ({
 
             return { case: updatedCase };
         });
+    },
+    fetchPatientLaboratoryStudies: async( { caseId, laboratoryStudies } : { caseId: Case["id"] ; laboratoryStudies : number[] } ) => {
+        const patientLaboratoryStudies = await getPatientLaboratorystudies( { caseId, patientlaboratoryStudies: laboratoryStudies } );
+        console.log(patientLaboratoryStudies)
     },
     fetchSimulation: async( caseId: Case["id"] ) => {
         const clinicalCase = await getSimulation( caseId );

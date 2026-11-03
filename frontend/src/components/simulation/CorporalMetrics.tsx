@@ -54,7 +54,7 @@ const CorporalMetrics = () => {
                 flex justify-start items-center gap-x-5 cursor-pointer"
             >
                 <ChartPieIcon className="text-green-400 h-8" />
-                Obtener métricas corporales del paciente
+                Obtener métricas corporales
             </PopoverButton>
 
             <PopoverPanel
