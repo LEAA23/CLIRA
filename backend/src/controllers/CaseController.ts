@@ -16,6 +16,8 @@ import axios from "axios";
 import { formatEmbedding } from "../utils/formatEmbedding";
 import db from "../config/db";
 import { QueryTypes } from "sequelize";
+import { LaboratoryStudy } from "../models/LaboratoryStudy";
+import { CasesLaboratoryStudy } from "../models/CasesLaboratoryStudy";
 
 export class CaseController {
 
@@ -40,7 +42,14 @@ export class CaseController {
                 completed: false
             });
 
+            
             const filters : number[] = JSON.parse( req.body.filters );
+
+            type LaboratoryStudy = {
+                id: number;
+                value: number;
+            };
+            const laboratoryStudies : LaboratoryStudy[] = JSON.parse( req.body.laboratoryStudies );
 
             type CaseFeature = {
                 type: string;
@@ -126,6 +135,17 @@ export class CaseController {
                     case_record_id: record.id
                 });
             }
+
+            laboratoryStudies.forEach( async(laboratoryStudy) => {
+                //Insertamos en la tabla pivote la informacion
+                if(laboratoryStudy.id === 0) return;
+                
+                await CasesLaboratoryStudy.create({
+                    case_id: clinicalCase.id,
+                    laboratoryStudy_id: laboratoryStudy.id,
+                    value: laboratoryStudy.value
+                })
+            } );
             
             return res.status(200).send( "El caso se creo correctamente" );
             
@@ -210,6 +230,16 @@ export class CaseController {
             caseData.bloodPreassure = "";
 
             return res.status(200).json( { clinicalCase: caseData } );
+        } catch (error) {
+            console.log(error)
+            return res.status(500).json( { error: "Error interno del servidor" } );
+        }
+    }
+
+    static getLaboratorystudies = async( req: Request, res: Response ) => {
+        try {
+            const laboratoryStudies = await LaboratoryStudy.findAll({});
+            return res.status(200).json({ laboratoryStudies })
         } catch (error) {
             console.log(error)
             return res.status(500).json( { error: "Error interno del servidor" } );

@@ -11,6 +11,8 @@ import { CasesFilters } from "./CasesFilters";
 import FilterCategories from "./FilterCategories";
 import { CaseRecord } from "./CaseRecord";
 import { CaseEmbedding } from "./CaseEmbedding";
+import { LaboratoryStudy } from "./LaboratoryStudy";
+import { CasesLaboratoryStudy } from "./CasesLaboratoryStudy";
 
 //LAS ASOCIACIONES EN SEQUELIZE SON LAS RELACIONES ENTRE LAS BASES DE DATOS
 
@@ -186,4 +188,19 @@ CaseRecord.hasOne(CaseEmbedding, {
 CaseEmbedding.belongsTo(CaseRecord, {
     foreignKey: "case_record_id",
     as: "record"
+});
+
+
+Case.belongsToMany(LaboratoryStudy, {
+    through: CasesLaboratoryStudy,
+    foreignKey: "case_id",
+    otherKey: "laboratoryStudy_id",
+    as: "laboratoryStudies"
+});
+
+LaboratoryStudy.belongsToMany(Case, {
+    through: CasesLaboratoryStudy,
+    foreignKey: "laboratoryStudy_id",
+    otherKey: "case_id",
+    as: "cases"
 });

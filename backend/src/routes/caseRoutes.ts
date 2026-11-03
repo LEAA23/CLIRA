@@ -24,6 +24,7 @@ router.post("/",
     body("height"),
     body("weight"),
     body("bloodPreassure"),
+    body("laboratoryStudies"),
     body("filters").isLength({ min: 1 }).withMessage("Selecciona al menos un filtro"),
     handleInputErrors,
     CaseController.createCase
@@ -59,6 +60,12 @@ router.get(
     "/filters/categories",
     authenticate,
     CaseController.getFilterCategories
+);
+
+router.get("/laboratoryStudies",
+    authenticate,
+    handleInputErrors,
+    CaseController.getLaboratorystudies
 );
 
 router.get("/:caseId",

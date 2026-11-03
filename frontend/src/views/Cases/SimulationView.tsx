@@ -7,6 +7,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { completeCase } from "../../api/caseApi";
 import SymptomsAndHistory from "../../components/simulation/SymptomsAndHistory";
 import CorporalMetrics from "../../components/simulation/CorporalMetrics";
+import LaboratoryStudies from "../../components/simulation/LaboratoyStudies";
 
 const SimulationView = () => {
     // Referencia al canvas de la simulación
@@ -200,6 +201,7 @@ const SimulationView = () => {
             <div className="flex justify-between gap-5">
                 <SymptomsAndHistory />
                 <CorporalMetrics />
+                <LaboratoryStudies />
             </div>
 
             {/* Recursos disponibles */}

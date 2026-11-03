@@ -4,18 +4,19 @@ import { useShowModal } from "../../hooks/useShowModal";
 import { useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import ErrorMessage from "../ErrorMessage";
-import { ArrowRightStartOnRectangleIcon, ArrowUpTrayIcon, HeartIcon, PlusIcon } from "@heroicons/react/16/solid";
-import { useState } from "react";
+import { ArrowRightStartOnRectangleIcon, ArrowUpTrayIcon, BeakerIcon, HeartIcon, PlusIcon } from "@heroicons/react/16/solid";
+import { useEffect, useState } from "react";
 import { Popover, PopoverButton, PopoverPanel } from "@headlessui/react";
 import { toast } from "react-toastify";
 import { useAppStore } from "../../stores/useAppStore";
-import type { CreateCaseForm } from "../../types";
+import type { CreateCaseForm, LaboratoryStudies } from "../../types";
 
 const CreateCaseModal = () => {
     const showModal = useShowModal( "CreateCase" );
 
     const navigate = useNavigate();
 
+    const getLaboratoryStudies = useAppStore( state => state.getLaboratorystudies );
     const createCase = useAppStore( state => state.createCase );
 
     const { register, handleSubmit, formState: { errors }, setValue } = useForm<CreateCaseForm>();
@@ -90,14 +91,15 @@ const CreateCaseModal = () => {
         data.append("filters", JSON.stringify(selectedFilters));
         data.append("symptomsAndHistory", JSON.stringify( records ));
 
+        if(laboratoryResults.length > 0) {
+            data.append("laboratoryStudies", JSON.stringify( laboratoryResults ) );
+        }
         if(selectedFile) {
             data.append("previewImage", selectedFile);
         }
         if(selectedModel) {
             data.append("simulationModel", selectedModel);
         }
-
-        console.log(formData)
 
         try {
             const message = await createCase( data );
@@ -110,6 +112,7 @@ const CreateCaseModal = () => {
             setSelectedFile(null);
             setSelectedModel(null);
             setSelectedFilters([]);
+            setLaboratoryResults([]);
         } catch (error) {
             if( error instanceof Error ) {
                 toast.error( error.message );
@@ -148,6 +151,58 @@ const CreateCaseModal = () => {
                 i === index
                     ? { ...record, [field]: value }
                     : record
+            )
+        );
+    };
+
+    //Estudios de laboratorio
+
+    interface LaboratoryResult {
+        id: number;
+        value: number;
+    }
+
+    useEffect(() => {
+        const fetchLaboratoryStudies = async () => {
+            try {
+                const laboratoryStudies = await getLaboratoryStudies();
+                if(laboratoryStudies) {
+                    setLaboratoryStudies( laboratoryStudies );
+                }
+            } catch (error) {
+                console.error("Error al obtener los estudios:", error);
+            }
+        };
+
+        fetchLaboratoryStudies();
+    }, []);
+
+    const [laboratoryStudies, setLaboratoryStudies] = useState<LaboratoryStudies>([]);
+    const [laboratoryResults, setLaboratoryResults] = useState<LaboratoryResult[]>([]);
+
+    const addLaboratoryResult = () => {
+        setLaboratoryResults(prev => [
+            ...prev,
+            { id: 0, value: 0 }
+        ]);
+    };
+
+    const removeLaboratoryResult = (index: number) => {
+        setLaboratoryResults(prev =>
+            prev.filter((_, i) => i !== index)
+        );
+    };
+
+    const updateLaboratoryResult = (
+        index: number,
+        field: keyof LaboratoryResult,
+        value: number | string
+    ) => {
+        setLaboratoryResults(prev =>
+            prev.map((result, i) =>
+                i === index
+                    ? { ...result, [field]: value }
+                    : result
             )
         );
     };
@@ -279,7 +334,7 @@ const CreateCaseModal = () => {
                                             <button 
                                                 onClick={addRecord}
                                                 type="button"
-                                                className="bg-purple-500 py-2 px-6 text-white font-bold rounded-lg mt-10 md:mt-5 
+                                                className="bg-purple-500 py-2 px-6 text-white font-bold rounded-lg mt-3 
                                                 hover:cursor-pointer hover:transition-colors hover:bg-purple-600 w-full flex 
                                                 justify-center items-center gap-x-2"                                            >
                                                 <HeartIcon className="h-6 aspect-square"
@@ -338,6 +393,86 @@ const CreateCaseModal = () => {
                                                 />
 
                                             </div>
+                                        </div>
+                            
+                                        <div className="my-5 flex flex-col">
+                                            <label className="text-gray-600 font-bold text-xl">
+                                                Estudios de laboratorio
+                                            </label>
+
+                                            {laboratoryResults.map((result, index) => (
+                                                <div key={index}>
+                                                    <p className="text-gray-500">
+                                                        Estudio de laboratorio {index + 1}
+                                                    </p>
+
+                                                    <div className="flex flex-wrap justify-start items-center gap-2">
+
+                                                        <select
+                                                            value={result.id}
+                                                            onChange={e =>
+                                                                updateLaboratoryResult(
+                                                                    index,
+                                                                    "id",
+                                                                    Number(e.target.value)
+                                                                )
+                                                            }
+                                                            className="bg-blue-500 px-3 py-2 rounded-lg text-white font-semibold cursor-pointer"
+                                                        >
+                                                            <option defaultChecked disabled value={0}> Selecciona un estudio </option>
+
+                                                            {laboratoryStudies.map(study => (
+                                                                <option
+                                                                    key={study.id}
+                                                                    value={study.id}
+                                                                    disabled={laboratoryResults.some(
+                                                                        (item, i) =>
+                                                                            i !== index &&
+                                                                            item.id === study.id
+                                                                    )}
+                                                                >
+                                                                    {study.name}
+                                                                </option>
+                                                            ))}
+                                                        </select>
+
+                                                        <input
+                                                            type="number"
+                                                            step="any"
+                                                            value={result.value}
+                                                            onChange={e =>
+                                                                updateLaboratoryResult(
+                                                                    index,
+                                                                    "value",
+                                                                    Number(e.target.value)
+                                                                )
+                                                            }
+                                                            placeholder="Resultado"
+                                                            className="border border-gray-400 p-2 my-3 rounded-lg"
+                                                        />
+
+                                                        <button
+                                                            onClick={() => removeLaboratoryResult(index)}
+                                                            type="button"
+                                                            className="px-3 py-2 bg-red-400 hover:bg-red-500 cursor-pointer text-white font-bold rounded-lg"
+                                                        >
+                                                            Eliminar
+                                                        </button>
+
+                                                    </div>
+                                                </div>
+                                            ))}
+
+                                            <button
+                                                onClick={addLaboratoryResult}
+                                                type="button"
+                                                className="bg-purple-500 py-2 px-6 text-white font-bold rounded-lg mt-3
+                                                hover:cursor-pointer hover:transition-colors hover:bg-purple-600 w-full flex
+                                                justify-center items-center gap-x-2"
+                                            >
+                                                <BeakerIcon className="h-6 aspect-square"/>
+                                                Agregar estudio de laboratorio
+                                            </button>
                                         </div>
 
                                         <div className="flex flex-col">
@@ -632,4 +767,4 @@ const CreateCaseModal = () => {
   )
 }
 
-export default CreateCaseModal
+export default CreateCaseModal;
