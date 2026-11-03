@@ -111,19 +111,27 @@ export const getLaboratorystudies = async() => {
     }
 }
 
-export const getPatientLaboratorystudies = async( { caseId, patientlaboratoryStudies } : { caseId: Case["id"] ; patientlaboratoryStudies : number[] } ) => {
+export const getPatientLaboratorystudies = async ({ caseId, patientlaboratoryStudies }: { caseId: Case["id"]; patientlaboratoryStudies: number[]; }) => {
     try {
-        const { data: { laboratoryResults } } = await api.post(`/cases/${caseId}/laboratoryStudies`, { laboratoryStudies: patientlaboratoryStudies  } );
-        const response = laboratoryStudyResultsSchema.safeParse( laboratoryResults );
-        if( response.data ) {
-            return response.data;
+        const { data: { laboratoryResults } } = await api.post(`/cases/${caseId}/laboratoryStudies`, { laboratoryStudies: patientlaboratoryStudies });
+
+        const response = laboratoryStudyResultsSchema.safeParse(laboratoryResults);
+
+        if (!response.success) {
+            console.error(response.error);
+            throw new Error("Formato de resultados de laboratorio inválido");
         }
+
+        return response.data;
+
     } catch (error) {
-        if( isAxiosError( error ) && error.response ) {
-            throw new Error( error.response.data.error );
+        if (isAxiosError(error) && error.response) {
+            throw new Error(error.response.data.error);
         }
+
+        throw error;
     }
-}
+};
 
 export const getSimulation = async( caseId: Case["id"] ) => {
     try {
