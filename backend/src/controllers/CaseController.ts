@@ -150,7 +150,6 @@ export class CaseController {
             return res.status(200).send( "El caso se creo correctamente" );
             
         } catch (error) {
-            console.log(error)
             return res.status(500).json( { error: "Error interno del servidor" } );
         }
     }
@@ -241,10 +240,40 @@ export class CaseController {
             const laboratoryStudies = await LaboratoryStudy.findAll({});
             return res.status(200).json({ laboratoryStudies })
         } catch (error) {
-            console.log(error)
             return res.status(500).json( { error: "Error interno del servidor" } );
         }
     }
+
+    static getPatientLaboratoryStudies = async (req: Request, res: Response) => {
+        const { laboratoryStudies } = req.body;
+
+        try {
+            const laboratoryResults = await Promise.all(
+                laboratoryStudies.map(async (labStudyId: number) => {
+                    const labResult = await CasesLaboratoryStudy.findOne({
+                        where: {
+                            case_id: req.clinicalCase.id,
+                            laboratoryStudy_id: labStudyId
+                        },
+                        attributes: ["value"]
+                    });
+
+                    return {
+                        id: labStudyId,
+                        value: labResult ? Number(labResult.value) : null
+                    };
+                })
+            );
+
+            return res.status(200).json({ laboratoryResults });
+
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                error: "Error interno del servidor"
+            });
+        }
+    };
 
     static askQuestion = async( req: Request, res: Response ) => {
         const { question } = req.body;
@@ -334,8 +363,6 @@ export class CaseController {
 
                 return;
             });
-
-            console.log(metricValues)
 
             return res.status(200).json( { metrics: metricValues } );
         } catch (error) {

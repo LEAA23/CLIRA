@@ -226,8 +226,17 @@ export const MetricsSquema = z.array(
 export const LaboratoryStudySquema = z.object({
     id: z.number(),
     name: z.string()
-})
+});
+
+export const LaboratoryStudyResultSquema = z.object({
+    id: z.number(),
+    value: z.number().or( z.null() )
+});
 
 export const laboratoryStudiesSchema = z.array(
     LaboratoryStudySquema
+);
+
+export const laboratoryStudyResultsSchema = z.array(
+    LaboratoryStudyResultSquema
 )
