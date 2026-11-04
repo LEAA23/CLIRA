@@ -214,7 +214,8 @@ export class CaseController {
                 where: { id: caseId },
                 include: [ 
                     { model: Filters, as: "filters", attributes: [ "id", "name", "category_id" ], through: { attributes: [] } }, 
-                    { model: User, as: "creator", attributes: [ "id", "name", 'lastName', 'email' ] }
+                    { model: User, as: "creator", attributes: [ "id", "name", 'lastName', 'email' ] },
+                    { model: ClinicalCaseImage, as: "images", attributes: [ "id", "path"] },
                 ]
             });
 
@@ -239,7 +240,27 @@ export class CaseController {
             caseData.weight = 0;
             caseData.bloodPreassure = "";
             caseData.laboratoryStudyResults = [];
-            caseData.images = [];
+
+            type ClinicalCaseImageData = {
+                id: number;
+                path: string | null;
+            };
+            const images = caseData.images as ClinicalCaseImageData[];
+
+            await Promise.all( 
+                images.map( async( image ) => {
+
+                    if( !image.path ) return;
+
+                    const command = new GetObjectCommand({
+                        Bucket: process.env.AWS_BUCKET,
+                        Key: image.path
+                    });
+                    const key = await getSignedUrl( s3Client, command, { expiresIn: 60 * 60 * 24 } );
+                    image.path = key;
+                })
+            );
+            caseData.images = images;
 
             return res.status(200).json( { clinicalCase: caseData } );
         } catch (error) {
