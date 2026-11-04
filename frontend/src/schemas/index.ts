@@ -191,6 +191,12 @@ export const CaseSchema = z.object({
     height: z.number(),
     weight: z.number(),
     bloodPreassure: z.string(),
+    images: z.array(
+        z.object({
+            id: z.number(),
+            path: z.string()
+        })
+    ),
     previewImage: z.file().or(z.null()).or(z.string()),
     simulationModel: z.file().or(z.null()).or(z.string()),
     teacher_id: z.number(),

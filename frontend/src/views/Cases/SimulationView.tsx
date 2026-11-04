@@ -125,7 +125,7 @@ const SimulationView = () => {
 
             </div>
 
-            <h1 className="text-5xl text-center font-bold text-blue-500 mb-5">
+            <h1 className="text-5xl text-center font-bold text-blue-500 my-5">
                 {clinicalCase?.title ?? "Cargando caso..."}
             </h1>
             

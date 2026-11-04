@@ -15,7 +15,8 @@ router.post("/",
     isUserTeacher,
     uploadFile.fields([
         { name: "previewImage", maxCount: 1 },
-        { name: "simulationModel", maxCount: 1 }
+        { name: "simulationModel", maxCount: 1 },
+        { name: "images", maxCount: 10 }
     ]),
     isValidGLB,
     body("title").notEmpty().withMessage("El titulo es obligatorio"),

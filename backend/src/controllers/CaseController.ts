@@ -18,6 +18,8 @@ import db from "../config/db";
 import { QueryTypes } from "sequelize";
 import { LaboratoryStudy } from "../models/LaboratoryStudy";
 import { CasesLaboratoryStudy } from "../models/CasesLaboratoryStudy";
+import { ClinicalCaseImage } from "../models/ClinicalCaseImage";
+import { saveClinicalImages } from "../utils/saveClinicalImages";
 
 export class CaseController {
 
@@ -26,6 +28,7 @@ export class CaseController {
         const files = req.files as {
             [fieldname: string] : Express.Multer.File[]
         }
+        const images = files.images;
         const { title, description, height, weight, bloodPreassure } = req.body;
 
         try {
@@ -41,7 +44,6 @@ export class CaseController {
                 teacher_id: req.user.id,
                 completed: false
             });
-
             
             const filters : number[] = JSON.parse( req.body.filters );
 
@@ -95,6 +97,11 @@ export class CaseController {
             }
 
             await clinicalCase.save();
+
+            if(images.length > 0) {
+                //Guardamos las imagenes en el bucket de AWS y las referencias en la BD
+                await saveClinicalImages( { caseId: clinicalCase.id, images } );
+            }
                             
             // Guardamos los filtros asociados al caso
             await Promise.all(
@@ -150,6 +157,7 @@ export class CaseController {
             return res.status(200).send( "El caso se creo correctamente" );
             
         } catch (error) {
+            console.log(error)
             return res.status(500).json( { error: "Error interno del servidor" } );
         }
     }
@@ -160,7 +168,8 @@ export class CaseController {
                 include: [
                     { model: Filters, as: "filters", attributes: ["id", "name", "category_id"], through: { attributes: [] } },
                     { model: User, as: "creator", attributes: ["id", "name", "lastName", "email"] },
-                    { model: CaseRecord, as: "symptomsAndHistory", attributes: ["type", "content"] }
+                    { model: CaseRecord, as: "symptomsAndHistory", attributes: ["type", "content"] },
+                    { model: ClinicalCaseImage, as: "images", attributes: ["id", "path"] }
                 ]
             });
 
@@ -230,6 +239,7 @@ export class CaseController {
             caseData.weight = 0;
             caseData.bloodPreassure = "";
             caseData.laboratoryStudyResults = [];
+            caseData.images = [];
 
             return res.status(200).json( { clinicalCase: caseData } );
         } catch (error) {
