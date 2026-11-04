@@ -13,6 +13,7 @@ import { CaseRecord } from "./CaseRecord";
 import { CaseEmbedding } from "./CaseEmbedding";
 import { LaboratoryStudy } from "./LaboratoryStudy";
 import { CasesLaboratoryStudy } from "./CasesLaboratoryStudy";
+import { ClinicalCaseImage } from "./ClinicalCaseImage";
 
 //LAS ASOCIACIONES EN SEQUELIZE SON LAS RELACIONES ENTRE LAS BASES DE DATOS
 
@@ -203,4 +204,19 @@ LaboratoryStudy.belongsToMany(Case, {
     foreignKey: "laboratoryStudy_id",
     otherKey: "case_id",
     as: "cases"
+});
+
+
+// Asociaciones para los estudios clínicos (1:N)
+// Un caso clínico puede tener muchos estudios clínicos.
+Case.hasMany(ClinicalCaseImage, {
+    foreignKey: "case_id",
+    as: "clinicalStudies",
+    onDelete: "CASCADE"
+});
+
+// Cada estudio clínico pertenece a un solo caso.
+ClinicalCaseImage.belongsTo(Case, {
+    foreignKey: "case_id",
+    as: "case"
 });
