@@ -23,6 +23,16 @@ const CreateCaseModal = () => {
 
     const [ selectedFile, setSelectedFile ] = useState<File | null>(null);
     const [ selectedModel, setSelectedModel ]= useState<File | null>(null);
+    //State local para permitirle a los usuarios seleccionar varias imagenes y mantener la seleccion
+    const [ selectedImages, setSelectedImages ] = useState<File[]>([]);
+    //Construimos una URL temporal para poder renderizarla en el componnete cuando el usuario seleccione una imagen
+    const files = selectedImages;
+    let mediaURLS = files? Array.from(files).map( file => URL.createObjectURL(file) ) : null; 
+
+    const handleClick = ( index : number ) => {
+        setSelectedImages( prev => prev.filter( (_, i) => i !== index ) );
+    }
+
     let caseImageURL = selectedFile? URL.createObjectURL( selectedFile ) : null;
     let modelInfo = selectedModel? selectedModel.name : null;
 
@@ -101,6 +111,15 @@ const CreateCaseModal = () => {
             data.append("simulationModel", selectedModel);
         }
 
+        if( selectedImages.length > 0 ) {
+            //Iteramos sobre cada archivo en media y lo agregamos al campo de images
+            selectedImages.forEach( image => {
+                data.append("images", image);
+            } );
+        }
+
+        console.log(formData);
+
         try {
             const message = await createCase( data );
             toast.success( message );
@@ -111,6 +130,7 @@ const CreateCaseModal = () => {
             setValue("description", "");
             setSelectedFile(null);
             setSelectedModel(null);
+            setSelectedImages([]);
             setSelectedFilters([]);
             setLaboratoryResults([]);
         } catch (error) {
@@ -474,6 +494,71 @@ const CreateCaseModal = () => {
                                                 Agregar estudio de laboratorio
                                             </button>
                                         </div>
+
+                                        <div className="flex flex-col justify-between space-x-5 my-5">
+                                            <label 
+                                                htmlFor="images"
+                                                className="text-gray-600 text-xl font-bold"
+                                            >Imagenes de estudios clinicos</label>
+
+                                            <input
+                                                id="images"
+                                                type="file"
+                                                multiple
+                                                accept="image/*"
+                                                className="hidden"
+                                                {...register("images", {
+                                                    onChange: e => {
+                                                        const files : File[] = Array.from( e.target.files ?? [] );
+
+                                                        setSelectedImages( prev => [
+                                                            ...prev,
+                                                            ...files
+                                                        ] )
+                                                    }
+                                                })}
+                                            />
+                                            <label 
+                                                htmlFor="images"
+                                                className="bg-purple-500 py-2 px-6 text-white font-bold rounded-lg mt-3 
+                                                hover:cursor-pointer hover:transition-colors hover:bg-purple-600 w-full flex 
+                                                justify-center items-center gap-x-2"
+                                            >
+                                                <ArrowUpTrayIcon className="h-6"/>
+                                                Seleccionar imagenes clinicas
+                                            </label>
+
+                                            {mediaURLS!.length > 0 && (
+                                                <div className="mt-5">
+                                                    <p className="text-sm text-gray-600 font-semibold mb-5">Imagenes seleccionadas:</p>
+
+                                                    <div className="flex justify-start space-x-5 space-y-5 items-center flex-wrap">
+                                                        {mediaURLS!.map( (mediaURL, index) => (
+                                                            <div className="relative">
+                                                                <img 
+                                                                    key={mediaURL}
+                                                                    src={ mediaURL } 
+                                                                    alt="Vista previa de imagen de fondo"
+                                                                    className="h-36" 
+                                                                />
+
+                                                                <div 
+                                                                    className="absolute top-1 right-1 bg-red-400 h-8 aspect-square rounded-full
+                                                                                hover:bg-red-500 cursor-pointer p-1"
+                                                                    onClick={ () => handleClick( index ) }
+                                                                >
+                                                                    <p className="font-bold text-white text-center">X</p>
+                                                                </div>
+
+                                                            </div>
+
+                                                        ) )}
+                                                    </div>
+                                                </div>
+                                            )}
+
+                                        </div>
+
 
                                         <div className="flex flex-col">
                                             <label 

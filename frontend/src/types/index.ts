@@ -63,7 +63,7 @@ export type Filter = z.infer<typeof FilterSchema>;
  * CASES TYPES
  */
 export type Case = z.infer<typeof CaseSchema>;
-export type CreateCaseForm = Pick<Case, "title" | "description" | "symptomsAndHistory" | "height" | "weight" | "bloodPreassure" | "previewImage" | "simulationModel" >;
+export type CreateCaseForm = Pick<Case, "title" | "description" | "symptomsAndHistory" | "height" | "weight" | "bloodPreassure" | "previewImage" | "simulationModel" | "images">;
 export type EditCaseForm = Pick<Case, "title" | "description" | "previewImage" | "simulationModel">;
 
 /**

@@ -211,7 +211,7 @@ LaboratoryStudy.belongsToMany(Case, {
 // Un caso clínico puede tener muchos estudios clínicos.
 Case.hasMany(ClinicalCaseImage, {
     foreignKey: "case_id",
-    as: "clinicalStudies",
+    as: "images",
     onDelete: "CASCADE"
 });
 
