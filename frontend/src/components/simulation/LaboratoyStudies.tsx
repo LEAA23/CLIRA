@@ -13,7 +13,7 @@ type MetricsForm = {
     metrics: string[];
 };
 
-const LaboratoryStudies = () => {
+const LaboratoryStudiesComponent = () => {
 
     const params = useParams();
     const caseId = +params.id!;
@@ -141,4 +141,4 @@ const LaboratoryStudies = () => {
     );
 };
 
-export default LaboratoryStudies;
+export default LaboratoryStudiesComponent;

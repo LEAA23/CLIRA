@@ -7,7 +7,8 @@ import { useNavigate, useParams } from "react-router-dom";
 import { completeCase } from "../../api/caseApi";
 import SymptomsAndHistory from "../../components/simulation/SymptomsAndHistory";
 import CorporalMetrics from "../../components/simulation/CorporalMetrics";
-import LaboratoryStudies from "../../components/simulation/LaboratoyStudies";
+import LaboratoryStudiesComponent from "../../components/simulation/LaboratoyStudies";
+import ClinicalStudiesCarousel from "../../components/simulation/ClinicalStudiesCarousel";
 
 const SimulationView = () => {
     // Referencia al canvas de la simulación
@@ -201,7 +202,7 @@ const SimulationView = () => {
             <div className="flex justify-between gap-5">
                 <SymptomsAndHistory />
                 <CorporalMetrics />
-                <LaboratoryStudies />
+                <LaboratoryStudiesComponent />
             </div>
 
             {/* Recursos disponibles */}
@@ -210,9 +211,14 @@ const SimulationView = () => {
                     Recursos disponibles:
                 </p>
 
-                <div className="flex justify-start gap-x-5 mt-5">
-                    {/* Aquí puedes agregar los recursos disponibles */}
-                </div>
+                {clinicalCase.images.length > 0? (
+                    <div className="mt-5">
+                        <ClinicalStudiesCarousel images={clinicalCase.images} />
+                    </div>
+
+                ) : (
+                    <p className="text-gray-500 font-semibold">No hay recursos extra disponibles para este caso</p>
+                )}
             </div>
         </>
     );

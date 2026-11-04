@@ -1,6 +1,12 @@
 import { CreationOptional, DataTypes, InferAttributes, InferCreationAttributes, Model } from "sequelize";
 import db from "../config/db";
 
+
+type ClinicalCaseImageData = {
+    id: number;
+    path: string | null;
+};
+
 export class Case extends Model< InferAttributes<Case>, InferCreationAttributes<Case> > {
     declare id: CreationOptional<number>;
     declare title: string;
@@ -22,7 +28,7 @@ export class Case extends Model< InferAttributes<Case>, InferCreationAttributes<
     declare completed: boolean;
     declare symptomsAndHistory?: [];
     declare laboratoryStudyResults?: []; 
-    declare images?: [];
+    declare images?: ClinicalCaseImageData[];
 }
 
 Case.init({
