@@ -219,6 +219,15 @@ export const CaseSchema = z.object({
 
 export const CasesSquema = z.array( CaseSchema );
 
+// Esquema reducido para seleccionar casos clínicos desde el tablón de grupos
+export const PublicCaseSchema = z.object({
+    id: z.number(),
+    title: z.string(),
+    description: z.string()
+});
+
+export const PublicCasesSchema = z.array(PublicCaseSchema);
+
 //Symptoms Squema
 export const SymptomSquema = z.string();
 

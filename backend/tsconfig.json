@@ -4,10 +4,12 @@
         "rootDir": "./src",
         "lib": ["esnext"],
         "target": "ESNext",
+        "types": ["node"],
         "moduleResolution": "NodeNext",
         "module": "NodeNext",
         "strict": true,
         "sourceMap": true,
+        "skipLibCheck": true,
         "esModuleInterop": true,
         "declaration": true
     },
