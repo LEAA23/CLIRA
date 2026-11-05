@@ -56,12 +56,12 @@ Case.init({
         allowNull: false
     },
     height: {
-        type: DataTypes.NUMBER,
+        type: DataTypes.FLOAT,
         defaultValue: null,
         allowNull: true
     },
     weight: {
-        type: DataTypes.NUMBER,
+        type: DataTypes.FLOAT,
         defaultValue: null,
         allowNull: true
     },

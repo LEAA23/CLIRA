@@ -1,6 +1,6 @@
 import { isAxiosError } from "axios"
 import api from "../lib/axios";
-import { CaseSchema, CasesSquema, laboratoryStudiesSchema, laboratoryStudyResultsSchema, MetricsSquema } from "../schemas";
+import { CaseSchema, CasesSquema, PublicCasesSchema, laboratoryStudiesSchema, laboratoryStudyResultsSchema, MetricsSquema } from "../schemas";
 import type { Case, Filter } from "../types";
 
 export const createCase = async( formData: FormData ) => {
@@ -28,17 +28,31 @@ export const getCases = async() => {
     }
 }
 
-export const getPublicCases = async (): Promise<Case[]> => {
+export type PublicCase = {
+    id: number;
+    title: string;
+    description: string;
+};
+
+export const getPublicCases = async (): Promise<PublicCase[]> => {
     try {
         const { data } = await api.get("/cases/public");
 
-        const response = CasesSquema.safeParse(data.cases);
+        const response = PublicCasesSchema.safeParse(data.cases);
 
         if (!response.success) {
-            throw new Error("Los datos de los casos no tienen un formato válido");
+            console.error(
+                "Error al validar los casos públicos:",
+                response.error
+            );
+
+            throw new Error(
+                "Los datos de los casos no tienen un formato válido"
+            );
         }
 
         return response.data;
+
     } catch (error) {
         if (isAxiosError(error) && error.response) {
             throw new Error(

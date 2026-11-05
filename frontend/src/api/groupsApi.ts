@@ -245,6 +245,7 @@ export const createComment = async( { groupId, postId, content } : { groupId : G
 }
 
 export const getComments = async( { groupId, postId } : { groupId : Group["id"] ; postId: Post["id"] } ) => {
+    if (!postId || postId === 0) return [];
     try {
         const { data: { comments } } = await api(`/groups/${groupId}/posts/${postId}/comments`);
         const response = CommentsSchema.safeParse( comments );
@@ -257,6 +258,7 @@ export const getComments = async( { groupId, postId } : { groupId : Group["id"] 
         if( isAxiosError(error) && error.response ) {
             throw new Error( error.response.data.error );
         }
+        throw error;
     }
 }
 
