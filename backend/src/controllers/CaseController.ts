@@ -404,6 +404,30 @@ export class CaseController {
         }
     }
 
+    static diagnose = async( req: Request, res: Response ) => {
+        const { features } = req.body;
+        try {
+
+            interface Prediction {
+                posicion: number;
+                diagnostico: string;
+                puntuacion: number;
+            }
+
+            interface PredictionResponse {
+                success: boolean;
+                predicciones: Prediction[];
+            }
+
+            // Solicitamos a Python la prediccion de la enfermedad con las caracteristicas obtenidas del usuario
+            const { data } = await axios.post<PredictionResponse>(`${process.env.AI_SERVICE_URL}/predict`,{ features });
+            console.log(data)
+        } catch (error) {
+            console.log(error)
+            return res.status(500).json( { error: "Error interno del servidor" } );
+        }
+    }
+
     static updateCase = async( req: Request, res: Response ) => {
         //Obtenemos los archivos subidos por el usuario, tanto la imagen como el modelo 3D
         const files = req.files as {

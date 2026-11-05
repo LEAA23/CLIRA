@@ -14,6 +14,7 @@ import { CaseEmbedding } from "./CaseEmbedding";
 import { LaboratoryStudy } from "./LaboratoryStudy";
 import { CasesLaboratoryStudy } from "./CasesLaboratoryStudy";
 import { ClinicalCaseImage } from "./ClinicalCaseImage";
+import { SimulationResult } from "./SimulationResult";
 
 //LAS ASOCIACIONES EN SEQUELIZE SON LAS RELACIONES ENTRE LAS BASES DE DATOS
 
@@ -217,6 +218,28 @@ Case.hasMany(ClinicalCaseImage, {
 
 // Cada estudio clínico pertenece a un solo caso.
 ClinicalCaseImage.belongsTo(Case, {
+    foreignKey: "case_id",
+    as: "case"
+});
+
+
+
+User.hasMany(SimulationResult, {
+    foreignKey: "user_id",
+    as: "simulationResults"
+});
+
+SimulationResult.belongsTo(User, {
+    foreignKey: "user_id",
+    as: "user"
+});
+
+Case.hasMany(SimulationResult, {
+    foreignKey: "case_id",
+    as: "simulationResults"
+});
+
+SimulationResult.belongsTo(Case, {
     foreignKey: "case_id",
     as: "case"
 });

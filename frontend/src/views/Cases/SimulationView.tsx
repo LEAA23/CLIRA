@@ -1,7 +1,6 @@
 import { ArrowLeftIcon } from "@heroicons/react/16/solid";
 import Experience from "../../SimulationExperiences/PatientExperience/Experience";
 import { useEffect, useRef, useState } from "react";
-import type { FormEvent } from "react";
 import { useAppStore } from "../../stores/useAppStore";
 import { useNavigate, useParams } from "react-router-dom";
 import { completeCase } from "../../api/caseApi";
@@ -9,6 +8,9 @@ import SymptomsAndHistory from "../../components/simulation/SymptomsAndHistory";
 import CorporalMetrics from "../../components/simulation/CorporalMetrics";
 import LaboratoryStudiesComponent from "../../components/simulation/LaboratoyStudies";
 import ClinicalStudiesCarousel from "../../components/simulation/ClinicalStudiesCarousel";
+import { useForm } from "react-hook-form";
+import ErrorMessage from "../../components/ErrorMessage";
+import type { DiagnosisForm } from "../../types";
 
 const SimulationView = () => {
     // Referencia al canvas de la simulación
@@ -21,6 +23,8 @@ const SimulationView = () => {
     const [diagnosis, setDiagnosis] = useState("");
     const [savingDiagnosis, setSavingDiagnosis] = useState(false);
     const [diagnosisMessage, setDiagnosisMessage] = useState("");
+
+    const { register, formState: { errors }, handleSubmit } = useForm<DiagnosisForm>( { defaultValues: { diagnosis: "" } } );
 
     // Obtenemos el ID del caso desde la URL
     const params = useParams();
@@ -71,34 +75,12 @@ const SimulationView = () => {
     };
 
     // Enviamos el diagnóstico y registramos el caso como completado
-    const handleDiagnosisSubmit = async (
-        event: FormEvent<HTMLFormElement>
-    ) => {
-        event.preventDefault();
-
-        if (!diagnosis.trim()) {
-            setDiagnosisMessage(
-                "Escribe tu diagnóstico antes de continuar."
-            );
-            return;
-        }
-
-        if (!Number.isInteger(caseId) || caseId <= 0) {
-            setDiagnosisMessage("El ID del caso no es válido.");
-            return;
-        }
-
-        setSavingDiagnosis(true);
-        setDiagnosisMessage("");
-
+    const handleDiagnosisSubmit = async( formData: DiagnosisForm ) => {
+        console.log(formData.diagnosis);
         try {
             await completeCase(caseId);
 
-            setDiagnosisMessage(
-                "Diagnóstico enviado y caso registrado como completado."
-            );
 
-            setDiagnosis("");
         } catch (error) {
             setDiagnosisMessage(
                 error instanceof Error
@@ -161,39 +143,35 @@ const SimulationView = () => {
                     </div>
 
                     <form
-                        onSubmit={handleDiagnosisSubmit}
+                        onSubmit={ handleSubmit( handleDiagnosisSubmit ) }
                         className="flex flex-col gap-3 mt-5"
                     >
+                                                
+                        <label 
+                            htmlFor="diagnosis"
+                            className="text-gray-600 font-bold text-xl"
+                        >Diagnostico final</label>
                         <input
                             type="text"
-                            value={diagnosis}
-                            onChange={(event) =>
-                                setDiagnosis(event.target.value)
-                            }
+                            id="diagnosis"
                             className="border border-gray-400 p-2 w-full rounded-lg"
                             placeholder="Coloca tu diagnóstico final aquí"
                             disabled={savingDiagnosis}
+                            {...register("diagnosis", {
+                                required: "El diagnostico es obligatorio"
+                            })}
                         />
+                        {errors.diagnosis && (
+                            <ErrorMessage>{ String(errors.diagnosis.message) }</ErrorMessage>
+                        )}
 
                         <input
                             type="submit"
-                            value={
-                                savingDiagnosis
-                                    ? "Guardando..."
-                                    : "Diagnosticar"
-                            }
+                            value={ savingDiagnosis? "Guardando..." : "Diagnosticar" }
                             disabled={savingDiagnosis}
                             className="bg-blue-500 py-2 px-6 text-white font-bold rounded-lg hover:cursor-pointer hover:transition-colors hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed"
                         />
 
-                        {diagnosisMessage && (
-                            <p
-                                className="text-sm text-gray-600"
-                                role="status"
-                            >
-                                {diagnosisMessage}
-                            </p>
-                        )}
                     </form>
                 </div>
             </div>

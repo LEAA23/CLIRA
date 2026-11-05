@@ -325,9 +325,10 @@ const CreateCaseModal = () => {
                                                             }
                                                             className="bg-blue-500 px-3 py-2 rounded-lg text-white font-semibold cursor-pointer"
                                                         >
+                                                            <option value="gender">Genero</option>
+                                                            <option value="age">Edad</option>
                                                             <option value="symptom">Síntoma</option>
                                                             <option value="history">Antecedente médico</option>
-                                                            <option value="age">Edad</option>
                                                         </select>
 
                                                         <input
