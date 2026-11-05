@@ -54,37 +54,112 @@ export class GroupsControlller {
         }
     }
 
-    static getGroups = async( req: Request, res: Response ) => {
+    
+    static getGroups = async (req: Request, res: Response) => {
         try {
-            //Extraemos el id del maestro
             const teacher = req.user.id;
             const rol = req.user.rol;
-            
-            if(rol === "teacher") {
-                //Econtramos todos los grupos que pertencen al maetsro mediante el id del mismo, ademas mediante la asociacion teahcerUser obtenemos el nombre del maestro
-                const groups = await Group.findAll( { 
-                    where: { teacher }, 
-                    include: [ { model: User, as: "teacherUser", attributes: ["id", "name"] } ]
-                } );
-                return res.status(200).json({ groups });
+
+            const groups = await Group.findAll({
+                where: rol === "teacher" ? { teacher } : {},
+                include: [
+                    {
+                        model: User,
+                        as: "teacherUser",
+                        attributes: ["id", "name"]
+                    },
+                    {
+                        model: User,
+                        as: "users",
+                        attributes: ["id"],
+                        through: { attributes: [] }
+                    }
+                ]
+            });
+
+            const formattedGroups = await Promise.all(
+                groups.map(async (group) => {
+                    // Convertimos el modelo Sequelize a un objeto plano.
+                    const groupData = group.toJSON() as {
+                        id: number;
+                        name: string;
+                        bgImage: string;
+                        teacherUser?: {
+                            id: number;
+                            name: string;
+                        };
+                        users?: Array<{
+                            id: number;
+                        }>;
+                    };
+
+                    let bgImageUrl = "";
+
+                    if (groupData.bgImage) {
+                        const command = new GetObjectCommand({
+                            Bucket: process.env.AWS_BUCKET,
+                            Key: groupData.bgImage
+                        });
+
+                        bgImageUrl = await getSignedUrl(
+                            s3Client,
+                            command,
+                            { expiresIn: 60 * 60 * 24 }
+                        );
+                    }
+
+                    return {
+                        id: groupData.id,
+                        name: groupData.name,
+                        teacherUser: groupData.teacherUser ?? {
+                            id: 0,
+                            name: "Profesor"
+                        },
+                        bgImage: bgImageUrl,
+                        memberCount: groupData.users?.length ?? 0
+                    };
+                })
+            );
+
+            if (rol === "teacher") {
+                return res.status(200).json({
+                    groups: formattedGroups
+                });
             }
 
-            //El rol es de un estudiante, entonces consultamos los grupos en donde esta dicho estudiante
+            // Para estudiantes, obtenemos exclusivamente sus grupos.
             const student = await User.findOne({
                 where: { id: req.user.id },
-                attributes:[],
-                include: [ 
-                    { model: Group, as: "groups", include: [ { model: User, as: "teacherUser", attributes: ["id", "name"] } ] }
+                attributes: ["id"],
+                include: [
+                    {
+                        model: Group,
+                        as: "groups",
+                        attributes: ["id"]
+                    }
                 ]
             }) as (User & { groups: Group[] }) | null;
 
-            return res.status(200).json({ groups: student!.groups  });
-            
+            const studentGroupIds = new Set(
+                (student?.groups ?? []).map(group => group.id)
+            );
+
+            const studentGroups = formattedGroups.filter(group =>
+                studentGroupIds.has(group.id)
+            );
+
+            return res.status(200).json({
+                groups: studentGroups
+            });
+
         } catch (error) {
-            console.log(error)
-            return res.status(500).json( { error: "Error interno del servidor" } );
+            console.log(error);
+            return res.status(500).json({
+                error: "Error interno del servidor"
+            });
         }
-    }
+    };
+
 
     static updateGroup = async( req: Request, res: Response ) => {
         const { name } = req.body;
@@ -158,51 +233,99 @@ export class GroupsControlller {
         }
     }
 
-    static getGroup = async( req: Request, res: Response ) => {
+    static getGroup = async (req: Request, res: Response) => {
         const { groupId } = req.params;
 
         try {
-            //Verificamos si realmente existe un grupo con el id que se esta mandando
-            const groupExists = await Group.findOne( { 
+            const groupExists = await Group.findOne({
                 where: { id: groupId },
-                include: [ 
-                    //Hacemos un join con la tabla de User y nos traemos el id del usuario que en este caso es un teacher
-                    { model: User, 
-                        as: "teacherUser", 
+                include: [
+                    {
+                        model: User,
+                        as: "teacherUser",
                         attributes: ["id", "name"]
                     },
-                    //Hacemos otro join y nos taremos los miembros de ese grupo 
-                    { 
-                        model: User, 
-                        as: "users", 
-                        attributes: ["id", "name", "lastName", "email", "profileImage"], 
-                        through: { attributes: [] } 
-                    } 
-                ]  
-            } );
-            
-            if(!groupExists) {
-                const error = new Error("El grupo no existe");
-                return res.status(404).json( { error: error.message } );
+                    {
+                        model: User,
+                        as: "users",
+                        attributes: [
+                            "id",
+                            "name",
+                            "lastName",
+                            "email",
+                            "profileImage"
+                        ],
+                        through: { attributes: [] }
+                    }
+                ]
+            });
+
+            if (!groupExists) {
+                return res.status(404).json({
+                    error: "El grupo no existe"
+                });
             }
 
-            //obtener la imagen de fondo desde AWS y reescribir bgImage
-            const command = new GetObjectCommand({
+            // Convertimos el grupo a un objeto normal para preparar las URLs.
+            const groupData = groupExists.toJSON();
+
+            // Obtener URL de la portada.
+            const bgCommand = new GetObjectCommand({
                 Bucket: process.env.AWS_BUCKET,
-                Key: groupExists!.bgImage
+                Key: groupExists.bgImage
             });
-            //Creamos la url para poder acceder a la imagen de forma segura sin exponer el bucket de AWS
-            const url = await getSignedUrl( s3Client, command, { expiresIn: 60 * 60 *24 } );
-            groupExists.bgImage = url;
-            
-            //FALTA VERIFICAR QUE EL USUARIO QUE ENTRA ESTE EN DICHO GRUPO
-            return res.status(200).json( { group: groupExists } );
+
+            const bgImageUrl = await getSignedUrl(
+                s3Client,
+                bgCommand,
+                { expiresIn: 60 * 60 * 24 }
+            );
+
+            // Obtener URLs de las fotografías de los alumnos.
+            const usersWithProfileImages = await Promise.all(
+                (groupData.users ?? []).map(async (student: User) => {
+
+                    if (!student.profileImage) {
+                        return {
+                            ...student,
+                            profileImage: null
+                        };
+                    }
+
+                    const profileCommand = new GetObjectCommand({
+                        Bucket: process.env.AWS_BUCKET,
+                        Key: student.profileImage
+                    });
+
+                    const profileImageUrl = await getSignedUrl(
+                        s3Client,
+                        profileCommand,
+                        { expiresIn: 60 * 60 * 24 }
+                    );
+
+                    return {
+                        ...student,
+                        profileImage: profileImageUrl
+                    };
+                })
+            );
+
+            return res.status(200).json({
+                group: {
+                    ...groupData,
+                    bgImage: bgImageUrl,
+                    users: usersWithProfileImages
+                }
+            });
 
         } catch (error) {
-            console.log(error)
-            return res.status(500).json( { error: "Error interno del servidor" } );
+            console.log(error);
+
+            return res.status(500).json({
+                error: "Error interno del servidor"
+            });
         }
-    }
+    };
 
     static setMembertoGroup = async( req: Request, res: Response ) => {
         const { groupId } = req.params;
