@@ -1,5 +1,5 @@
 import type { StateCreator } from "zustand";
-import { createCase, deleteCase, deleteCaseImage, deleteCaseModel, getCases, getSimulation, updateCase } from "../api/caseApi";
+import { createCase, deleteCase, deleteCaseImage, deleteCaseModel, getCases, getCorporalMetrics, getLaboratorystudies, getPatientLaboratorystudies, getSimulation, updateCase } from "../api/caseApi";
 import type { Case, Symptom } from "../types";
 import { askPatientSymptomsAndHistory } from "../api/simulationApi";
 
@@ -9,7 +9,10 @@ export type CaseSliceType = {
     createCase: (formData: FormData) => Promise<string | undefined>;
     getCases: () => Promise<void>;
     fetchCase: (caseId: number) => Promise<void>;
-    askQuestion: ({ caseId, question }: { caseId: number; question: string; }) => Promise<void>
+    getLaboratorystudies: () => Promise<{ id: number; name: string; }[] | undefined>;
+    askQuestion: ({ caseId, question }: { caseId: number; question: string; }) => Promise<void>;
+    fetchCorporalMetrics: ({ caseId, metricsSelected }: { caseId: number; metricsSelected: string[]; }) => Promise<void>;
+    fetchPatientLaboratoryStudies: ({ caseId, laboratoryStudies }: { caseId: number; laboratoryStudies: number[]; }) => Promise<void>;
     updateCase: ({ caseId, formData }: { caseId: number; formData: FormData; }) => Promise<string | undefined>;
     deleteCaseImage: (caseId: number) => Promise<string | undefined>;
     deleteCaseModel: (caseId: number) => Promise<string | undefined>;
@@ -25,6 +28,11 @@ export const createCaseSlice : StateCreator<CaseSliceType> = ((set, get) => ({
         title: "",
         description: "",
         symptomsAndHistory: [],
+        laboratoryStudyResults: [],
+        images: [],
+        height: 0,
+        weight: 0,
+        bloodPreassure: "",
         previewImage: "",
         simulationModel: "",
         teacher_id: 0,
@@ -46,6 +54,10 @@ export const createCaseSlice : StateCreator<CaseSliceType> = ((set, get) => ({
             case: get().cases.find( clinicalCase => clinicalCase.id === caseId )
         }));
     },
+    getLaboratorystudies: async() => {
+        const laboratoryStudies = await getLaboratorystudies();
+        return laboratoryStudies;
+    },
     askQuestion: async( { caseId, question } : { caseId: Case["id"] ; question: Symptom } ) => {
         const records = await askPatientSymptomsAndHistory( { caseId, question } );
         const symptomsAndHistory = [...records!.records];
@@ -55,6 +67,44 @@ export const createCaseSlice : StateCreator<CaseSliceType> = ((set, get) => ({
                 symptomsAndHistory
             }
         }));
+    },
+    fetchCorporalMetrics: async ({ caseId, metricsSelected }) => {
+
+        const corporalMetrics = await getCorporalMetrics({
+            caseId,
+            metricsSelected
+        });
+
+        set(state => {
+            const updatedCase = { ...state.case };
+
+            corporalMetrics!.forEach(metric => {
+
+                if (metric.type === "height") {
+                    updatedCase.height = +metric.value;
+                }
+
+                if (metric.type === "weight") {
+                    updatedCase.weight = +metric.value;
+                }
+
+                if (metric.type === "bloodPreassure") {
+                    updatedCase.bloodPreassure = metric.value as string;
+                }
+
+            });
+
+            return { case: updatedCase };
+        });
+    },
+    fetchPatientLaboratoryStudies: async( { caseId, laboratoryStudies } : { caseId: Case["id"] ; laboratoryStudies : number[] } ) => {
+        const patientLaboratoryStudies = await getPatientLaboratorystudies( { caseId, patientlaboratoryStudies: laboratoryStudies } );
+        set(() => ({
+            case: {
+                ...get().case,
+                laboratoryStudyResults: patientLaboratoryStudies
+            }
+        }))
     },
     fetchSimulation: async( caseId: Case["id"] ) => {
         const clinicalCase = await getSimulation( caseId );
@@ -112,6 +162,11 @@ export const createCaseSlice : StateCreator<CaseSliceType> = ((set, get) => ({
                 title: "",
                 description: "",
                 symptomsAndHistory: [],
+                laboratoryStudyResults: [],
+                images: [],
+                height: 0,
+                weight: 0,
+                bloodPreassure: "",
                 previewImage: "",
                 simulationModel: "",
                 teacher_id: 0,

@@ -11,6 +11,9 @@ import { CasesFilters } from "./CasesFilters";
 import FilterCategories from "./FilterCategories";
 import { CaseRecord } from "./CaseRecord";
 import { CaseEmbedding } from "./CaseEmbedding";
+import { LaboratoryStudy } from "./LaboratoryStudy";
+import { CasesLaboratoryStudy } from "./CasesLaboratoryStudy";
+import { ClinicalCaseImage } from "./ClinicalCaseImage";
 
 //LAS ASOCIACIONES EN SEQUELIZE SON LAS RELACIONES ENTRE LAS BASES DE DATOS
 
@@ -186,4 +189,34 @@ CaseRecord.hasOne(CaseEmbedding, {
 CaseEmbedding.belongsTo(CaseRecord, {
     foreignKey: "case_record_id",
     as: "record"
+});
+
+
+Case.belongsToMany(LaboratoryStudy, {
+    through: CasesLaboratoryStudy,
+    foreignKey: "case_id",
+    otherKey: "laboratoryStudy_id",
+    as: "laboratoryStudies"
+});
+
+LaboratoryStudy.belongsToMany(Case, {
+    through: CasesLaboratoryStudy,
+    foreignKey: "laboratoryStudy_id",
+    otherKey: "case_id",
+    as: "cases"
+});
+
+
+// Asociaciones para los estudios clínicos (1:N)
+// Un caso clínico puede tener muchos estudios clínicos.
+Case.hasMany(ClinicalCaseImage, {
+    foreignKey: "case_id",
+    as: "images",
+    onDelete: "CASCADE"
+});
+
+// Cada estudio clínico pertenece a un solo caso.
+ClinicalCaseImage.belongsTo(Case, {
+    foreignKey: "case_id",
+    as: "case"
 });

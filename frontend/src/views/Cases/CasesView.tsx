@@ -171,7 +171,7 @@ const CasesView = () => {
             </h1>
 
             {/* Buscador y botón para profesores */}
-            <div className="mb-6 flex flex-col gap-4 md:flex-row md:items-start">
+            <div className="mb-6 flex flex-col items-center gap-4 md:flex-row ">
                 <div className="min-w-0 flex-1">
                     <SearchBar
                         key={searchBarKey}
@@ -200,7 +200,7 @@ const CasesView = () => {
                                 `${location.pathname}?CreateCase=true`
                             )
                         }
-                        className="flex shrink-0 items-center justify-center gap-x-2 whitespace-nowrap rounded-lg bg-blue-500 px-6 py-3 font-bold text-white transition hover:bg-blue-600"
+                        className="flex shrink-0 cursor-pointer items-center justify-center gap-x-2 whitespace-nowrap rounded-lg bg-blue-500 px-6 py-3 font-bold text-white transition hover:bg-blue-600"
                     >
                         <PlusIcon className="h-6 w-6" />
                         Crear caso clínico

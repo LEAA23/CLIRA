@@ -50,7 +50,7 @@ const AboutView = () => {
   return (
     <div className="w-full overflow-hidden">
       {/* Presentación principal */}
-      <section className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-blue-950 via-blue-800 to-cyan-700 px-7 py-14 text-white shadow-xl md:px-12 md:py-20">
+      <section className="relative overflow-hidden rounded-3xl bg-linear-to-br from-blue-950 via-blue-800 to-cyan-700 px-7 py-14 text-white shadow-xl md:px-12 md:py-20">
         <div className="absolute -right-20 -top-20 h-72 w-72 rounded-full bg-cyan-300/10 blur-3xl" />
         <div className="absolute -bottom-24 -left-20 h-72 w-72 rounded-full bg-blue-300/10 blur-3xl" />
 
@@ -207,7 +207,7 @@ const AboutView = () => {
           </p>
         </div>
 
-        <div className="rounded-3xl bg-gradient-to-br from-blue-800 to-cyan-600 p-7 text-white shadow-xl md:p-9">
+        <div className="rounded-3xl bg-linear-to-br from-blue-800 to-cyan-600 p-7 text-white shadow-xl md:p-9">
           <h3 className="mb-7 text-2xl font-bold">
             Tu recorrido en CLIRA
           </h3>

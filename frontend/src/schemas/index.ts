@@ -188,6 +188,21 @@ export const CaseSchema = z.object({
             content: z.string()
         })
     ),
+    laboratoryStudyResults: z.array(
+        z.object({
+            id: z.number(),
+            value: z.number().or( z.null() )
+        })
+    ),
+    height: z.number(),
+    weight: z.number(),
+    bloodPreassure: z.string(),
+    images: z.array(
+        z.object({
+            id: z.number(),
+            path: z.string()
+        })
+    ),
     previewImage: z.file().or(z.null()).or(z.string()),
     simulationModel: z.file().or(z.null()).or(z.string()),
     teacher_id: z.number(),
@@ -218,3 +233,28 @@ export const askQuestionResponse = z.object({
         })
     )
 });
+
+export const MetricsSquema = z.array(
+    z.object({
+        type: z.string(),
+        value: z.number().or( z.string() )
+    })
+)
+
+export const LaboratoryStudySquema = z.object({
+    id: z.number(),
+    name: z.string()
+});
+
+export const LaboratoryStudyResultSquema = z.object({
+    id: z.number(),
+    value: z.number().or( z.null() )
+});
+
+export const laboratoryStudiesSchema = z.array(
+    LaboratoryStudySquema
+);
+
+export const laboratoryStudyResultsSchema = z.array(
+    LaboratoryStudyResultSquema
+)

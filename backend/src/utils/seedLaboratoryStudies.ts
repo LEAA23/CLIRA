@@ -1,0 +1,75 @@
+import { LaboratoryStudy } from "../models/LaboratoryStudy";
+
+export const seedLaboratoryStudies = async () => {
+    const laboratoryStudies = [
+        { id: 1, name: "Absolute Basophil Count" },
+        { id: 2, name: "Absolute Eosinophil Count" },
+        { id: 3, name: "Absolute Lymphocyte Count" },
+        { id: 4, name: "Absolute Monocyte Count" },
+        { id: 5, name: "Absolute Neutrophil Count" },
+        { id: 6, name: "Alanine Aminotransferase (ALT)" },
+        { id: 7, name: "Albumin" },
+        { id: 8, name: "Alkaline Phosphatase" },
+        { id: 9, name: "Anion Gap" },
+        { id: 10, name: "Asparate Aminotransferase (AST)" },
+        { id: 11, name: "Base Excess" },
+        { id: 12, name: "Basophils" },
+        { id: 13, name: "Bicarbonate" },
+        { id: 14, name: "Bilirubin, Total" },
+        { id: 15, name: "Calcium, Total" },
+        { id: 16, name: "Calculated Total CO2" },
+        { id: 17, name: "Chloride" },
+        { id: 18, name: "Creatine Kinase (CK)" },
+        { id: 19, name: "Creatine Kinase, MB Isoenzyme" },
+        { id: 20, name: "Creatinine" },
+        { id: 21, name: "Eosinophils" },
+        { id: 22, name: "Epithelial Cells" },
+        { id: 23, name: "Glucose" },
+        { id: 24, name: "H" },
+        { id: 25, name: "Hematocrit" },
+        { id: 26, name: "Hemoglobin" },
+        { id: 27, name: "I" },
+        { id: 28, name: "INR(PT)" },
+        { id: 29, name: "Immature Granulocytes" },
+        { id: 30, name: "L" },
+        { id: 31, name: "Lactate" },
+        { id: 32, name: "Lactate Dehydrogenase (LD)" },
+        { id: 33, name: "Lymphocytes" },
+        { id: 34, name: "MCH" },
+        { id: 35, name: "MCHC" },
+        { id: 36, name: "MCV" },
+        { id: 37, name: "Magnesium" },
+        { id: 38, name: "Monocytes" },
+        { id: 39, name: "Neutrophils" },
+        { id: 40, name: "PT" },
+        { id: 41, name: "PTT" },
+        { id: 42, name: "Phosphate" },
+        { id: 43, name: "Platelet Count" },
+        { id: 44, name: "Potassium" },
+        { id: 45, name: "Protein" },
+        { id: 46, name: "RBC" },
+        { id: 47, name: "RDW" },
+        { id: 48, name: "RDW-SD" },
+        { id: 49, name: "Red Blood Cells" },
+        { id: 50, name: "Sodium" },
+        { id: 51, name: "Specific Gravity" },
+        { id: 52, name: "Urea Nitrogen" },
+        { id: 53, name: "WBC" },
+        { id: 54, name: "White Blood Cells" },
+        { id: 55, name: "pCO2" },
+        { id: 56, name: "pH" },
+        { id: 57, name: "pO2" }
+    ];
+
+    for (const study of laboratoryStudies) {
+        await LaboratoryStudy.findOrCreate({
+            where: {
+                id: study.id,
+            },
+            defaults: {
+                id: study.id,
+                name: study.name,
+            },
+        });
+    }
+};

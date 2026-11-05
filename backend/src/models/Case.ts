@@ -1,12 +1,21 @@
 import { CreationOptional, DataTypes, InferAttributes, InferCreationAttributes, Model } from "sequelize";
 import db from "../config/db";
 
+
+type ClinicalCaseImageData = {
+    id: number;
+    path: string | null;
+};
+
 export class Case extends Model< InferAttributes<Case>, InferCreationAttributes<Case> > {
     declare id: CreationOptional<number>;
     declare title: string;
     declare description: string;
     declare previewImage: string;
     declare simulationModel: string;
+    declare height: number | null;
+    declare weight: number | null;
+    declare bloodPreassure: string | null;
     declare diagnosis: string;
     // declare weight: number;
     // declare height: number;
@@ -18,6 +27,8 @@ export class Case extends Model< InferAttributes<Case>, InferCreationAttributes<
     declare teacher_id: number;
     declare completed: boolean;
     declare symptomsAndHistory?: [];
+    declare laboratoryStudyResults?: []; 
+    declare images?: ClinicalCaseImageData[];
 }
 
 Case.init({
@@ -43,6 +54,21 @@ Case.init({
         type: DataTypes.STRING,
         defaultValue: "",
         allowNull: false
+    },
+    height: {
+        type: DataTypes.NUMBER,
+        defaultValue: null,
+        allowNull: true
+    },
+    weight: {
+        type: DataTypes.NUMBER,
+        defaultValue: null,
+        allowNull: true
+    },
+    bloodPreassure: {
+        type: DataTypes.STRING,
+        defaultValue: null,
+        allowNull: true
     },
     diagnosis: {
         type: DataTypes.TEXT,

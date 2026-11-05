@@ -16,6 +16,10 @@ import axios from "axios";
 import { formatEmbedding } from "../utils/formatEmbedding";
 import db from "../config/db";
 import { QueryTypes } from "sequelize";
+import { LaboratoryStudy } from "../models/LaboratoryStudy";
+import { CasesLaboratoryStudy } from "../models/CasesLaboratoryStudy";
+import { ClinicalCaseImage } from "../models/ClinicalCaseImage";
+import { saveClinicalImages } from "../utils/saveClinicalImages";
 
 export class CaseController {
 
@@ -24,7 +28,8 @@ export class CaseController {
         const files = req.files as {
             [fieldname: string] : Express.Multer.File[]
         }
-        const { title, description } = req.body;
+        const images = files.images;
+        const { title, description, height, weight, bloodPreassure } = req.body;
 
         try {
             const clinicalCase = Case.build({
@@ -32,12 +37,21 @@ export class CaseController {
                 description,
                 previewImage: "",
                 simulationModel: "",
+                height,
+                weight,
+                bloodPreassure,
                 diagnosis: "",
                 teacher_id: req.user.id,
                 completed: false
             });
-
+            
             const filters : number[] = JSON.parse( req.body.filters );
+
+            type LaboratoryStudy = {
+                id: number;
+                value: number;
+            };
+            const laboratoryStudies : LaboratoryStudy[] = JSON.parse( req.body.laboratoryStudies );
 
             type CaseFeature = {
                 type: string;
@@ -83,6 +97,11 @@ export class CaseController {
             }
 
             await clinicalCase.save();
+
+            if(images.length > 0) {
+                //Guardamos las imagenes en el bucket de AWS y las referencias en la BD
+                await saveClinicalImages( { caseId: clinicalCase.id, images } );
+            }
                             
             // Guardamos los filtros asociados al caso
             await Promise.all(
@@ -123,6 +142,17 @@ export class CaseController {
                     case_record_id: record.id
                 });
             }
+
+            laboratoryStudies.forEach( async(laboratoryStudy) => {
+                //Insertamos en la tabla pivote la informacion
+                if(laboratoryStudy.id === 0) return;
+                
+                await CasesLaboratoryStudy.create({
+                    case_id: clinicalCase.id,
+                    laboratoryStudy_id: laboratoryStudy.id,
+                    value: laboratoryStudy.value
+                })
+            } );
             
             return res.status(200).send( "El caso se creo correctamente" );
             
@@ -132,38 +162,50 @@ export class CaseController {
         }
     }
     
-    static getCases = async( req: Request, res: Response ) => {
+   static getCases = async (req: Request, res: Response) => {
         try {
             const cases = await Case.findAll({
-                include: [ 
-                    { model: Filters, as: "filters", attributes: [ "id", "name", "category_id" ], through: { attributes: [] } }, 
-                    { model: User, as: "creator", attributes: [ "id", "name", 'lastName', 'email' ] },
-                    { model: CaseRecord, as: "symptomsAndHistory", attributes: ["type", "content"] }
+                include: [
+                    { model: Filters, as: "filters", attributes: ["id", "name", "category_id"], through: { attributes: [] } },
+                    { model: User, as: "creator", attributes: ["id", "name", "lastName", "email"] },
+                    { model: CaseRecord, as: "symptomsAndHistory", attributes: ["type", "content"] },
+                    { model: ClinicalCaseImage, as: "images", attributes: ["id", "path"] }
                 ]
             });
 
-            await Promise.all(
+            const formattedCases = await Promise.all(
                 cases.map(async (clinicalCase) => {
+                    const caseData = clinicalCase.toJSON();
 
-                    if(clinicalCase.previewImage === "") return;
+                    caseData.height = 0;
+                    caseData.weight = 0;
+                    caseData.symptomsAndHistory = [];
+                    caseData.laboratoryStudyResults = [];
 
-                    const command = new GetObjectCommand({
-                        Bucket: process.env.AWS_BUCKET,
-                        Key: clinicalCase.previewImage
-                    });
+                    if (caseData.previewImage !== "") {
+                        const command = new GetObjectCommand({
+                            Bucket: process.env.AWS_BUCKET,
+                            Key: caseData.previewImage
+                        });
 
-                    const key = await getSignedUrl( s3Client, command, { expiresIn: 60 * 60 * 24 } );
-                    clinicalCase.previewImage = key;
-                    
-                    
+                        caseData.previewImage = await getSignedUrl(
+                            s3Client,
+                            command,
+                            { expiresIn: 60 * 60 * 24 }
+                        );
+                    }
+
+                    return caseData;
                 })
-            )
-            return res.status(200).json( { cases } );
+            );
+
+            return res.status(200).json({ cases: formattedCases });
+
         } catch (error) {
             console.error("ERROR AL CONSULTAR LOS CASOS:", error);
-            return res.status(500).json( { error: "Error interno del servidor" } );
+            return res.status(500).json({ error: "Error interno del servidor" });
         }
-    }
+    };
 
     static getCase = async( req: Request, res: Response ) => {
         const { caseId } = req.params;
@@ -172,7 +214,8 @@ export class CaseController {
                 where: { id: caseId },
                 include: [ 
                     { model: Filters, as: "filters", attributes: [ "id", "name", "category_id" ], through: { attributes: [] } }, 
-                    { model: User, as: "creator", attributes: [ "id", "name", 'lastName', 'email' ] }
+                    { model: User, as: "creator", attributes: [ "id", "name", 'lastName', 'email' ] },
+                    { model: ClinicalCaseImage, as: "images", attributes: [ "id", "path"] },
                 ]
             });
 
@@ -193,6 +236,31 @@ export class CaseController {
 
             const caseData = clinicalCase.toJSON();
             caseData.symptomsAndHistory = [];
+            caseData.height = 0;
+            caseData.weight = 0;
+            caseData.bloodPreassure = "";
+            caseData.laboratoryStudyResults = [];
+
+            type ClinicalCaseImageData = {
+                id: number;
+                path: string | null;
+            };
+            const images = caseData.images as ClinicalCaseImageData[];
+
+            await Promise.all( 
+                images.map( async( image ) => {
+
+                    if( !image.path ) return;
+
+                    const command = new GetObjectCommand({
+                        Bucket: process.env.AWS_BUCKET,
+                        Key: image.path
+                    });
+                    const key = await getSignedUrl( s3Client, command, { expiresIn: 60 * 60 * 24 } );
+                    image.path = key;
+                })
+            );
+            caseData.images = images;
 
             return res.status(200).json( { clinicalCase: caseData } );
         } catch (error) {
@@ -200,6 +268,46 @@ export class CaseController {
             return res.status(500).json( { error: "Error interno del servidor" } );
         }
     }
+
+    static getLaboratorystudies = async( req: Request, res: Response ) => {
+        try {
+            const laboratoryStudies = await LaboratoryStudy.findAll({});
+            return res.status(200).json({ laboratoryStudies })
+        } catch (error) {
+            return res.status(500).json( { error: "Error interno del servidor" } );
+        }
+    }
+
+    static getPatientLaboratoryStudies = async (req: Request, res: Response) => {
+        const { laboratoryStudies } = req.body;
+
+        try {
+            const laboratoryResults = await Promise.all(
+                laboratoryStudies.map(async (labStudyId: number) => {
+                    const labResult = await CasesLaboratoryStudy.findOne({
+                        where: {
+                            case_id: req.clinicalCase.id,
+                            laboratoryStudy_id: labStudyId
+                        },
+                        attributes: ["value"]
+                    });
+
+                    return {
+                        id: labStudyId,
+                        value: labResult ? Number(labResult.value) : null
+                    };
+                })
+            );
+
+            return res.status(200).json({ laboratoryResults });
+
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                error: "Error interno del servidor"
+            });
+        }
+    };
 
     static askQuestion = async( req: Request, res: Response ) => {
         const { question } = req.body;
@@ -222,7 +330,7 @@ export class CaseController {
                     cr.type,
                     cr.content,
                     ce.embedding <=> $1::vector AS distance
-                FROM "CaseRecord" cr
+                FROM "CaseRecords" cr
                 INNER JOIN "CaseEmbeddings" ce
                     ON ce.case_record_id = cr.id
                 WHERE cr.patient_id = $2
@@ -235,8 +343,6 @@ export class CaseController {
                     type: QueryTypes.SELECT
                 }
             );
-
-            console.log(records)
 
             //Si no hay coincidencias suficientemente similares respondemos con un mensaje prederetermindo
             if (records.length === 0) {
@@ -260,6 +366,40 @@ export class CaseController {
 
         } catch (error) {
             console.log(error)
+            return res.status(500).json( { error: "Error interno del servidor" } );
+        }
+    }
+
+    static getCorporalMetrics = async( req: Request, res: Response ) => {
+        const { metricsSelected } = req.body;
+        try {
+            const metricValues = metricsSelected.map( (metric : string) => {
+                if( metric === "height" ) {
+                    return {
+                        type: "height",
+                        value: req.clinicalCase.height != null? +req.clinicalCase.height : 0
+                    }
+                }
+                
+                if( metric === "weight" ) {
+                    return {
+                        type: "weight",
+                        value: req.clinicalCase.weight != null? +req.clinicalCase.weight : 0
+                    }                
+                }
+
+                if( metric === "bloodPreassure" ) {
+                    return {
+                        type: "bloodPreassure",
+                        value: req.clinicalCase.bloodPreassure !== null? req.clinicalCase.bloodPreassure: ""
+                    }                  
+                }
+
+                return;
+            });
+
+            return res.status(200).json( { metrics: metricValues } );
+        } catch (error) {
             return res.status(500).json( { error: "Error interno del servidor" } );
         }
     }

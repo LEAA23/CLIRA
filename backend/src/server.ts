@@ -9,6 +9,7 @@ import aiRoutes from "./routes/aiRoutes";
 import {authenticateConection} from "./config/db";
 import { corsOptions } from "./config/cors";
 import { seedFilters, seedFilterCategories } from "./utils/filterSeeder";
+import { seedLaboratoryStudies } from "./utils/seedLaboratoryStudies";
 
 const app = express();
 
@@ -18,6 +19,7 @@ const startServer = async () => {
 
     await seedFilterCategories();
     await seedFilters();
+    await seedLaboratoryStudies();
 
 };
 startServer();

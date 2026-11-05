@@ -4,24 +4,35 @@ import { useShowModal } from "../../hooks/useShowModal";
 import { useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import ErrorMessage from "../ErrorMessage";
-import { ArrowRightStartOnRectangleIcon, ArrowUpTrayIcon, HeartIcon, PlusIcon } from "@heroicons/react/16/solid";
-import { useState } from "react";
+import { ArrowRightStartOnRectangleIcon, ArrowUpTrayIcon, BeakerIcon, HeartIcon, PlusIcon } from "@heroicons/react/16/solid";
+import { useEffect, useState } from "react";
 import { Popover, PopoverButton, PopoverPanel } from "@headlessui/react";
 import { toast } from "react-toastify";
 import { useAppStore } from "../../stores/useAppStore";
-import type { CreateCaseForm } from "../../types";
+import type { CreateCaseForm, LaboratoryStudies } from "../../types";
 
 const CreateCaseModal = () => {
     const showModal = useShowModal( "CreateCase" );
 
     const navigate = useNavigate();
 
+    const getLaboratoryStudies = useAppStore( state => state.getLaboratorystudies );
     const createCase = useAppStore( state => state.createCase );
 
     const { register, handleSubmit, formState: { errors }, setValue } = useForm<CreateCaseForm>();
 
     const [ selectedFile, setSelectedFile ] = useState<File | null>(null);
     const [ selectedModel, setSelectedModel ]= useState<File | null>(null);
+    //State local para permitirle a los usuarios seleccionar varias imagenes y mantener la seleccion
+    const [ selectedImages, setSelectedImages ] = useState<File[]>([]);
+    //Construimos una URL temporal para poder renderizarla en el componnete cuando el usuario seleccione una imagen
+    const files = selectedImages;
+    let mediaURLS = files? Array.from(files).map( file => URL.createObjectURL(file) ) : null; 
+
+    const handleClick = ( index : number ) => {
+        setSelectedImages( prev => prev.filter( (_, i) => i !== index ) );
+    }
+
     let caseImageURL = selectedFile? URL.createObjectURL( selectedFile ) : null;
     let modelInfo = selectedModel? selectedModel.name : null;
 
@@ -84,15 +95,30 @@ const CreateCaseModal = () => {
         const data = new FormData();
         data.append("title", formData.title);
         data.append("description", formData.description);
+        data.append("height", String(formData.height) );
+        data.append("weight", String(formData.weight) );
+        data.append("bloodPreassure", String(formData.bloodPreassure) );
         data.append("filters", JSON.stringify(selectedFilters));
         data.append("symptomsAndHistory", JSON.stringify( records ));
 
+        if(laboratoryResults.length > 0) {
+            data.append("laboratoryStudies", JSON.stringify( laboratoryResults ) );
+        }
         if(selectedFile) {
             data.append("previewImage", selectedFile);
         }
         if(selectedModel) {
             data.append("simulationModel", selectedModel);
         }
+
+        if( selectedImages.length > 0 ) {
+            //Iteramos sobre cada archivo en media y lo agregamos al campo de images
+            selectedImages.forEach( image => {
+                data.append("images", image);
+            } );
+        }
+
+        console.log(formData);
 
         try {
             const message = await createCase( data );
@@ -104,7 +130,9 @@ const CreateCaseModal = () => {
             setValue("description", "");
             setSelectedFile(null);
             setSelectedModel(null);
+            setSelectedImages([]);
             setSelectedFilters([]);
+            setLaboratoryResults([]);
         } catch (error) {
             if( error instanceof Error ) {
                 toast.error( error.message );
@@ -143,6 +171,58 @@ const CreateCaseModal = () => {
                 i === index
                     ? { ...record, [field]: value }
                     : record
+            )
+        );
+    };
+
+    //Estudios de laboratorio
+
+    interface LaboratoryResult {
+        id: number;
+        value: number;
+    }
+
+    useEffect(() => {
+        const fetchLaboratoryStudies = async () => {
+            try {
+                const laboratoryStudies = await getLaboratoryStudies();
+                if(laboratoryStudies) {
+                    setLaboratoryStudies( laboratoryStudies );
+                }
+            } catch (error) {
+                console.error("Error al obtener los estudios:", error);
+            }
+        };
+
+        fetchLaboratoryStudies();
+    }, []);
+
+    const [laboratoryStudies, setLaboratoryStudies] = useState<LaboratoryStudies>([]);
+    const [laboratoryResults, setLaboratoryResults] = useState<LaboratoryResult[]>([]);
+
+    const addLaboratoryResult = () => {
+        setLaboratoryResults(prev => [
+            ...prev,
+            { id: 0, value: 0 }
+        ]);
+    };
+
+    const removeLaboratoryResult = (index: number) => {
+        setLaboratoryResults(prev =>
+            prev.filter((_, i) => i !== index)
+        );
+    };
+
+    const updateLaboratoryResult = (
+        index: number,
+        field: keyof LaboratoryResult,
+        value: number | string
+    ) => {
+        setLaboratoryResults(prev =>
+            prev.map((result, i) =>
+                i === index
+                    ? { ...result, [field]: value }
+                    : result
             )
         );
     };
@@ -225,7 +305,6 @@ const CreateCaseModal = () => {
                                         </div>
 
                                         <div className="my-5 flex flex-col">
-                                            
                                             <label
                                                 className="text-gray-600 font-bold text-xl"
                                             >
@@ -248,6 +327,7 @@ const CreateCaseModal = () => {
                                                         >
                                                             <option value="symptom">Síntoma</option>
                                                             <option value="history">Antecedente médico</option>
+                                                            <option value="age">Edad</option>
                                                         </select>
 
                                                         <input
@@ -274,7 +354,7 @@ const CreateCaseModal = () => {
                                             <button 
                                                 onClick={addRecord}
                                                 type="button"
-                                                className="bg-purple-500 py-2 px-6 text-white font-bold rounded-lg mt-10 md:mt-5 
+                                                className="bg-purple-500 py-2 px-6 text-white font-bold rounded-lg mt-3 
                                                 hover:cursor-pointer hover:transition-colors hover:bg-purple-600 w-full flex 
                                                 justify-center items-center gap-x-2"                                            >
                                                 <HeartIcon className="h-6 aspect-square"
@@ -282,6 +362,203 @@ const CreateCaseModal = () => {
                                                 Agregar registro clinico
                                             </button>
                                         </div>
+                                        
+                                        <div className="my-5 flex flex-col">
+                                            <p className="text-gray-600 font-bold text-xl">
+                                                Metricas corporales del paciente
+                                            </p>
+
+                                            <div>
+                                                <label htmlFor="height" className="text-gray-500">
+                                                    Altura
+                                                </label>
+                                                <input 
+                                                    id="height"
+                                                    type="number"
+                                                    {...register("height")}
+                                                    min="100"
+                                                    max="300"
+                                                    placeholder="Ingresa la altura del paciente en cm"
+                                                    className="border border-gray-400 p-2 mb-3 w-full rounded-lg"
+                                                />
+
+                                            </div>
+
+                                            <div>
+                                                <label htmlFor="weight" className="text-gray-500">
+                                                    Peso
+                                                </label>
+                                                <input 
+                                                    id="weight"
+                                                    type="number"
+                                                    {...register("weight")}
+                                                    min="1"
+                                                    max="300"
+                                                    placeholder="Ingresa el peso del paciente en kg"
+                                                    className="border border-gray-400 p-2 mb-3 w-full rounded-lg"
+                                                />
+
+                                            </div>
+
+                                            <div>
+                                                <label htmlFor="bloodPreassure" className="text-gray-500">
+                                                    Presi&oacute;n Sanguinea
+                                                </label>
+                                                <input 
+                                                    id="bloodPreassure"
+                                                    type="text"
+                                                    {...register("bloodPreassure")}
+                                                    placeholder="Ingresa la presion sanguinea del paciente, Ej. 120/80"
+                                                    className="border border-gray-400 p-2 mb-3 w-full rounded-lg"
+                                                />
+
+                                            </div>
+                                        </div>
+                            
+                                        <div className="my-5 flex flex-col">
+                                            <label className="text-gray-600 font-bold text-xl">
+                                                Estudios de laboratorio
+                                            </label>
+
+                                            {laboratoryResults.map((result, index) => (
+                                                <div key={index}>
+                                                    <p className="text-gray-500">
+                                                        Estudio de laboratorio {index + 1}
+                                                    </p>
+
+                                                    <div className="flex flex-wrap justify-start items-center gap-2">
+
+                                                        <select
+                                                            value={result.id}
+                                                            onChange={e =>
+                                                                updateLaboratoryResult(
+                                                                    index,
+                                                                    "id",
+                                                                    Number(e.target.value)
+                                                                )
+                                                            }
+                                                            className="bg-blue-500 px-3 py-2 rounded-lg text-white font-semibold cursor-pointer"
+                                                        >
+                                                            <option defaultChecked disabled value={0}> Selecciona un estudio </option>
+
+                                                            {laboratoryStudies.map(study => (
+                                                                <option
+                                                                    key={study.id}
+                                                                    value={study.id}
+                                                                    disabled={laboratoryResults.some(
+                                                                        (item, i) =>
+                                                                            i !== index &&
+                                                                            item.id === study.id
+                                                                    )}
+                                                                >
+                                                                    {study.name}
+                                                                </option>
+                                                            ))}
+                                                        </select>
+
+                                                        <input
+                                                            type="number"
+                                                            step="any"
+                                                            value={result.value}
+                                                            onChange={e =>
+                                                                updateLaboratoryResult(
+                                                                    index,
+                                                                    "value",
+                                                                    Number(e.target.value)
+                                                                )
+                                                            }
+                                                            placeholder="Resultado"
+                                                            className="border border-gray-400 p-2 my-3 rounded-lg"
+                                                        />
+
+                                                        <button
+                                                            onClick={() => removeLaboratoryResult(index)}
+                                                            type="button"
+                                                            className="px-3 py-2 bg-red-400 hover:bg-red-500 cursor-pointer text-white font-bold rounded-lg"
+                                                        >
+                                                            Eliminar
+                                                        </button>
+
+                                                    </div>
+                                                </div>
+                                            ))}
+
+                                            <button
+                                                onClick={addLaboratoryResult}
+                                                type="button"
+                                                className="bg-purple-500 py-2 px-6 text-white font-bold rounded-lg mt-3
+                                                hover:cursor-pointer hover:transition-colors hover:bg-purple-600 w-full flex
+                                                justify-center items-center gap-x-2"
+                                            >
+                                                <BeakerIcon className="h-6 aspect-square"/>
+                                                Agregar estudio de laboratorio
+                                            </button>
+                                        </div>
+
+                                        <div className="flex flex-col justify-between space-x-5 my-5">
+                                            <label 
+                                                htmlFor="images"
+                                                className="text-gray-600 text-xl font-bold"
+                                            >Imagenes de estudios clinicos</label>
+
+                                            <input
+                                                id="images"
+                                                type="file"
+                                                multiple
+                                                accept="image/*"
+                                                className="hidden"
+                                                {...register("images", {
+                                                    onChange: e => {
+                                                        const files : File[] = Array.from( e.target.files ?? [] );
+
+                                                        setSelectedImages( prev => [
+                                                            ...prev,
+                                                            ...files
+                                                        ] )
+                                                    }
+                                                })}
+                                            />
+                                            <label 
+                                                htmlFor="images"
+                                                className="bg-purple-500 py-2 px-6 text-white font-bold rounded-lg mt-3 
+                                                hover:cursor-pointer hover:transition-colors hover:bg-purple-600 w-full flex 
+                                                justify-center items-center gap-x-2"
+                                            >
+                                                <ArrowUpTrayIcon className="h-6"/>
+                                                Seleccionar imagenes clinicas
+                                            </label>
+
+                                            {mediaURLS!.length > 0 && (
+                                                <div className="mt-5">
+                                                    <p className="text-sm text-gray-600 font-semibold mb-5">Imagenes seleccionadas:</p>
+
+                                                    <div className="flex justify-start space-x-5 space-y-5 items-center flex-wrap">
+                                                        {mediaURLS!.map( (mediaURL, index) => (
+                                                            <div className="relative">
+                                                                <img 
+                                                                    key={mediaURL}
+                                                                    src={ mediaURL } 
+                                                                    alt="Vista previa de imagen de fondo"
+                                                                    className="h-36" 
+                                                                />
+
+                                                                <div 
+                                                                    className="absolute top-1 right-1 bg-red-400 h-8 aspect-square rounded-full
+                                                                                hover:bg-red-500 cursor-pointer p-1"
+                                                                    onClick={ () => handleClick( index ) }
+                                                                >
+                                                                    <p className="font-bold text-white text-center">X</p>
+                                                                </div>
+
+                                                            </div>
+
+                                                        ) )}
+                                                    </div>
+                                                </div>
+                                            )}
+
+                                        </div>
+
 
                                         <div className="flex flex-col">
                                             <label 
@@ -575,4 +852,4 @@ const CreateCaseModal = () => {
   )
 }
 
-export default CreateCaseModal
+export default CreateCaseModal;

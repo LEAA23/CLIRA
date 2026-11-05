@@ -114,7 +114,7 @@ const CatalogView = () => {
             </header>
 
             {/* HERO */}
-            <section className="relative overflow-hidden bg-gradient-to-br from-[#102b55] via-blue-800 to-cyan-700 text-white dark:from-[#302044] dark:via-[#382452] dark:to-[#493064]">
+            <section className="relative overflow-hidden bg-linear-to-br from-[#102b55] via-blue-800 to-cyan-700 text-white dark:from-[#302044] dark:via-[#382452] dark:to-[#493064]">
                 <div className="absolute -right-24 -top-32 h-96 w-96 rounded-full bg-cyan-300/10 blur-2xl" />
                 <div className="absolute -bottom-40 left-10 h-96 w-96 rounded-full bg-blue-300/10 blur-2xl" />
 
@@ -309,7 +309,7 @@ const CatalogView = () => {
                                     key={clinicalCase.id}
                                     className="group flex flex-col overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm transition duration-300 hover:-translate-y-2 hover:border-cyan-200 hover:shadow-xl dark:border-purple-400/20 dark:bg-[#2b2045] dark:hover:border-purple-300/50 dark:hover:shadow-purple-950/30"
                                 >
-                                    <div className="relative h-52 overflow-hidden bg-gradient-to-br from-blue-100 to-cyan-100 dark:from-[#493064] dark:to-[#302044]">
+                                    <div className="relative h-52 overflow-hidden bg-linear-to-br from-blue-100 to-cyan-100 dark:from-[#493064] dark:to-[#302044]">
                                         {image ? (
                                             <img
                                                 src={image}

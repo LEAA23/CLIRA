@@ -1,4 +1,3 @@
-import MedicalHistoryOptions from "../../components/simulation/MedicalHistoryOptions";
 import { ArrowLeftIcon } from "@heroicons/react/16/solid";
 import Experience from "../../SimulationExperiences/PatientExperience/Experience";
 import { useEffect, useRef, useState } from "react";
@@ -6,6 +5,10 @@ import type { FormEvent } from "react";
 import { useAppStore } from "../../stores/useAppStore";
 import { useNavigate, useParams } from "react-router-dom";
 import { completeCase } from "../../api/caseApi";
+import SymptomsAndHistory from "../../components/simulation/SymptomsAndHistory";
+import CorporalMetrics from "../../components/simulation/CorporalMetrics";
+import LaboratoryStudiesComponent from "../../components/simulation/LaboratoyStudies";
+import ClinicalStudiesCarousel from "../../components/simulation/ClinicalStudiesCarousel";
 
 const SimulationView = () => {
     // Referencia al canvas de la simulación
@@ -123,7 +126,7 @@ const SimulationView = () => {
 
             </div>
 
-            <h1 className="text-5xl text-center font-bold text-blue-500 mb-5">
+            <h1 className="text-5xl text-center font-bold text-blue-500 my-5">
                 {clinicalCase?.title ?? "Cargando caso..."}
             </h1>
             
@@ -197,7 +200,9 @@ const SimulationView = () => {
 
             {/* Opciones de historial médico */}
             <div className="flex justify-between gap-5">
-                <MedicalHistoryOptions />
+                <SymptomsAndHistory />
+                <CorporalMetrics />
+                <LaboratoryStudiesComponent />
             </div>
 
             {/* Recursos disponibles */}
@@ -206,9 +211,14 @@ const SimulationView = () => {
                     Recursos disponibles:
                 </p>
 
-                <div className="flex justify-start gap-x-5 mt-5">
-                    {/* Aquí puedes agregar los recursos disponibles */}
-                </div>
+                {clinicalCase.images.length > 0? (
+                    <div className="mt-5">
+                        <ClinicalStudiesCarousel images={clinicalCase.images} />
+                    </div>
+
+                ) : (
+                    <p className="text-gray-500 font-semibold">No hay recursos extra disponibles para este caso</p>
+                )}
             </div>
         </>
     );
