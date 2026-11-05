@@ -116,7 +116,7 @@ const CasesView = () => {
             );
         }
 
-        return cases.filter((clinicalCase) => {
+        return (cases || []).filter((clinicalCase) => {
             // Dentro de cada categoría basta con coincidir
             // con uno de los filtros seleccionados.
             // Entre categorías deben cumplirse todas.

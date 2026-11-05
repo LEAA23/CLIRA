@@ -19,8 +19,10 @@ import EditPostModal from "../../components/posts/EditPostModal";
 import DeletePostModal from "../../components/posts/DeletePostModal";
 
 import { useAppStore } from "../../stores/useAppStore";
-import { getPublicCases } from "../../api/caseApi";
-import type { Case } from "../../types";
+import {
+    getPublicCases,
+    type PublicCase
+} from "../../api/caseApi";
 
 type GroupTab = "tablon" | "personas";
 
@@ -32,7 +34,7 @@ const GroupView = () => {
 
     const [activeTab, setActiveTab] = useState<GroupTab>("tablon");
     const [showCaseForm, setShowCaseForm] = useState(false);
-    const [availableCases, setAvailableCases] = useState<Case[]>([]);
+    const [availableCases, setAvailableCases] = useState<PublicCase[]>([]);
     const [selectedCase, setSelectedCase] = useState("");
     const [announcement, setAnnouncement] = useState("");
     const [loadingCases, setLoadingCases] = useState(false);
