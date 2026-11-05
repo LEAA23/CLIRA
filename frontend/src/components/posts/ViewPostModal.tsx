@@ -68,6 +68,10 @@ const ViewPostModal = () => {
             const message = await createComment( data );
             toast.success( message );
             setValue("content", "");
+            await fecthComments({
+                groupId: Number(groupId),
+                postId: Number(postId)
+            });
         } catch (error) {
             if( error instanceof Error ) {
                 toast.error( error.message );

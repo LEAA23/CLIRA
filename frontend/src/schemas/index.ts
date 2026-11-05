@@ -68,9 +68,15 @@ export const GroupResponse = GroupShcema.pick({
 });
 
 export const GroupsSchema = z.array(
-    GroupShcema.omit({
-        bgImage: true,
-        teacher: true
+    z.object({
+        id: z.number(),
+        name: z.string(),
+        teacherUser: z.object({
+            id: z.number().optional(),
+            name: z.string()
+        }),
+        bgImage: z.string(),
+        memberCount: z.number()
     })
 );
 

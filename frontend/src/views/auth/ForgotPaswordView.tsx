@@ -74,7 +74,7 @@ const ForgotPaswordView = () => {
                     />
                 </form>
 
-                <div className="bg-[url(/phone.png)] bg-cover bg-no-repeat"></div>
+                <div className="bg-[url(/phone.png)] dark:bg-[url(/phone.png)] bg-no-repeat bg-cover bg-center"></div>
             </div>
         </>
     </>

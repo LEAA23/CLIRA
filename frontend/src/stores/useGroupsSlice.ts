@@ -108,38 +108,64 @@ export const createGroupsSlice : StateCreator<GroupsSliceType> = ( set, get ) =>
             userSearched
         }));
     },
-    addMembertoGroup: async( { groupId, user } : { groupId : Group["id"] ; user : UserSearched } ) => {
-        const message = await addMembertoGroup( { groupId, email: user.email } );
-        if( message === "El usuario fue agregado correctamente" ) {
+    
+    addMembertoGroup: async ({ groupId, user }: { groupId: Group["id"]; user: UserSearched }) => {
+        const message = await addMembertoGroup({
+            groupId,
+            email: user.email
+        });
+
+        if (message === "El usuario fue agregado correctamente") {
             set((state) => ({
                 group: {
                     ...state.group,
                     users: [...state.group.users, user]
-                }
+                },
+                groups: state.groups.map(item =>
+                    item.id === groupId
+                        ? { ...item, membersCount: item.membersCount + 1 }
+                        : item
+                )
             }));
 
             get().cleanUserSearched();
         }
+
         return message;
     },
+
     fetchUserDelete: async( { groupId, email } : { groupId : Group["id"] ; email : UserSearched["email"] } ) => {
         const userSearched = await searchDeleteUser( { groupId, email} );
         set(() => ({
             userSearched
         }))
     },
-    removeMemberFromGroup: async( { groupId, user } : { groupId: Group["id"] ; user: UserSearched } ) => {
-        const message = await removeMemberFromGroup( { groupId, email: user.email } );
-        if( message === `${user.name} fue eliminado del grupo correctamente` ) {
+    
+    removeMemberFromGroup: async ({ groupId, user }: { groupId: number; user: UserSearched }) => {
+        const message = await removeMemberFromGroup({
+            groupId,
+            email: user.email
+        });
+
+        if (message === `${user.name} fue eliminado del grupo correctamente`) {
             set((state) => ({
                 group: {
                     ...state.group,
-                    users: state.group.users.filter( u => u.id !== user.id )
-                }
-            }))
+                    users: state.group.users.filter(member => member.id !== user.id)
+                },
+                groups: state.groups.map(item =>
+                    item.id === groupId
+                        ? {
+                            ...item,
+                            membersCount: Math.max(0, item.membersCount - 1)
+                        }
+                        : item
+                )
+            }));
 
             get().cleanUserSearched();
         }
+
         return message;
-    }
+    },
 })
