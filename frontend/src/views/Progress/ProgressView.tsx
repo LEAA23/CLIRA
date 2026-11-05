@@ -1,7 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import {
     AcademicCapIcon,
-    ArrowTrendingUpIcon,
     BookOpenIcon,
     CheckCircleIcon,
     MagnifyingGlassIcon,
@@ -144,18 +143,21 @@ const ProgressView = () => {
     }, [cases, search]);
 
     return (
+        <>
+            <h1 className="my-10 text-center text-5xl font-bold text-blue-500">
+                Mi Progreso
+            </h1>
+        
         <div className="min-h-full space-y-8 pb-10 text-slate-800 dark:text-purple-100">
+
             {/* ENCABEZADO */}
-            <header className="relative mt-8 overflow-hidden rounded-3xl bg-gradient-to-br from-blue-900 via-blue-800 to-cyan-700 p-7 text-white shadow-xl dark:from-[#302044] dark:via-[#382452] dark:to-[#493064] md:p-10">
+            <header className="relative overflow-hidden rounded-lg bg-gradient-to-br from-blue-900 via-blue-800 to-cyan-700 p-7 text-white shadow-xl dark:from-[#302044] dark:via-[#382452] dark:to-[#493064] md:p-10">
                 <div className="absolute -right-12 -top-16 h-56 w-56 rounded-full bg-cyan-300/10 blur-2xl" />
                 <div className="absolute -bottom-24 left-1/3 h-56 w-56 rounded-full bg-blue-300/10 blur-2xl" />
 
                 <div className="relative">
-                    <div className="mb-5 flex h-14 w-14 items-center justify-center rounded-2xl border border-white/20 bg-white/10">
-                        <ArrowTrendingUpIcon className="h-8 w-8 text-cyan-200 dark:text-purple-200" />
-                    </div>
 
-                    <p className="text-sm font-bold uppercase tracking-[0.2em] text-cyan-200 dark:text-purple-200">
+                    <p className="text-xl font-bold uppercase text-cyan-200 dark:text-purple-200">
                         Tu espacio personal
                     </p>
 
@@ -171,10 +173,10 @@ const ProgressView = () => {
 
                     <Link
                         to="/clinical-cases"
-                        className="mt-7 inline-flex items-center gap-2 rounded-xl bg-cyan-300 px-5 py-3 font-bold text-blue-950 transition hover:-translate-y-0.5 hover:bg-cyan-200 dark:bg-purple-200 dark:text-[#302044] dark:hover:bg-purple-100"
+                        className="mt-7 inline-flex items-center gap-2 rounded-lg bg-blue-500 px-5 py-3 font-bold text-white transition hover:-translate-y-0.5 hover:bg-blue-600 dark:bg-purple-200 dark:text-[#302044] dark:hover:bg-purple-100"
                     >
                         Explorar casos
-                        <ArrowRightIcon className="h-5 w-5" />
+                        <ArrowRightIcon className="h-5 aspect-square" />
                     </Link>
                 </div>
             </header>
@@ -202,12 +204,9 @@ const ProgressView = () => {
             {/* TARJETAS DE MÉTRICAS */}
             <section>
                 <div className="mb-5">
-                    <h2 className="text-2xl font-extrabold">
+                    <h2 className="text-2xl text-blue-500 text-center font-bold">
                         Resumen de tu progreso
                     </h2>
-                    <p className="mt-1 text-sm text-slate-500 dark:text-purple-300/70">
-                        Una vista general de tu actividad clínica.
-                    </p>
                 </div>
 
                 <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
@@ -299,15 +298,10 @@ const ProgressView = () => {
 
             {/* LOGROS */}
             <section>
+                <h2 className="text-2xl font-bold text-blue-500 text-center">
+                    Tus logros
+                </h2>
                 <div className="mb-5 flex flex-col justify-between gap-2 sm:flex-row sm:items-end">
-                    <div>
-                        <h2 className="text-2xl font-extrabold">
-                            Tus logros
-                        </h2>
-                        <p className="mt-1 text-sm text-slate-500 dark:text-purple-300/70">
-                            Reconocimientos por cada etapa de tu aprendizaje.
-                        </p>
-                    </div>
 
                     <span className="text-sm font-bold text-purple-700 dark:text-purple-300">
                         {loading
@@ -409,26 +403,11 @@ const ProgressView = () => {
 
             {/* CATÁLOGO E HISTORIAL DISPONIBLE */}
             <section>
-                <div className="mb-5 flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
-                    <div>
-                        <h2 className="text-2xl font-extrabold">
-                            Explora tus casos
-                        </h2>
-                        <p className="mt-1 text-sm text-slate-500 dark:text-purple-300/70">
-                            Busca un caso para consultar o continuar practicando.
-                        </p>
-                    </div>
+                <h2 className="text-2xl font-bold text-blue-500 text-center">
+                    Explora tus casos
+                </h2>
 
-                    <Link
-                        to="/clinical-cases"
-                        className="inline-flex items-center gap-2 text-sm font-bold text-blue-700 hover:text-cyan-700 dark:text-purple-300 dark:hover:text-purple-100"
-                    >
-                        Ir a casos clínicos
-                        <ArrowRightIcon className="h-4 w-4" />
-                    </Link>
-                </div>
-
-                <div className="mb-5 flex items-center gap-3 rounded-2xl border border-slate-200 bg-white px-4 dark:border-purple-400/20 dark:bg-[#2b2045]">
+                <div className="my-5 flex items-center gap-3 rounded-lg border border-slate-200 bg-white px-4 dark:border-purple-400/20 dark:bg-[#2b2045]">
                     <MagnifyingGlassIcon className="h-5 w-5 shrink-0 text-slate-400 dark:text-purple-300/70" />
 
                     <input
@@ -532,16 +511,8 @@ const ProgressView = () => {
                     </div>
                 )}
             </section>
-
-            {/* PIE */}
-            <footer className="flex flex-col gap-2 border-t border-slate-200 py-5 text-sm text-slate-500 dark:border-purple-400/15 dark:text-purple-300/60 sm:flex-row sm:items-center sm:justify-between">
-                <p className="flex items-center gap-2">
-                    <SparklesIcon className="h-4 w-4" />
-                    Cada caso cuenta en tu formación.
-                </p>
-                <p>CLIRA · Tu progreso clínico</p>
-            </footer>
         </div>
+    </>
     );
 };
 
@@ -570,7 +541,7 @@ const MetricCard = ({
     };
 
     return (
-        <article className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition hover:-translate-y-1 hover:shadow-md dark:border-purple-400/20 dark:bg-[#2b2045]">
+        <article className="rounded-lg border border-slate-200 bg-white p-5 shadow transition">
             <div className="flex items-start justify-between gap-3">
                 <div>
                     <p className="text-sm font-semibold text-slate-500 dark:text-purple-300/70">
