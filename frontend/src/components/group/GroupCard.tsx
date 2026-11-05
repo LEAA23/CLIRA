@@ -27,12 +27,12 @@ const GroupCard = ({
     const user = useAppStore(state => state.user);
 
     return (
-        <article className="group relative mb-6 overflow-hidden rounded-3xl border border-gray-200/80 bg-white shadow-sm transition-all duration-300 hover:-translate-y-1.5 hover:shadow-2xl dark:border-gray-700 dark:bg-gray-800">
+        <article className="group relative mb-6 overflow-hidden rounded-lg border border-gray-200/80 bg-white shadow-sm transition-all duration-300 hover:-translate-y-1.5 hover:shadow-2xl dark:border-gray-700 dark:bg-gray-800">
 
             {/* PORTADA */}
             <Link
                 to={`/groups/${id}`}
-                className="relative block h-56 overflow-hidden bg-gradient-to-br from-indigo-700 via-purple-700 to-blue-600"
+                className="relative block h-56 overflow-hidden bg-linear-to-br from-indigo-700 via-purple-700 to-blue-600"
             >
                 {bgImage && (
                     <img
@@ -46,17 +46,11 @@ const GroupCard = ({
                 )}
 
                 {/* Degradado para mejorar la lectura */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/20 to-black/10" />
+                <div className="absolute inset-0 bg-linear-to-t from-black/85 via-black/20 to-black/10" />
 
                 {/* Elementos decorativos */}
                 <div className="absolute -right-12 -top-16 h-48 w-48 rounded-full border border-white/20" />
                 <div className="absolute -right-5 -top-9 h-32 w-32 rounded-full border border-white/20" />
-
-                <div className="absolute left-5 top-5 flex items-center gap-2 rounded-full border border-white/20 bg-white/15 px-3 py-1.5 text-xs font-semibold text-white backdrop-blur-md">
-                    <SparklesIcon className="h-4 w-4" />
-                    Espacio académico
-                </div>
-
                 <div className="absolute bottom-5 left-5 right-5">
                     <p className="mb-2 text-xs font-semibold uppercase tracking-[0.2em] text-white/70">
                         CLIRA · Comunidad
