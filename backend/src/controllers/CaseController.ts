@@ -25,6 +25,7 @@ import { Disease } from "../models/Disease";
 import { SimulationPrediction } from "../models/SimulatioPrediction";
 import { evaluateAge, evaluateHistory, evaluateSymptoms } from "../utils/simulationEvaluation/evaluateSymptomsAndHistory";
 import { evaluateBodyMetrics } from "../utils/simulationEvaluation/evaluateBodyMetrics";
+import { evaluateLaboratoryStudies } from "../utils/simulationEvaluation/evaluateLaboratoryStudies";
 
 export class CaseController {
 
@@ -410,7 +411,7 @@ export class CaseController {
     }
 
     static diagnose = async (req: Request, res: Response) => {
-        const { symptomsAndHistory, bodyMetrics, features, diagnosis } = req.body;
+        const { symptomsAndHistory, bodyMetrics, laboratoryStudies, features, diagnosis } = req.body;
 
         const transaction = await db.transaction();
 
@@ -616,13 +617,49 @@ export class CaseController {
             const historyEvaluation = evaluateHistory({ symptomsAndHistory, expectedRecords });
             const ageEvaluation = evaluateAge({ symptomsAndHistory, expectedRecords });
 
-            
-
+            //Evaluacion metricas corporales
             const bodyEvaluation = evaluateBodyMetrics({ studentRecords: bodyMetrics, expectedMetrics: {
                 height: req.clinicalCase.height,
                 weight: req.clinicalCase.weight,
                 bloodPressure: req.clinicalCase.bloodPreassure
             } });
+            
+            //Evaluacion estudios de laboratorio
+            interface ExpectedLaboratoryStudy {
+                laboratoryStudy_id: number;
+                name: string;
+                value: number | null;
+            }
+
+            const expectedLaboratoryStudies = await db.query<ExpectedLaboratoryStudy>(
+                `
+                    SELECT
+                        cls."laboratoryStudy_id",
+                        ls."name",
+                        cls."value"
+                    FROM "CasesLaboratoryStudies" cls
+                    INNER JOIN "LaboratoryStudies" ls
+                        ON ls.id = cls."laboratoryStudy_id"
+                    WHERE cls."case_id" = :caseId;
+                `,
+                {
+                    replacements: {
+                        caseId: req.clinicalCase.id
+                    },
+                    transaction,
+                    type: QueryTypes.SELECT
+                }
+            );
+
+            // Evaluar estudios seleccionados e interpretación de resultados
+
+            const laboratoryEvaluation = evaluateLaboratoryStudies({
+                studentStudies: laboratoryStudies ?? [],
+                expectedStudies: expectedLaboratoryStudies.map(study => ({
+                    ...study,
+                    value: study.value === null ? null : Number(study.value)
+                }))
+            });
 
             // Confirmar transacción
             await transaction.commit();
@@ -642,6 +679,7 @@ export class CaseController {
                     age: ageEvaluation
                 },
                 bodyEvaluation,
+                laboratoryEvaluation,
                 predicciones: data.predicciones,
                 // comparaciones: comparisons,
                 mejorCoincidencia: bestMatch,
