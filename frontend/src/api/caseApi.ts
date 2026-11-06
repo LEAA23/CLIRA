@@ -1,7 +1,7 @@
 import { isAxiosError } from "axios"
 import api from "../lib/axios";
 import { CaseSchema, CasesSquema, PublicCasesSchema, laboratoryStudiesSchema, laboratoryStudyResultsSchema, MetricsSquema } from "../schemas";
-import type { Case, Filter } from "../types";
+import type { Case, DiagnosisDataForm, Filter } from "../types";
 
 export const createCase = async( formData: FormData ) => {
     try {
@@ -170,6 +170,23 @@ export const getCorporalMetrics = async( { caseId, metricsSelected } : { caseId:
         if( response.data ) {
             return response.data;
         }
+    } catch (error) {
+        if( isAxiosError( error ) && error.response ) {
+            throw new Error( error.response.data.error );
+        }
+    }
+}
+
+export const diagnose = async( { caseId, diagnoseData } : { caseId: Case["id"] ; diagnoseData: DiagnosisDataForm } ) => {
+    try {
+        console.log(diagnoseData)
+        const { data } = await api.post(`/cases/${caseId}/diagnose`, diagnoseData );
+        console.log(data)
+        // const response = MetricsSquema.safeParse( data );
+        // console.log(response)
+        // if( response.data ) {
+        //     return response.data;
+        // }
     } catch (error) {
         if( isAxiosError( error ) && error.response ) {
             throw new Error( error.response.data.error );

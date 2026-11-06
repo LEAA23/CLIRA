@@ -1,6 +1,5 @@
 
 interface StudentLaboratoryStudy {
-    studyId?: number;
     id?: number;
     value: number | null;
 }
@@ -22,7 +21,7 @@ export const evaluateLaboratoryStudies = ({
     // Normalizar identificadores y evitar duplicados
     const submittedStudies = new Map(
         studentStudies.map(study => [
-            Number(study.studyId ?? study.id),
+            Number(study.id ?? study.id),
             study
         ])
     );
@@ -86,7 +85,7 @@ export const evaluateLaboratoryStudies = ({
         const difference = Math.abs(studentValue - expectedValue);
 
         return {
-            studyId: study.laboratoryStudy_id,
+            id: study.laboratoryStudy_id,
             name: study.name,
             expectedValue,
             studentValue,

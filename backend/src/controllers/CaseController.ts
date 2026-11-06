@@ -439,15 +439,35 @@ export class CaseController {
             // Convertir al formato de pgvector
             const diagnosisEmbedding: number[] = embedding;
 
-            // Agregar métricas corporales del caso a las features
+            // Obtener edad y género de symptomsAndHistory
+            const age = symptomsAndHistory.find(
+                (record: { type: string; content: string }) => record.type === "age"
+            )?.content;
+
+            const gender = symptomsAndHistory.find(
+                (record: { type: string; content: string }) => record.type === "gender"
+            )?.content?.toLowerCase().trim();
+
+
+            // Agregar métricas corporales y datos demográficos a las features
             const predictionFeatures = {
                 ...features,
 
-                "Height (Inches)": req.clinicalCase.height !== null
+                "anchor_age": age != null
+                    ? Number(age)
+                    : null,
+
+                "gender": gender?.includes("hombre")
+                    ? 1
+                    : gender?.includes("mujer")
+                        ? 0
+                        : null,
+
+                "Height (Inches)": req.clinicalCase.height != null
                     ? Number((req.clinicalCase.height / 2.54).toFixed(2))
                     : null,
 
-                "Weight (Lbs)": req.clinicalCase.weight !== null
+                "Weight (Lbs)": req.clinicalCase.weight != null
                     ? Number((req.clinicalCase.weight * 2.20462).toFixed(2))
                     : null
             };
