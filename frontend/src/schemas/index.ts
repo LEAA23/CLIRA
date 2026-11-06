@@ -184,6 +184,7 @@ export const CaseSchema = z.object({
     description: z.string(),
     symptomsAndHistory: z.array(
         z.object({
+            id: z.number(),
             type: z.string(),
             content: z.string()
         })
