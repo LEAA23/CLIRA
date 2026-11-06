@@ -267,3 +267,7 @@ export const laboratoryStudiesSchema = z.array(
 export const laboratoryStudyResultsSchema = z.array(
     LaboratoryStudyResultSquema
 )
+
+export const DiagnosisSchema = z.object({
+    diagnosis: z.string()
+});
