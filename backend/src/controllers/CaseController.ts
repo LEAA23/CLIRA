@@ -24,6 +24,7 @@ import { SimulationResult } from "../models/SimulationResult";
 import { Disease } from "../models/Disease";
 import { SimulationPrediction } from "../models/SimulatioPrediction";
 import { evaluateAge, evaluateHistory, evaluateSymptoms } from "../utils/simulationEvaluation/evaluateSymptomsAndHistory";
+import { evaluateBodyMetrics } from "../utils/simulationEvaluation/evaluateBodyMetrics";
 
 export class CaseController {
 
@@ -409,7 +410,7 @@ export class CaseController {
     }
 
     static diagnose = async (req: Request, res: Response) => {
-        const { symptomsAndHistory, features, diagnosis } = req.body;
+        const { symptomsAndHistory, bodyMetrics, features, diagnosis } = req.body;
 
         const transaction = await db.transaction();
 
@@ -437,8 +438,21 @@ export class CaseController {
             // Convertir al formato de pgvector
             const diagnosisEmbedding: number[] = embedding;
 
+            // Agregar métricas corporales del caso a las features
+            const predictionFeatures = {
+                ...features,
+
+                "Height (Inches)": req.clinicalCase.height !== null
+                    ? Number((req.clinicalCase.height / 2.54).toFixed(2))
+                    : null,
+
+                "Weight (Lbs)": req.clinicalCase.weight !== null
+                    ? Number((req.clinicalCase.weight * 2.20462).toFixed(2))
+                    : null
+            };
+
             // Solicitar predicción al AIService
-            const { data } = await axios.post<PredictionResponse>( `${process.env.AI_SERVICE_URL}/predict`, { features } );
+            const { data } = await axios.post<PredictionResponse>( `${process.env.AI_SERVICE_URL}/predict`, { features: predictionFeatures } );
             if (!data.success || !data.predicciones?.length) {
                 await transaction.rollback();
 
@@ -598,22 +612,17 @@ export class CaseController {
                 .filter(record => record.type === "symptom")
                 .map(record => record.content);
 
-            const symptomEvaluation = evaluateSymptoms({
-                symptomsAndHistory,
-                expectedSymptoms
-            });
+            const symptomEvaluation = evaluateSymptoms({ symptomsAndHistory, expectedSymptoms });
+            const historyEvaluation = evaluateHistory({ symptomsAndHistory, expectedRecords });
+            const ageEvaluation = evaluateAge({ symptomsAndHistory, expectedRecords });
 
-            // Evaluar antecedentes clínicos
-            const historyEvaluation = evaluateHistory({
-                symptomsAndHistory,
-                expectedRecords
-            });
+            
 
-            // Evaluar edad
-            const ageEvaluation = evaluateAge({
-                symptomsAndHistory,
-                expectedRecords
-            });
+            const bodyEvaluation = evaluateBodyMetrics({ studentRecords: bodyMetrics, expectedMetrics: {
+                height: req.clinicalCase.height,
+                weight: req.clinicalCase.weight,
+                bloodPressure: req.clinicalCase.bloodPreassure
+            } });
 
             // Confirmar transacción
             await transaction.commit();
@@ -632,6 +641,7 @@ export class CaseController {
                     history: historyEvaluation,
                     age: ageEvaluation
                 },
+                bodyEvaluation,
                 predicciones: data.predicciones,
                 // comparaciones: comparisons,
                 mejorCoincidencia: bestMatch,

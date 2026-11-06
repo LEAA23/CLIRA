@@ -109,6 +109,7 @@ router.post("/:caseId/diagnose",
     param( "caseId" ).notEmpty().withMessage("El id del caso es obligatorio"),
     body("diagnosis").trim().notEmpty().withMessage("El diagnostico es obligatorio"),
     body("symptomsAndHistory").isArray().withMessage("Error al obtener los sintomas e historial"),
+    body("bodyMetrics").isArray().withMessage("Error al obtener las metricas corporales"),
     body("features").isObject().withMessage("Error al obtener las metricas de diagnostico"),
     handleInputErrors,
     CaseController.diagnose
