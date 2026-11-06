@@ -23,6 +23,7 @@ import { saveClinicalImages } from "../utils/saveClinicalImages";
 import { SimulationResult } from "../models/SimulationResult";
 import { Disease } from "../models/Disease";
 import { SimulationPrediction } from "../models/SimulatioPrediction";
+import { evaluateAge, evaluateHistory, evaluateSymptoms } from "../utils/simulationEvaluation/evaluateSymptomsAndHistory";
 
 export class CaseController {
 
@@ -337,7 +338,7 @@ export class CaseController {
                 INNER JOIN "CaseEmbeddings" ce
                     ON ce.case_record_id = cr.id
                 WHERE cr.patient_id = $2
-                AND ce.embedding <=> $1::vector < 0.80
+                AND ce.embedding <=> $1::vector < 0.70
                 ORDER BY distance ASC
                 LIMIT 5;
                 `,
@@ -408,7 +409,7 @@ export class CaseController {
     }
 
     static diagnose = async (req: Request, res: Response) => {
-        const { features, diagnosis } = req.body;
+        const { symptomsAndHistory, features, diagnosis } = req.body;
 
         const transaction = await db.transaction();
 
@@ -525,6 +526,11 @@ export class CaseController {
             //Hacemos la comparacion entre la entrada del usuario y lo predicho por el modelo
             const THRESHOLD = 0.50;
 
+            /**
+             * EVALUACIONES
+             */
+
+            //Comparar los embeddings para el diagnostico
             const comparisons = await db.query<{
                 disease_id: number;
                 code: string;
@@ -579,6 +585,36 @@ export class CaseController {
                 transaction
             });
 
+            // Evaluar información clínica identificada
+            const expectedRecords = await CaseRecord.findAll({
+                where: {
+                    patient_id: req.clinicalCase.id
+                },
+                attributes: ["id", "content", "type"]
+            });
+
+            // Evaluar síntomas
+            const expectedSymptoms = expectedRecords
+                .filter(record => record.type === "symptom")
+                .map(record => record.content);
+
+            const symptomEvaluation = evaluateSymptoms({
+                symptomsAndHistory,
+                expectedSymptoms
+            });
+
+            // Evaluar antecedentes clínicos
+            const historyEvaluation = evaluateHistory({
+                symptomsAndHistory,
+                expectedRecords
+            });
+
+            // Evaluar edad
+            const ageEvaluation = evaluateAge({
+                symptomsAndHistory,
+                expectedRecords
+            });
+
             // Confirmar transacción
             await transaction.commit();
 
@@ -590,6 +626,11 @@ export class CaseController {
                     diagnosis,
                     // diagnosis_embedding: diagnosisEmbedding,
                     is_correct: isCorrect
+                },
+                anamnesisEvaluation:  {
+                    symptoms: symptomEvaluation,
+                    history: historyEvaluation,
+                    age: ageEvaluation
                 },
                 predicciones: data.predicciones,
                 // comparaciones: comparisons,

@@ -1,6 +1,6 @@
 import type { StateCreator } from "zustand";
 import { createCase, deleteCase, deleteCaseImage, deleteCaseModel, getCases, getCorporalMetrics, getLaboratorystudies, getPatientLaboratorystudies, getSimulation, updateCase } from "../api/caseApi";
-import type { Case, Symptom } from "../types";
+import type { Case } from "../types";
 import { askPatientSymptomsAndHistory } from "../api/simulationApi";
 
 export type CaseSliceType = {
@@ -58,16 +58,33 @@ export const createCaseSlice : StateCreator<CaseSliceType> = ((set, get) => ({
         const laboratoryStudies = await getLaboratorystudies();
         return laboratoryStudies;
     },
-    askQuestion: async( { caseId, question } : { caseId: Case["id"] ; question: Symptom } ) => {
-        const records = await askPatientSymptomsAndHistory( { caseId, question } );
-        const symptomsAndHistory = [...records!.records];
-        set(() => ({
-            case: {
-                ...get().case,
-                symptomsAndHistory
+askQuestion: async ({ caseId, question }) => {
+    const records = await askPatientSymptomsAndHistory({
+        caseId,
+        question
+    });
+
+    set((state) => {
+        const previousRecords = state.case.symptomsAndHistory || [];
+
+        const uniqueRecords = new Map(
+            previousRecords.map(record => [record.id, record])
+        );
+
+        records!.records.forEach(record => {
+            if (!uniqueRecords.has(record.id)) {
+                uniqueRecords.set(record.id, record);
             }
-        }));
-    },
+        });
+
+        return {
+            case: {
+                ...state.case,
+                symptomsAndHistory: Array.from(uniqueRecords.values())
+            }
+        };
+    });
+},
     fetchCorporalMetrics: async ({ caseId, metricsSelected }) => {
 
         const corporalMetrics = await getCorporalMetrics({
