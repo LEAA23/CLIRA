@@ -15,6 +15,8 @@ import { LaboratoryStudy } from "./LaboratoryStudy";
 import { CasesLaboratoryStudy } from "./CasesLaboratoryStudy";
 import { ClinicalCaseImage } from "./ClinicalCaseImage";
 import { SimulationResult } from "./SimulationResult";
+import { SimulationPrediction } from "./SimulatioPrediction";
+import { Disease } from "./Disease";
 
 //LAS ASOCIACIONES EN SEQUELIZE SON LAS RELACIONES ENTRE LAS BASES DE DATOS
 
@@ -242,4 +244,25 @@ Case.hasMany(SimulationResult, {
 SimulationResult.belongsTo(Case, {
     foreignKey: "case_id",
     as: "case"
+});
+
+
+SimulationResult.hasMany(SimulationPrediction, {
+    foreignKey: "simulation_result_id",
+    as: "predictions"
+});
+
+SimulationPrediction.belongsTo(SimulationResult, {
+    foreignKey: "simulation_result_id",
+    as: "simulationResult"
+});
+
+SimulationPrediction.belongsTo(Disease, {
+    foreignKey: "disease_id",
+    as: "disease"
+});
+
+Disease.hasMany(SimulationPrediction, {
+    foreignKey: "disease_id",
+    as: "predictions"
 });

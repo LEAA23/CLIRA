@@ -1,12 +1,21 @@
-import { CreationOptional, DataTypes, InferAttributes, InferCreationAttributes, Model } from "sequelize";
+import {
+    CreationOptional,
+    DataTypes,
+    InferAttributes,
+    InferCreationAttributes,
+    Model
+} from "sequelize";
 import db from "../config/db";
 
-export class SimulationResult extends Model< InferAttributes<SimulationResult>, InferCreationAttributes<SimulationResult> > {
+export class SimulationResult extends Model<
+    InferAttributes<SimulationResult>,
+    InferCreationAttributes<SimulationResult>
+> {
     declare id: CreationOptional<number>;
     declare case_id: number;
     declare user_id: number;
     declare diagnosis: string;
-    declare ai_predictions: object | null;
+    declare diagnosis_embedding: number[] | null;
     declare is_correct: CreationOptional<boolean | null>;
 }
 
@@ -36,8 +45,8 @@ SimulationResult.init({
         type: DataTypes.STRING,
         allowNull: false
     },
-    ai_predictions: {
-        type: DataTypes.JSONB,
+    diagnosis_embedding: {
+        type:  "VECTOR(384)" as any,
         allowNull: true
     },
     is_correct: {

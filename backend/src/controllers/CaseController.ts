@@ -20,6 +20,9 @@ import { LaboratoryStudy } from "../models/LaboratoryStudy";
 import { CasesLaboratoryStudy } from "../models/CasesLaboratoryStudy";
 import { ClinicalCaseImage } from "../models/ClinicalCaseImage";
 import { saveClinicalImages } from "../utils/saveClinicalImages";
+import { SimulationResult } from "../models/SimulationResult";
+import { Disease } from "../models/Disease";
+import { SimulationPrediction } from "../models/SimulatioPrediction";
 
 export class CaseController {
 
@@ -404,10 +407,12 @@ export class CaseController {
         }
     }
 
-    static diagnose = async( req: Request, res: Response ) => {
-        const { features } = req.body;
-        try {
+    static diagnose = async (req: Request, res: Response) => {
+        const { features, diagnosis } = req.body;
 
+        const transaction = await db.transaction();
+
+        try {
             interface Prediction {
                 posicion: number;
                 diagnostico: string;
@@ -419,15 +424,133 @@ export class CaseController {
                 predicciones: Prediction[];
             }
 
-            // Solicitamos a Python la prediccion de la enfermedad con las caracteristicas obtenidas del usuario
-            const { data } = await axios.post<PredictionResponse>(`${process.env.AI_SERVICE_URL}/predict`,{ features });
-            console.log(data)
-        } catch (error) {
-            console.log(error)
-            return res.status(500).json( { error: "Error interno del servidor" } );
-        }
-    }
+            // Generar embedding del diagnóstico original
+            const { data: embeddingData } = await axios.post( `${process.env.AI_SERVICE_URL}/embeddings/generate`, { text: diagnosis } );
 
+            // Validar embedding
+            const embedding = embeddingData.embedding;
+            if (!Array.isArray(embedding) || embedding.length !== 384) {
+                throw new Error("El embedding debe contener 384 dimensiones");
+            }
+
+            // Convertir al formato de pgvector
+            const diagnosisEmbedding: number[] = embedding;
+
+            // Solicitar predicción al AIService
+            const { data } = await axios.post<PredictionResponse>( `${process.env.AI_SERVICE_URL}/predict`, { features } );
+            if (!data.success || !data.predicciones?.length) {
+                await transaction.rollback();
+
+                return res.status(400).json({
+                    error: "No se pudieron obtener predicciones"
+                });
+            }
+
+            // Crear resultado de la simulación
+            const embeddingString = `[${diagnosisEmbedding.join(",")}]`;
+
+            const [simulationResultId] = await db.query<{ id: number }>(
+                `
+                    INSERT INTO "SimulationResults"
+                    (
+                        "case_id",
+                        "user_id",
+                        "diagnosis",
+                        "diagnosis_embedding",
+                        "is_correct",
+                        "createdAt",
+                        "updatedAt"
+                    )
+                    VALUES (
+                        :caseId,
+                        :userId,
+                        :diagnosis,
+                        CAST(:embedding AS vector),
+                        NULL,
+                        NOW(),
+                        NOW()
+                    )
+                    RETURNING "id";
+                `,
+                {
+                    replacements: {
+                        caseId: req.clinicalCase.id,
+                        userId: req.user.id,
+                        diagnosis,
+                        embedding: embeddingString
+                    },
+                    transaction,
+                    type: QueryTypes.SELECT
+                }
+            );
+
+            // Obtener los códigos de las enfermedades predichas
+            const codes = data.predicciones.map(
+                prediction => prediction.diagnostico
+            );
+
+            // Buscar las enfermedades en la tabla Disease
+            const diseases = await Disease.findAll({
+                where: { code: codes },
+                transaction
+            });
+
+            // Crear un mapa para relacionar código e ID
+            const diseaseMap = new Map(
+                diseases.map(disease => [disease.code, disease.id])
+            );
+
+            // Verificar que todas las enfermedades existan
+            const missingDiseases = codes.filter(
+                code => !diseaseMap.has(code)
+            );
+
+            if (missingDiseases.length > 0) {
+                throw new Error(
+                    `No se encontraron las enfermedades: ${missingDiseases.join(", ")}`
+                );
+            }
+
+            // Preparar las predicciones para almacenarlas
+            const predictions = data.predicciones.map(prediction => ({
+                simulation_result_id: simulationResultId.id,
+                disease_id: diseaseMap.get(prediction.diagnostico)!,
+                position: prediction.posicion,
+                score: prediction.puntuacion
+            }));
+
+            // Guardar las predicciones
+            await SimulationPrediction.bulkCreate(predictions, { transaction });
+
+            // Confirmar transacción
+            await transaction.commit();
+
+            return res.status(200).json({
+                simulationResult: {
+                    id: simulationResultId.id,
+                    case_id: req.clinicalCase.id,
+                    user_id: req.user.id,
+                    diagnosis,
+                    diagnosis_embedding: diagnosisEmbedding,
+                    is_correct: null
+                },
+                predicciones: data.predicciones
+            });
+
+
+
+
+
+        } catch (error) {
+            await transaction.rollback();
+
+            console.log(error);
+
+            return res.status(500).json({
+                error: "Error interno del servidor"
+            });
+        }
+    };
     static updateCase = async( req: Request, res: Response ) => {
         //Obtenemos los archivos subidos por el usuario, tanto la imagen como el modelo 3D
         const files = req.files as {
