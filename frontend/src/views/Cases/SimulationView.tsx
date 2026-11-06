@@ -34,6 +34,23 @@ const SimulationView = () => {
     const fetchSimulation = useAppStore(
         (state) => state.fetchSimulation
     );
+    const getLaboratorystudies = useAppStore( state => state.getLaboratorystudies );
+    const diagnose = useAppStore( state => state.diagnose );
+    interface LaboratoryStudy {
+        id: number;
+        name: string;
+    }
+    const [laboratoryStudies, setLaboratoryStudies] = useState<LaboratoryStudy[]>([]);
+
+    useEffect(() => {
+        const fetchStudies = async () => {
+            const studies = await getLaboratorystudies();
+            if(studies)
+            setLaboratoryStudies(studies);
+        };
+
+        fetchStudies();
+    }, [getLaboratorystudies]);
 
     const clinicalCase = useAppStore(
         (state) => state.case
@@ -63,6 +80,7 @@ const SimulationView = () => {
             }
 
             await fetchSimulation(caseId);
+            await getLaboratorystudies();
         };
 
         fetchData();
@@ -76,11 +94,55 @@ const SimulationView = () => {
 
     // Enviamos el diagnóstico y registramos el caso como completado
     const handleDiagnosisSubmit = async( formData: DiagnosisForm ) => {
-        console.log(formData.diagnosis);
+        const features = Object.fromEntries(
+            clinicalCase.laboratoryStudyResults.map(result => {
+                const study = laboratoryStudies.find(
+                    study => study.id === result.id
+                );
+
+                return [study!.name, result.value];
+            })
+        );
+
+        //Costruimos la respuesta de bodyMetrics con todos los valores seleccionados por el usuario
+        type BodyMetric = {
+            type: string;
+            content: string | number | null | undefined;
+        };
+
+        const metrics: BodyMetric[] = [
+            {
+                type: "height",
+                content: clinicalCase.height
+            },
+            {
+                type: "weight",
+                content: clinicalCase.weight
+            },
+            {
+                type: "bloodPreassure",
+                content: clinicalCase.bloodPreassure
+            }
+        ];
+
+        const bodyMetrics = metrics.filter(
+            (metric): metric is BodyMetric & { content: string | number } =>
+                metric.content !== null &&
+                metric.content !== undefined &&
+                metric.content !== 0 &&
+                metric.content !== ""
+        );
+
+        const diagnosisData = {
+            diagnosis: formData.diagnosis,
+            symptomsAndHistory: clinicalCase.symptomsAndHistory,
+            bodyMetrics,
+            laboratoryStudies: clinicalCase.laboratoryStudyResults,
+            features
+        }
         try {
             await completeCase(caseId);
-
-
+            await diagnose( { caseId, diagnoseData: diagnosisData } );
         } catch (error) {
             setDiagnosisMessage(
                 error instanceof Error

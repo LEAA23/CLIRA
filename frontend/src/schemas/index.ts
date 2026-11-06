@@ -272,3 +272,38 @@ export const laboratoryStudyResultsSchema = z.array(
 export const DiagnosisSchema = z.object({
     diagnosis: z.string()
 });
+
+export const DiagnoseDataSchema = z.object({
+    diagnosis: z.string(),
+
+    symptomsAndHistory: z.array(
+        z.object({
+            id: z.number(),
+            type: z.string(),
+            content: z.string(),
+            distance: z.number().optional()
+        })
+    ),
+
+    bodyMetrics: z.array(
+        z.object({
+            type: z.string(),
+            content: z.union([
+                z.string(),
+                z.number()
+            ])
+        })
+    ),
+
+    laboratoryStudies: z.array(
+        z.object({
+            id: z.number(),
+            value: z.number().nullable()
+        })
+    ),
+
+    features: z.record(
+        z.string(),
+        z.number().nullable()
+    )
+});

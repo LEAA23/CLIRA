@@ -1,6 +1,6 @@
 import type { StateCreator } from "zustand";
-import { createCase, deleteCase, deleteCaseImage, deleteCaseModel, getCases, getCorporalMetrics, getLaboratorystudies, getPatientLaboratorystudies, getSimulation, updateCase } from "../api/caseApi";
-import type { Case } from "../types";
+import { createCase, deleteCase, deleteCaseImage, deleteCaseModel, diagnose, getCases, getCorporalMetrics, getLaboratorystudies, getPatientLaboratorystudies, getSimulation, updateCase } from "../api/caseApi";
+import type { Case, DiagnosisDataForm } from "../types";
 import { askPatientSymptomsAndHistory } from "../api/simulationApi";
 
 export type CaseSliceType = {
@@ -13,6 +13,27 @@ export type CaseSliceType = {
     askQuestion: ({ caseId, question }: { caseId: number; question: string; }) => Promise<void>;
     fetchCorporalMetrics: ({ caseId, metricsSelected }: { caseId: number; metricsSelected: string[]; }) => Promise<void>;
     fetchPatientLaboratoryStudies: ({ caseId, laboratoryStudies }: { caseId: number; laboratoryStudies: number[]; }) => Promise<void>;
+    diagnose: ({ caseId, diagnoseData }: {
+    caseId: number;
+    diagnoseData: {
+    diagnosis: string;
+    symptomsAndHistory: {
+    id: number;
+    type: string;
+    content: string;
+    distance?: number | undefined;
+    }[];
+    bodyMetrics: {
+    type: string;
+    content: string | number;
+    }[];
+    laboratoryStudies: {
+    id: number;
+    value: number | null;
+    }[];
+    features: Record<string, number | null>;
+    };
+    }) => Promise<void>;
     updateCase: ({ caseId, formData }: { caseId: number; formData: FormData; }) => Promise<string | undefined>;
     deleteCaseImage: (caseId: number) => Promise<string | undefined>;
     deleteCaseModel: (caseId: number) => Promise<string | undefined>;
@@ -58,33 +79,32 @@ export const createCaseSlice : StateCreator<CaseSliceType> = ((set, get) => ({
         const laboratoryStudies = await getLaboratorystudies();
         return laboratoryStudies;
     },
-askQuestion: async ({ caseId, question }) => {
-    const records = await askPatientSymptomsAndHistory({
-        caseId,
-        question
-    });
-
-    set((state) => {
-        const previousRecords = state.case.symptomsAndHistory || [];
-
-        const uniqueRecords = new Map(
-            previousRecords.map(record => [record.id, record])
-        );
-
-        records!.records.forEach(record => {
-            if (!uniqueRecords.has(record.id)) {
-                uniqueRecords.set(record.id, record);
-            }
+    askQuestion: async ({ caseId, question }) => {
+        const records = await askPatientSymptomsAndHistory({
+            caseId,
+            question
         });
+        set((state) => {
+            const previousRecords = state.case.symptomsAndHistory || [];
 
-        return {
-            case: {
-                ...state.case,
-                symptomsAndHistory: Array.from(uniqueRecords.values())
-            }
-        };
-    });
-},
+            const uniqueRecords = new Map(
+                previousRecords.map(record => [record.id, record])
+            );
+
+            records!.records.forEach(record => {
+                if (!uniqueRecords.has(record.id)) {
+                    uniqueRecords.set(record.id, record);
+                }
+            });
+
+            return {
+                case: {
+                    ...state.case,
+                    symptomsAndHistory: Array.from(uniqueRecords.values())
+                }
+            };
+        });
+    },
     fetchCorporalMetrics: async ({ caseId, metricsSelected }) => {
 
         const corporalMetrics = await getCorporalMetrics({
@@ -122,6 +142,10 @@ askQuestion: async ({ caseId, question }) => {
                 laboratoryStudyResults: patientLaboratoryStudies
             }
         }))
+    },
+    diagnose: async( { caseId, diagnoseData } : { caseId: Case["id"] ; diagnoseData: DiagnosisDataForm } ) => {
+        const data = await diagnose( { caseId, diagnoseData } );
+        console.log(data);
     },
     fetchSimulation: async( caseId: Case["id"] ) => {
         const clinicalCase = await getSimulation( caseId );
