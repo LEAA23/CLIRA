@@ -522,24 +522,80 @@ export class CaseController {
             // Guardar las predicciones
             await SimulationPrediction.bulkCreate(predictions, { transaction });
 
+            //Hacemos la comparacion entre la entrada del usuario y lo predicho por el modelo
+            const THRESHOLD = 0.50;
+
+            const comparisons = await db.query<{
+                disease_id: number;
+                code: string;
+                name: string;
+                position: number;
+                score: number;
+                similarity: number;
+            }>( 
+                `
+                    SELECT
+                        d.id AS disease_id,
+                        d.code,
+                        d.name,
+                        sp.position,
+                        sp.score,
+                        1 - (
+                            d.embedding <=> sr.diagnosis_embedding
+                        ) AS similarity
+                    FROM "SimulationPredictions" sp
+                    INNER JOIN "Diseases" d
+                        ON d.id = sp.disease_id
+                    INNER JOIN "SimulationResults" sr
+                        ON sr.id = sp.simulation_result_id
+                    WHERE
+                        sr.id = :simulationResultId
+                        AND 1 - (
+                            d.embedding <=> sr.diagnosis_embedding
+                        ) >= :threshold
+                    ORDER BY similarity DESC;
+                `,
+                {
+                    replacements: {
+                        simulationResultId: simulationResultId.id,
+                        threshold: THRESHOLD
+                    },
+                    transaction,
+                    type: QueryTypes.SELECT
+                }
+            );
+
+            const bestMatch = comparisons.length > 0? comparisons[0]: null;
+            const hasMatch = bestMatch !== null;
+            const isCorrect = hasMatch;
+
+            await SimulationResult.update({
+                is_correct: isCorrect
+            },
+            {
+                where: {
+                    id: simulationResultId.id
+                },
+                transaction
+            });
+
             // Confirmar transacción
             await transaction.commit();
 
             return res.status(200).json({
                 simulationResult: {
-                    id: simulationResultId.id,
-                    case_id: req.clinicalCase.id,
-                    user_id: req.user.id,
+                    // id: simulationResultId.id,
+                    // case_id: req.clinicalCase.id,
+                    // user_id: req.user.id,
                     diagnosis,
-                    diagnosis_embedding: diagnosisEmbedding,
-                    is_correct: null
+                    // diagnosis_embedding: diagnosisEmbedding,
+                    is_correct: isCorrect
                 },
-                predicciones: data.predicciones
+                predicciones: data.predicciones,
+                // comparaciones: comparisons,
+                mejorCoincidencia: bestMatch,
+                hasMatch
             });
-
-
-
-
 
         } catch (error) {
             await transaction.rollback();
@@ -551,6 +607,8 @@ export class CaseController {
             });
         }
     };
+
+
     static updateCase = async( req: Request, res: Response ) => {
         //Obtenemos los archivos subidos por el usuario, tanto la imagen como el modelo 3D
         const files = req.files as {
