@@ -422,7 +422,7 @@ export const DiagnosisResultsSquema = z.object({
             totalEvaluated: z.number(),
             correct: z.number(),
             incorrect: z.number(),
-            score: z.number(),
+            score: z.number().or( z.null() ),
             details: z.array(
                 DetailSquema.or( z.null() )
             )
@@ -438,6 +438,6 @@ export const DiagnosisResultsSquema = z.object({
         position: z.number(),
         score: z.number(),
         similarity: z.number()
-    }),
+    }).or( z.null() ),
     hasMatch: z.boolean()
 })

@@ -11,6 +11,7 @@ import ClinicalStudiesCarousel from "../../components/simulation/ClinicalStudies
 import { useForm } from "react-hook-form";
 import ErrorMessage from "../../components/ErrorMessage";
 import type { DiagnosisForm } from "../../types";
+import CaseCompletedModal from "../../components/simulation/CaseCompletedModal";
 
 const SimulationView = () => {
     // Referencia al canvas de la simulación
@@ -143,6 +144,7 @@ const SimulationView = () => {
         try {
             await completeCase(caseId);
             await diagnose( { caseId, diagnoseData: diagnosisData } );
+            navigate( location.pathname + "?caseCompleted=true" );
         } catch (error) {
             setDiagnosisMessage(
                 error instanceof Error
@@ -260,6 +262,8 @@ const SimulationView = () => {
                     <p className="text-gray-500 font-semibold">No hay recursos extra disponibles para este caso</p>
                 )}
             </div>
+
+            <CaseCompletedModal/>
         </>
     );
 };
