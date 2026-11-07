@@ -1,0 +1,34 @@
+import {
+    CircularProgressbar,
+    buildStyles,
+} from "react-circular-progressbar";
+
+import "react-circular-progressbar/dist/styles.css";
+
+interface SimulationDiagnosticAccuracyChart {
+    accuracy: number;
+}
+
+const SimulationDiagnosticAccuracyChart = ( { accuracy = 0 } : SimulationDiagnosticAccuracyChart ) => {
+    const isPerfect = accuracy === 100;
+
+    return (
+        <div className="flex flex-col items-center text-center">
+            <div className="mx-auto aspect-square w-56 shrink-0">
+                <CircularProgressbar
+                    className="diagnostic-accuracy-progress"
+                    value={accuracy}
+                    text={`${accuracy}%`}
+                    styles={buildStyles({
+                        pathColor: isPerfect ? "#DC2626" : "#3B82F6",
+                        trailColor: "#F5F5F5",
+                        textSize: "20px",
+                        textColor: isPerfect ? "#DC2626" : "#3B82F6",
+                    })}
+                />
+            </div>
+        </div>
+    );
+};
+
+export default SimulationDiagnosticAccuracyChart;

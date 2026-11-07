@@ -411,8 +411,13 @@ export class CaseController {
     }
 
     static diagnose = async (req: Request, res: Response) => {
-        const { symptomsAndHistory, bodyMetrics, laboratoryStudies, features, diagnosis } = req.body;
-
+        const {
+            diagnosis = "",
+            symptomsAndHistory = [],
+            laboratoryStudies = [],
+            bodyMetrics = [],
+            features = {}
+        } = req.body;
         const transaction = await db.transaction();
 
         try {
@@ -473,7 +478,10 @@ export class CaseController {
             };
 
             // Solicitar predicción al AIService
-            const { data } = await axios.post<PredictionResponse>( `${process.env.AI_SERVICE_URL}/predict`, { features: predictionFeatures } );
+            const { data } = await axios.post<PredictionResponse>(
+                `${process.env.AI_SERVICE_URL}/predict`,
+                { features: predictionFeatures }
+            );
             if (!data.success || !data.predicciones?.length) {
                 await transaction.rollback();
 
@@ -716,7 +724,6 @@ export class CaseController {
             });
         }
     };
-
 
     static updateCase = async( req: Request, res: Response ) => {
         //Obtenemos los archivos subidos por el usuario, tanto la imagen como el modelo 3D
