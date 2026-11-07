@@ -20,6 +20,12 @@ import { LaboratoryStudy } from "../models/LaboratoryStudy";
 import { CasesLaboratoryStudy } from "../models/CasesLaboratoryStudy";
 import { ClinicalCaseImage } from "../models/ClinicalCaseImage";
 import { saveClinicalImages } from "../utils/saveClinicalImages";
+import { SimulationResult } from "../models/SimulationResult";
+import { Disease } from "../models/Disease";
+import { SimulationPrediction } from "../models/SimulatioPrediction";
+import { evaluateAge, evaluateHistory, evaluateSymptoms } from "../utils/simulationEvaluation/evaluateSymptomsAndHistory";
+import { evaluateBodyMetrics } from "../utils/simulationEvaluation/evaluateBodyMetrics";
+import { evaluateLaboratoryStudies } from "../utils/simulationEvaluation/evaluateLaboratoryStudies";
 
 export class CaseController {
 
@@ -334,7 +340,7 @@ export class CaseController {
                 INNER JOIN "CaseEmbeddings" ce
                     ON ce.case_record_id = cr.id
                 WHERE cr.patient_id = $2
-                AND ce.embedding <=> $1::vector < 0.80
+                AND ce.embedding <=> $1::vector < 0.70
                 ORDER BY distance ASC
                 LIMIT 5;
                 `,
@@ -403,6 +409,321 @@ export class CaseController {
             return res.status(500).json( { error: "Error interno del servidor" } );
         }
     }
+
+    static diagnose = async (req: Request, res: Response) => {
+        const {
+            diagnosis = "",
+            symptomsAndHistory = [],
+            laboratoryStudies = [],
+            bodyMetrics = [],
+            features = {}
+        } = req.body;
+        const transaction = await db.transaction();
+
+        try {
+            interface Prediction {
+                posicion: number;
+                diagnostico: string;
+                puntuacion: number;
+            }
+
+            interface PredictionResponse {
+                success: boolean;
+                predicciones: Prediction[];
+            }
+
+            // Generar embedding del diagnóstico original
+            const { data: embeddingData } = await axios.post( `${process.env.AI_SERVICE_URL}/embeddings/generate`, { text: diagnosis } );
+
+            // Validar embedding
+            const embedding = embeddingData.embedding;
+            if (!Array.isArray(embedding) || embedding.length !== 384) {
+                throw new Error("El embedding debe contener 384 dimensiones");
+            }
+
+            // Convertir al formato de pgvector
+            const diagnosisEmbedding: number[] = embedding;
+
+            // Obtener edad y género de symptomsAndHistory
+            const age = symptomsAndHistory.find(
+                (record: { type: string; content: string }) => record.type === "age"
+            )?.content;
+
+            const gender = symptomsAndHistory.find(
+                (record: { type: string; content: string }) => record.type === "gender"
+            )?.content?.toLowerCase().trim();
+
+
+            // Agregar métricas corporales y datos demográficos a las features
+            const predictionFeatures = {
+                ...features,
+
+                "anchor_age": age != null
+                    ? Number(age)
+                    : null,
+
+                "gender": gender?.includes("hombre")
+                    ? 1
+                    : gender?.includes("mujer")
+                        ? 0
+                        : null,
+
+                "Height (Inches)": req.clinicalCase.height != null
+                    ? Number((req.clinicalCase.height / 2.54).toFixed(2))
+                    : null,
+
+                "Weight (Lbs)": req.clinicalCase.weight != null
+                    ? Number((req.clinicalCase.weight * 2.20462).toFixed(2))
+                    : null
+            };
+
+            // Solicitar predicción al AIService
+            const { data } = await axios.post<PredictionResponse>(
+                `${process.env.AI_SERVICE_URL}/predict`,
+                { features: predictionFeatures }
+            );
+            if (!data.success || !data.predicciones?.length) {
+                await transaction.rollback();
+
+                return res.status(400).json({
+                    error: "No se pudieron obtener predicciones"
+                });
+            }
+
+            // Crear resultado de la simulación
+            const embeddingString = `[${diagnosisEmbedding.join(",")}]`;
+
+            const [simulationResultId] = await db.query<{ id: number }>(
+                `
+                    INSERT INTO "SimulationResults"
+                    (
+                        "case_id",
+                        "user_id",
+                        "diagnosis",
+                        "diagnosis_embedding",
+                        "is_correct",
+                        "createdAt",
+                        "updatedAt"
+                    )
+                    VALUES (
+                        :caseId,
+                        :userId,
+                        :diagnosis,
+                        CAST(:embedding AS vector),
+                        NULL,
+                        NOW(),
+                        NOW()
+                    )
+                    RETURNING "id";
+                `,
+                {
+                    replacements: {
+                        caseId: req.clinicalCase.id,
+                        userId: req.user.id,
+                        diagnosis,
+                        embedding: embeddingString
+                    },
+                    transaction,
+                    type: QueryTypes.SELECT
+                }
+            );
+
+            // Obtener los códigos de las enfermedades predichas
+            const codes = data.predicciones.map(
+                prediction => prediction.diagnostico
+            );
+
+            // Buscar las enfermedades en la tabla Disease
+            const diseases = await Disease.findAll({
+                where: { code: codes },
+                transaction
+            });
+
+            // Crear un mapa para relacionar código e ID
+            const diseaseMap = new Map(
+                diseases.map(disease => [disease.code, disease.id])
+            );
+
+            // Verificar que todas las enfermedades existan
+            const missingDiseases = codes.filter(
+                code => !diseaseMap.has(code)
+            );
+
+            if (missingDiseases.length > 0) {
+                throw new Error(
+                    `No se encontraron las enfermedades: ${missingDiseases.join(", ")}`
+                );
+            }
+
+            // Preparar las predicciones para almacenarlas
+            const predictions = data.predicciones.map(prediction => ({
+                simulation_result_id: simulationResultId.id,
+                disease_id: diseaseMap.get(prediction.diagnostico)!,
+                position: prediction.posicion,
+                score: prediction.puntuacion
+            }));
+
+            // Guardar las predicciones
+            await SimulationPrediction.bulkCreate(predictions, { transaction });
+
+            //Hacemos la comparacion entre la entrada del usuario y lo predicho por el modelo
+            const THRESHOLD = 0.50;
+
+            /**
+             * EVALUACIONES
+             */
+
+            //Comparar los embeddings para el diagnostico
+            const comparisons = await db.query<{
+                disease_id: number;
+                code: string;
+                name: string;
+                position: number;
+                score: number;
+                similarity: number;
+            }>( 
+                `
+                    SELECT
+                        d.id AS disease_id,
+                        d.code,
+                        d.name,
+                        sp.position,
+                        sp.score,
+                        1 - (
+                            d.embedding <=> sr.diagnosis_embedding
+                        ) AS similarity
+                    FROM "SimulationPredictions" sp
+                    INNER JOIN "Diseases" d
+                        ON d.id = sp.disease_id
+                    INNER JOIN "SimulationResults" sr
+                        ON sr.id = sp.simulation_result_id
+                    WHERE
+                        sr.id = :simulationResultId
+                        AND 1 - (
+                            d.embedding <=> sr.diagnosis_embedding
+                        ) >= :threshold
+                    ORDER BY similarity DESC;
+                `,
+                {
+                    replacements: {
+                        simulationResultId: simulationResultId.id,
+                        threshold: THRESHOLD
+                    },
+                    transaction,
+                    type: QueryTypes.SELECT
+                }
+            );
+
+            const bestMatch = comparisons.length > 0? comparisons[0]: null;
+            const hasMatch = bestMatch !== null;
+            const isCorrect = hasMatch;
+
+            await SimulationResult.update({
+                is_correct: isCorrect
+            },
+            {
+                where: {
+                    id: simulationResultId.id
+                },
+                transaction
+            });
+
+            // Evaluar información clínica identificada
+            const expectedRecords = await CaseRecord.findAll({
+                where: {
+                    patient_id: req.clinicalCase.id
+                },
+                attributes: ["id", "content", "type"]
+            });
+
+            // Evaluar síntomas
+            const expectedSymptoms = expectedRecords
+                .filter(record => record.type === "symptom")
+                .map(record => record.content);
+
+            const symptomEvaluation = evaluateSymptoms({ symptomsAndHistory, expectedSymptoms });
+            const historyEvaluation = evaluateHistory({ symptomsAndHistory, expectedRecords });
+            const ageEvaluation = evaluateAge({ symptomsAndHistory, expectedRecords });
+
+            //Evaluacion metricas corporales
+            const bodyEvaluation = evaluateBodyMetrics({ studentRecords: bodyMetrics, expectedMetrics: {
+                height: req.clinicalCase.height,
+                weight: req.clinicalCase.weight,
+                bloodPressure: req.clinicalCase.bloodPreassure
+            } });
+            
+            //Evaluacion estudios de laboratorio
+            interface ExpectedLaboratoryStudy {
+                laboratoryStudy_id: number;
+                name: string;
+                value: number | null;
+            }
+
+            const expectedLaboratoryStudies = await db.query<ExpectedLaboratoryStudy>(
+                `
+                    SELECT
+                        cls."laboratoryStudy_id",
+                        ls."name",
+                        cls."value"
+                    FROM "CasesLaboratoryStudies" cls
+                    INNER JOIN "LaboratoryStudies" ls
+                        ON ls.id = cls."laboratoryStudy_id"
+                    WHERE cls."case_id" = :caseId;
+                `,
+                {
+                    replacements: {
+                        caseId: req.clinicalCase.id
+                    },
+                    transaction,
+                    type: QueryTypes.SELECT
+                }
+            );
+
+            // Evaluar estudios seleccionados e interpretación de resultados
+
+            const laboratoryEvaluation = evaluateLaboratoryStudies({
+                studentStudies: laboratoryStudies ?? [],
+                expectedStudies: expectedLaboratoryStudies.map(study => ({
+                    ...study,
+                    value: study.value === null ? null : Number(study.value)
+                }))
+            });
+
+            // Confirmar transacción
+            await transaction.commit();
+
+            return res.status(200).json({
+                simulationResult: {
+                    // id: simulationResultId.id,
+                    // case_id: req.clinicalCase.id,
+                    // user_id: req.user.id,
+                    diagnosis,
+                    // diagnosis_embedding: diagnosisEmbedding,
+                    is_correct: isCorrect
+                },
+                anamnesisEvaluation:  {
+                    symptoms: symptomEvaluation,
+                    history: historyEvaluation,
+                    age: ageEvaluation
+                },
+                bodyEvaluation,
+                laboratoryEvaluation,
+                predicciones: data.predicciones,
+                // comparaciones: comparisons,
+                mejorCoincidencia: bestMatch,
+                hasMatch
+            });
+
+        } catch (error) {
+            await transaction.rollback();
+
+            console.log(error);
+
+            return res.status(500).json({
+                error: "Error interno del servidor"
+            });
+        }
+    };
 
     static updateCase = async( req: Request, res: Response ) => {
         //Obtenemos los archivos subidos por el usuario, tanto la imagen como el modelo 3D

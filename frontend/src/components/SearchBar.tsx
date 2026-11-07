@@ -63,7 +63,7 @@ const SearchBar = ({
                         }
                         className="flex h-12 w-12 cursor-pointer shrink-0 items-center justify-center rounded-xl border border-gray-200 bg-white shadow-sm transition hover:border-blue-400 hover:text-blue-600 dark:border-gray-700 dark:bg-gray-800 dark:text-white"
                     >
-                        <AdjustmentsHorizontalIcon className="h-7 w-7 text-gray-500" />
+                        <AdjustmentsHorizontalIcon className="h-7 w-7 text-gray-400" />
                     </button>
                 )}
 

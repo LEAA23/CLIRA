@@ -10,6 +10,7 @@ import {authenticateConection} from "./config/db";
 import { corsOptions } from "./config/cors";
 import { seedFilters, seedFilterCategories } from "./utils/filterSeeder";
 import { seedLaboratoryStudies } from "./utils/seedLaboratoryStudies";
+import { seedDiseases } from "./utils/seedDesieses";
 
 const app = express();
 
@@ -20,6 +21,7 @@ const startServer = async () => {
     await seedFilterCategories();
     await seedFilters();
     await seedLaboratoryStudies();
+    await seedDiseases();
 
 };
 startServer();

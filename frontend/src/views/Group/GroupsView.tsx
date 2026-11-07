@@ -1,4 +1,3 @@
-
 import { useEffect } from "react";
 import GroupCard from "../../components/group/GroupCard";
 import { useAppStore } from "../../stores/useAppStore";
@@ -6,8 +5,7 @@ import { toast } from "react-toastify";
 import {
     PlusIcon,
     AcademicCapIcon,
-    UserGroupIcon,
-    SparklesIcon
+    UserGroupIcon
 } from "@heroicons/react/24/outline";
 import { useNavigate } from "react-router-dom";
 import CreateGroupModal from "../../components/group/CreateGroupModal";
@@ -48,8 +46,13 @@ const GroupsView = () => {
     return (
         <div className="clira-page clira-page--groups mx-auto min-h-full w-full max-w-7xl px-4 pb-12">
 
+            {/* TÍTULO */}
+            <h1 className="my-10 text-center text-5xl font-bold text-blue-500">
+                Mis Grupos
+            </h1>
+
             {/* ENCABEZADO */}
-            <section className="relative mb-10 overflow-hidden rounded-[2rem] bg-gradient-to-br from-slate-950 via-indigo-950 to-purple-900 px-7 py-10 shadow-xl md:px-10 md:py-12">
+            <section className="relative mb-10 overflow-hidden rounded-lg bg-linear-to-br from-slate-950 via-indigo-950 to-purple-900 px-7 py-10 shadow-xl md:px-10 md:py-12">
 
                 <div className="absolute -right-16 -top-24 h-80 w-80 rounded-full border border-white/10" />
                 <div className="absolute -right-5 -top-12 h-60 w-60 rounded-full border border-white/10" />
@@ -58,15 +61,6 @@ const GroupsView = () => {
                 <div className="relative z-10 flex flex-col justify-between gap-8 md:flex-row md:items-center">
 
                     <div className="max-w-2xl">
-                        <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 py-2 text-sm font-medium text-indigo-100 backdrop-blur-md">
-                            <SparklesIcon className="h-4 w-4" />
-                            Tu comunidad de aprendizaje
-                        </div>
-
-                        <h1 className="text-4xl font-extrabold tracking-tight text-white md:text-5xl">
-                            Mis Grupos
-                        </h1>
-
                         <p className="mt-4 max-w-xl text-base leading-relaxed text-indigo-100/80 md:text-lg">
                             {user.rol === "teacher"
                                 ? "Organiza tus espacios académicos, comparte casos clínicos y acompaña el progreso de tus estudiantes."
@@ -79,7 +73,7 @@ const GroupsView = () => {
                         <button
                             type="button"
                             onClick={() => navigate(location.pathname + "?createGroup=true")}
-                            className="inline-flex shrink-0 items-center justify-center gap-2 rounded-2xl bg-indigo-500 px-6 py-4 font-bold text-white shadow-lg shadow-indigo-950/30 transition-all hover:-translate-y-1 hover:bg-indigo-400 hover:shadow-xl"
+                            className="inline-flex shrink-0 items-center cursor-pointer justify-center gap-2 rounded-lg bg-blue-500 px-6 py-4 font-bold text-white shadow-lg shadow-indigo-950/30 transition-all hover:-translate-y-1 hover:bg-blue-600 hover:shadow-xl"
                         >
                             <PlusIcon className="h-5 w-5" />
                             Crear grupo
@@ -90,7 +84,7 @@ const GroupsView = () => {
                 {/* ESTADÍSTICAS */}
                 <div className="relative z-10 mt-9 grid grid-cols-1 gap-3 border-t border-white/15 pt-6 sm:grid-cols-2">
 
-                    <div className="flex items-center gap-3 rounded-2xl border border-white/10 bg-white/10 p-4 backdrop-blur-sm">
+                    <div className="flex items-center gap-3 rounded-lg border border-white/10 bg-white/10 p-4 backdrop-blur-sm">
                         <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-white/15 text-white">
                             <AcademicCapIcon className="h-6 w-6" />
                         </div>
@@ -99,12 +93,14 @@ const GroupsView = () => {
                                 {groups.length}
                             </p>
                             <p className="text-sm text-indigo-100/70">
-                                {user.rol === "teacher" ? "Grupos creados" : "Grupos disponibles"}
+                                {user.rol === "teacher"
+                                    ? "Grupos creados"
+                                    : "Grupos disponibles"}
                             </p>
                         </div>
                     </div>
 
-                    <div className="flex items-center gap-3 rounded-2xl border border-white/10 bg-white/10 p-4 backdrop-blur-sm">
+                    <div className="flex items-center gap-3 rounded-lg border border-white/10 bg-white/10 p-4 backdrop-blur-sm">
                         <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-white/15 text-white">
                             <UserGroupIcon className="h-6 w-6" />
                         </div>
@@ -121,16 +117,13 @@ const GroupsView = () => {
             </section>
 
             {/* TÍTULO DE SECCIÓN */}
-            <div className="mb-6 flex flex-wrap items-end justify-between gap-3">
-                <div>
-                    <p className="mb-1 text-sm font-semibold uppercase tracking-widest text-indigo-500">
-                        Espacios académicos
-                    </p>
-                    <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
-                        {groups.length > 0 ? "Tus comunidades" : "Comienza tu comunidad"}
-                    </h2>
-                </div>
+            <h2 className="text-2xl font-bold text-blue-500 text-center">
+                {groups.length > 0
+                    ? "Tus comunidades"
+                    : "Comienza tu comunidad"}
+            </h2>
 
+            <div className="mb-6 flex flex-wrap items-end justify-between gap-3">
                 {groups.length > 0 && (
                     <span className="rounded-full bg-indigo-50 px-4 py-2 text-sm font-semibold text-indigo-700 dark:bg-indigo-500/10 dark:text-indigo-300">
                         {groups.length} {groups.length === 1 ? "grupo" : "grupos"}
@@ -153,8 +146,8 @@ const GroupsView = () => {
                     ))}
                 </div>
             ) : (
-                <div className="rounded-3xl border border-dashed border-gray-300 bg-white px-6 py-16 text-center dark:border-gray-700 dark:bg-gray-800">
-                    <div className="mx-auto mb-5 flex h-20 w-20 items-center justify-center rounded-3xl bg-indigo-50 text-indigo-600 dark:bg-indigo-500/10 dark:text-indigo-300">
+                <div className="rounded-lg border border-dashed border-gray-300 bg-white px-6 py-16 text-center dark:border-gray-700 dark:bg-gray-800">
+                    <div className="mx-auto mb-5 flex h-20 w-20 items-center justify-center rounded-lg bg-indigo-50 text-indigo-600 dark:bg-indigo-500/10 dark:text-indigo-300">
                         <UserGroupIcon className="h-10 w-10" />
                     </div>
 
@@ -176,7 +169,7 @@ const GroupsView = () => {
                         <button
                             type="button"
                             onClick={() => navigate(location.pathname + "?createGroup=true")}
-                            className="mt-7 inline-flex items-center gap-2 rounded-xl bg-indigo-600 px-6 py-3 font-semibold text-white transition-colors hover:bg-indigo-500"
+                            className="mt-7 inline-flex items-center gap-2 rounded-lg bg-indigo-600 px-6 py-3 font-semibold text-white transition-colors hover:bg-indigo-500"
                         >
                             <PlusIcon className="h-5 w-5" />
                             Crear mi primer grupo
@@ -185,10 +178,12 @@ const GroupsView = () => {
                 </div>
             )}
 
+            {/* MODALES */}
             <CreateGroupModal />
             <EditGroupModal />
             <DeleteGroupModal />
             <MembersModal />
+
         </div>
     );
 };

@@ -1,11 +1,9 @@
 import { useEffect, useMemo, useState } from "react";
 import {
     AcademicCapIcon,
-    ArrowTrendingUpIcon,
     BookOpenIcon,
     CheckCircleIcon,
     MagnifyingGlassIcon,
-    SparklesIcon,
     TrophyIcon,
     LockClosedIcon,
     ArrowRightIcon,
@@ -13,6 +11,7 @@ import {
     FireIcon,
     XMarkIcon,
 } from "@heroicons/react/24/outline";
+
 import { Link } from "react-router-dom";
 import { getCases, getCompletedCases } from "../../api/caseApi";
 import type { Case } from "../../types";
@@ -64,6 +63,7 @@ const ProgressView = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
 
+    // Obtener los casos y el progreso del usuario
     useEffect(() => {
         let active = true;
 
@@ -80,6 +80,7 @@ const ProgressView = () => {
                 if (!active) return;
 
                 setCases(casesResult ?? []);
+
                 setCompletedCount(
                     Number.isFinite(completedResult)
                         ? Math.max(0, completedResult)
@@ -89,13 +90,16 @@ const ProgressView = () => {
                 if (!active) return;
 
                 console.error("Error al cargar el progreso:", err);
+
                 setError(
                     err instanceof Error
                         ? err.message
                         : "No se pudo cargar tu progreso."
                 );
             } finally {
-                if (active) setLoading(false);
+                if (active) {
+                    setLoading(false);
+                }
             }
         };
 
@@ -106,8 +110,13 @@ const ProgressView = () => {
         };
     }, []);
 
-    const pendingCount = Math.max(0, cases.length - completedCount);
+    // Calcular casos pendientes
+    const pendingCount = Math.max(
+        0,
+        cases.length - completedCount
+    );
 
+    // Calcular porcentaje de progreso
     const progressPercentage =
         cases.length > 0
             ? Math.min(
@@ -116,10 +125,12 @@ const ProgressView = () => {
               )
             : 0;
 
+    // Logros desbloqueados
     const unlockedAchievements = ACHIEVEMENTS.filter(
         achievement => completedCount >= achievement.requirement
     );
 
+    // Filtrar casos mediante el buscador
     const filteredCases = useMemo(() => {
         const term = search
             .normalize("NFD")
@@ -133,7 +144,7 @@ const ProgressView = () => {
             const content = [
                 clinicalCase.title,
                 clinicalCase.description,
-                ...clinicalCase.filters.map(filter => filter.name),
+                ...(clinicalCase.filters ?? []).map(filter => filter.name),
             ]
                 .join(" ")
                 .normalize("NFD")
@@ -146,17 +157,16 @@ const ProgressView = () => {
 
     return (
         <div className="clira-page clira-page--progress min-h-full space-y-8 px-4 pb-10 text-slate-800 dark:text-purple-100">
+
             {/* ENCABEZADO */}
             <header className="relative mt-8 overflow-hidden rounded-3xl bg-gradient-to-br from-blue-900 via-blue-800 to-cyan-700 p-7 text-white shadow-xl dark:from-[#302044] dark:via-[#382452] dark:to-[#493064] md:p-10">
+
                 <div className="absolute -right-12 -top-16 h-56 w-56 rounded-full bg-cyan-300/10 blur-2xl" />
                 <div className="absolute -bottom-24 left-1/3 h-56 w-56 rounded-full bg-blue-300/10 blur-2xl" />
 
                 <div className="relative">
-                    <div className="mb-5 flex h-14 w-14 items-center justify-center rounded-2xl border border-white/20 bg-white/10">
-                        <ArrowTrendingUpIcon className="h-8 w-8 text-cyan-200 dark:text-purple-200" />
-                    </div>
 
-                    <p className="text-sm font-bold uppercase tracking-[0.2em] text-cyan-200 dark:text-purple-200">
+                    <p className="text-xl font-bold uppercase text-cyan-200 dark:text-purple-200">
                         Tu espacio personal
                     </p>
 
@@ -172,10 +182,10 @@ const ProgressView = () => {
 
                     <Link
                         to="/clinical-cases"
-                        className="mt-7 inline-flex items-center gap-2 rounded-xl bg-cyan-300 px-5 py-3 font-bold text-blue-950 transition hover:-translate-y-0.5 hover:bg-cyan-200 dark:bg-purple-200 dark:text-[#302044] dark:hover:bg-purple-100"
+                        className="mt-7 inline-flex items-center gap-2 rounded-lg bg-blue-500 px-5 py-3 font-bold text-white transition hover:-translate-y-0.5 hover:bg-blue-600 dark:bg-purple-200 dark:text-[#302044] dark:hover:bg-purple-100"
                     >
                         Explorar casos
-                        <ArrowRightIcon className="h-5 w-5" />
+                        <ArrowRightIcon className="h-5 aspect-square" />
                     </Link>
                 </div>
             </header>
@@ -189,7 +199,9 @@ const ProgressView = () => {
                     <p className="font-bold">
                         No pudimos cargar todas tus estadísticas.
                     </p>
+
                     <p className="mt-1 text-sm">{error}</p>
+
                     <button
                         type="button"
                         onClick={() => window.location.reload()}
@@ -203,15 +215,13 @@ const ProgressView = () => {
             {/* TARJETAS DE MÉTRICAS */}
             <section>
                 <div className="mb-5">
-                    <h2 className="text-2xl font-extrabold">
+                    <h2 className="text-2xl text-blue-500 text-center font-bold">
                         Resumen de tu progreso
                     </h2>
-                    <p className="mt-1 text-sm text-slate-500 dark:text-purple-300/70">
-                        Una vista general de tu actividad clínica.
-                    </p>
                 </div>
 
                 <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+
                     <MetricCard
                         title="Casos completados"
                         value={completedCount}
@@ -247,19 +257,24 @@ const ProgressView = () => {
                         color="amber"
                         loading={loading}
                     />
+
                 </div>
             </section>
 
-            {/* AVANCE */}
-            <section className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm dark:border-purple-400/20 dark:bg-[#2b2045] md:p-8">
+            {/* AVANCE GENERAL */}
+            <section className="rounded-lg border border-slate-200 bg-white p-6 shadow-sm dark:border-purple-400/20 dark:bg-[#2b2045] md:p-8">
+
                 <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
+
                     <div>
                         <p className="text-sm font-bold uppercase tracking-wider text-cyan-700 dark:text-purple-300">
                             Objetivo de aprendizaje
                         </p>
+
                         <h2 className="mt-2 text-2xl font-extrabold">
                             Sigue avanzando
                         </h2>
+
                         <p className="mt-2 max-w-xl text-sm leading-relaxed text-slate-500 dark:text-purple-300/70">
                             Completa casos clínicos para aumentar tu progreso
                             y desbloquear nuevos reconocimientos.
@@ -267,9 +282,11 @@ const ProgressView = () => {
                     </div>
 
                     <div className="flex h-24 w-24 shrink-0 flex-col items-center justify-center rounded-full border-4 border-cyan-100 bg-cyan-50 dark:border-purple-400/20 dark:bg-[#392951]">
+
                         <span className="text-2xl font-extrabold text-cyan-800 dark:text-purple-200">
                             {loading ? "—" : `${progressPercentage}%`}
                         </span>
+
                         <span className="text-xs text-slate-500 dark:text-purple-300">
                             completado
                         </span>
@@ -293,23 +310,26 @@ const ProgressView = () => {
                 </div>
 
                 <div className="mt-3 flex justify-between gap-4 text-sm text-slate-500 dark:text-purple-300/70">
-                    <span>{loading ? "Calculando..." : `${completedCount} completados`}</span>
-                    <span>{loading ? " " : `${cases.length} casos en total`}</span>
+                    <span>
+                        {loading
+                            ? "Calculando..."
+                            : `${completedCount} completados`}
+                    </span>
+
+                    <span>
+                        {loading ? "" : `${cases.length} casos en total`}
+                    </span>
                 </div>
             </section>
 
             {/* LOGROS */}
             <section>
-                <div className="mb-5 flex flex-col justify-between gap-2 sm:flex-row sm:items-end">
-                    <div>
-                        <h2 className="text-2xl font-extrabold">
-                            Tus logros
-                        </h2>
-                        <p className="mt-1 text-sm text-slate-500 dark:text-purple-300/70">
-                            Reconocimientos por cada etapa de tu aprendizaje.
-                        </p>
-                    </div>
 
+                <h2 className="text-2xl font-bold text-blue-500 text-center">
+                    Tus logros
+                </h2>
+
+                <div className="mb-5 flex flex-col justify-between gap-2 sm:flex-row sm:items-end">
                     <span className="text-sm font-bold text-purple-700 dark:text-purple-300">
                         {loading
                             ? "Cargando..."
@@ -318,22 +338,27 @@ const ProgressView = () => {
                 </div>
 
                 <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+
                     {ACHIEVEMENTS.map(achievement => {
+
                         const unlocked =
                             !loading &&
                             completedCount >= achievement.requirement;
+
                         const AchievementIcon = achievement.icon;
 
                         return (
                             <article
                                 key={achievement.id}
-                                className={`relative overflow-hidden rounded-2xl border p-5 transition ${
+                                className={`relative overflow-hidden rounded-lg border p-5 transition ${
                                     unlocked
                                         ? "border-purple-200 bg-gradient-to-br from-white to-purple-50 shadow-sm dark:border-purple-400/30 dark:from-[#302044] dark:to-[#392951]"
                                         : "border-slate-200 bg-white dark:border-purple-400/15 dark:bg-[#2b2045]"
                                 }`}
                             >
+
                                 <div className="flex items-start justify-between gap-3">
+
                                     <div
                                         className={`flex h-12 w-12 items-center justify-center rounded-xl ${
                                             unlocked
@@ -366,17 +391,19 @@ const ProgressView = () => {
                                 </p>
 
                                 <div className="mt-4">
+
                                     <div className="mb-2 flex justify-between text-xs">
                                         <span className="text-slate-500 dark:text-purple-300/70">
                                             Progreso
                                         </span>
+
                                         <span className="font-bold">
                                             {loading
                                                 ? "—"
                                                 : `${Math.min(
-                                                      completedCount,
-                                                      achievement.requirement
-                                                  )}/${achievement.requirement}`}
+                                                    completedCount,
+                                                    achievement.requirement
+                                                )}/${achievement.requirement}`}
                                         </span>
                                     </div>
 
@@ -387,11 +414,11 @@ const ProgressView = () => {
                                                 width: loading
                                                     ? "0%"
                                                     : `${Math.min(
-                                                          100,
-                                                          (completedCount /
-                                                              achievement.requirement) *
-                                                              100
-                                                      )}%`,
+                                                        100,
+                                                        (completedCount /
+                                                            achievement.requirement) *
+                                                            100
+                                                    )}%`,
                                             }}
                                         />
                                     </div>
@@ -402,34 +429,23 @@ const ProgressView = () => {
                                         ¡Logro desbloqueado!
                                     </p>
                                 )}
+
                             </article>
                         );
                     })}
+
                 </div>
             </section>
 
-            {/* CATÁLOGO E HISTORIAL DISPONIBLE */}
+            {/* CATÁLOGO DE CASOS */}
             <section>
-                <div className="mb-5 flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
-                    <div>
-                        <h2 className="text-2xl font-extrabold">
-                            Explora tus casos
-                        </h2>
-                        <p className="mt-1 text-sm text-slate-500 dark:text-purple-300/70">
-                            Busca un caso para consultar o continuar practicando.
-                        </p>
-                    </div>
 
-                    <Link
-                        to="/clinical-cases"
-                        className="inline-flex items-center gap-2 text-sm font-bold text-blue-700 hover:text-cyan-700 dark:text-purple-300 dark:hover:text-purple-100"
-                    >
-                        Ir a casos clínicos
-                        <ArrowRightIcon className="h-4 w-4" />
-                    </Link>
-                </div>
+                <h2 className="text-2xl font-bold text-blue-500 text-center">
+                    Explora tus casos
+                </h2>
 
-                <div className="mb-5 flex items-center gap-3 rounded-2xl border border-slate-200 bg-white px-4 dark:border-purple-400/20 dark:bg-[#2b2045]">
+                <div className="my-5 flex items-center gap-3 rounded-lg border border-slate-200 bg-white px-4 dark:border-purple-400/20 dark:bg-[#2b2045]">
+
                     <MagnifyingGlassIcon className="h-5 w-5 shrink-0 text-slate-400 dark:text-purple-300/70" />
 
                     <input
@@ -455,13 +471,18 @@ const ProgressView = () => {
 
                 {loading ? (
                     <div className="flex min-h-40 flex-col items-center justify-center rounded-2xl border border-slate-200 bg-white dark:border-purple-400/20 dark:bg-[#2b2045]">
+
                         <div className="h-9 w-9 animate-spin rounded-full border-4 border-slate-200 border-t-purple-500 dark:border-purple-400/20 dark:border-t-purple-300" />
+
                         <p className="mt-4 text-sm text-slate-500 dark:text-purple-300">
                             Cargando tus casos...
                         </p>
                     </div>
+
                 ) : filteredCases.length > 0 ? (
+
                     <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+
                         {filteredCases.map(clinicalCase => (
                             <CaseCard
                                 key={clinicalCase.id}
@@ -482,13 +503,19 @@ const ProgressView = () => {
                                 maxFilters={3}
                             />
                         ))}
+
                     </div>
+
                 ) : (
+
                     <div className="rounded-2xl border border-slate-200 bg-white px-6 py-12 text-center dark:border-purple-400/20 dark:bg-[#2b2045]">
+
                         <BookOpenIcon className="mx-auto h-12 w-12 text-slate-300 dark:text-purple-300/50" />
+
                         <h3 className="mt-4 font-bold">
                             No encontramos casos
                         </h3>
+
                         <p className="mt-2 text-sm text-slate-500 dark:text-purple-300/70">
                             Prueba con otra búsqueda o explora el catálogo completo.
                         </p>
@@ -504,20 +531,14 @@ const ProgressView = () => {
                         )}
                     </div>
                 )}
+
             </section>
 
-            {/* PIE */}
-            <footer className="flex flex-col gap-2 border-t border-slate-200 py-5 text-sm text-slate-500 dark:border-purple-400/15 dark:text-purple-300/60 sm:flex-row sm:items-center sm:justify-between">
-                <p className="flex items-center gap-2">
-                    <SparklesIcon className="h-4 w-4" />
-                    Cada caso cuenta en tu formación.
-                </p>
-                <p>CLIRA · Tu progreso clínico</p>
-            </footer>
         </div>
     );
 };
 
+// COMPONENTE DE MÉTRICAS
 type MetricCardProps = {
     title: string;
     value: number | string;
@@ -535,6 +556,7 @@ const MetricCard = ({
     color,
     loading,
 }: MetricCardProps) => {
+
     const colorStyles = {
         green: "bg-green-50 text-green-700 dark:bg-green-400/10 dark:text-green-300",
         blue: "bg-blue-50 text-blue-700 dark:bg-blue-400/10 dark:text-blue-300",
@@ -543,12 +565,15 @@ const MetricCard = ({
     };
 
     return (
-        <article className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition hover:-translate-y-1 hover:shadow-md dark:border-purple-400/20 dark:bg-[#2b2045]">
+        <article className="rounded-lg border border-slate-200 bg-white p-5 shadow transition dark:border-purple-400/20 dark:bg-[#2b2045]">
+
             <div className="flex items-start justify-between gap-3">
+
                 <div>
                     <p className="text-sm font-semibold text-slate-500 dark:text-purple-300/70">
                         {title}
                     </p>
+
                     <p className="mt-3 text-3xl font-extrabold tracking-tight">
                         {loading ? "—" : value}
                     </p>
@@ -564,6 +589,7 @@ const MetricCard = ({
             <p className="mt-4 text-xs text-slate-400 dark:text-purple-300/60">
                 {description}
             </p>
+
         </article>
     );
 };

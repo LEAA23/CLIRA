@@ -1,7 +1,21 @@
-import { isAxiosError } from "axios"
+
+import { isAxiosError } from "axios";
 import api from "../lib/axios";
-import { CaseSchema, CasesSquema, PublicCasesSchema, laboratoryStudiesSchema, laboratoryStudyResultsSchema, MetricsSquema } from "../schemas";
-import type { Case, Filter, PublicCase } from "../types";
+import {
+    CaseSchema,
+    CasesSquema,
+    PublicCasesSchema,
+    laboratoryStudiesSchema,
+    laboratoryStudyResultsSchema,
+    MetricsSquema,
+    DiagnosisResultsSquema
+} from "../schemas";
+import type {
+    Case,
+    DiagnosisDataForm,
+    Filter,
+    PublicCase
+} from "../types";
 
 export const createCase = async( formData: FormData ) => {
     try {
@@ -106,9 +120,7 @@ export const deleteCase = async( caseId : Case["id"] ) => {
 export const getLaboratorystudies = async() => {
     try {
         const { data: { laboratoryStudies } } = await api.get("/cases/laboratoryStudies");
-        console.log(laboratoryStudies)
         const response = laboratoryStudiesSchema.safeParse( laboratoryStudies );
-        console.log(response)
         if( response.data ) {
             return response.data;
         }
@@ -158,9 +170,21 @@ export const getSimulation = async( caseId: Case["id"] ) => {
 export const getCorporalMetrics = async( { caseId, metricsSelected } : { caseId: Case["id"] ; metricsSelected: string[] } ) => {
     try {
         const { data: { metrics } } = await api.post(`/cases/${caseId}/corporalMetrics`, { caseId, metricsSelected } );
-        console.log(metrics)
         const response = MetricsSquema.safeParse( metrics );
-        console.log(response)
+        if( response.data ) {
+            return response.data;
+        }
+    } catch (error) {
+        if( isAxiosError( error ) && error.response ) {
+            throw new Error( error.response.data.error );
+        }
+    }
+}
+
+export const diagnose = async( { caseId, diagnoseData } : { caseId: Case["id"] ; diagnoseData: DiagnosisDataForm } ) => {
+    try {
+        const { data } = await api.post(`/cases/${caseId}/diagnose`, diagnoseData );
+        const response = DiagnosisResultsSquema.safeParse( data );
         if( response.data ) {
             return response.data;
         }

@@ -13,7 +13,6 @@ const SymptomsAndHistory = () => {
     const caseId = +params.id!;
 
     const clinicalCase = useAppStore( state => state.case );
-    const answer = clinicalCase.symptomsAndHistory[0];
 
     const askQuestion = useAppStore( state => state.askQuestion );
 
@@ -90,7 +89,7 @@ const SymptomsAndHistory = () => {
                     <div className="mt-5">
                         <p className="font-bold text-gray-800">Respuesta del paciente:</p>
                         <ul className="list-disc p-2">
-                            {clinicalCase.symptomsAndHistory.filter( feature => feature.type === answer.type).map(feature => (
+                            {clinicalCase.symptomsAndHistory.map(feature => (
                                 <li key={feature.type} className="text-gray-700">
                                     {feature.content}
                                 </li>
