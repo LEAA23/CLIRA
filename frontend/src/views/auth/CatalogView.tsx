@@ -11,12 +11,13 @@ import {
 } from "@heroicons/react/24/outline";
 
 import { getPublicCases } from "../../api/caseApi";
-import type { Case } from "../../types";
+import type { PublicCase } from "../../types";
+import CaseCard from "../../components/cases/CaseCard";
 
 const CatalogView = () => {
     const navigate = useNavigate();
 
-    const [cases, setCases] = useState<Case[]>([]);
+    const [cases, setCases] = useState<PublicCase[]>([]);
     const [search, setSearch] = useState("");
     const [selectedCategory, setSelectedCategory] = useState("Todos");
     const [loading, setLoading] = useState(true);
@@ -285,9 +286,11 @@ const CatalogView = () => {
                         <p className="font-bold text-red-700 dark:text-red-300">
                             No fue posible cargar el catálogo
                         </p>
+
                         <p className="mt-2 text-sm text-red-600 dark:text-red-200">
                             {error}
                         </p>
+
                         <button
                             type="button"
                             onClick={() => window.location.reload()}
@@ -298,97 +301,38 @@ const CatalogView = () => {
                     </div>
                 ) : filteredCases.length > 0 ? (
                     <div className="grid gap-7 sm:grid-cols-2 lg:grid-cols-3">
-                        {filteredCases.map(clinicalCase => {
-                            const image =
-                                typeof clinicalCase.previewImage === "string"
-                                    ? clinicalCase.previewImage
-                                    : "";
-
-                            return (
-                                <article
-                                    key={clinicalCase.id}
-                                    className="group flex flex-col overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm transition duration-300 hover:-translate-y-2 hover:border-cyan-200 hover:shadow-xl dark:border-purple-400/20 dark:bg-[#2b2045] dark:hover:border-purple-300/50 dark:hover:shadow-purple-950/30"
-                                >
-                                    <div className="relative h-52 overflow-hidden bg-linear-to-br from-blue-100 to-cyan-100 dark:from-[#493064] dark:to-[#302044]">
-                                        {image ? (
-                                            <img
-                                                src={image}
-                                                alt={clinicalCase.title}
-                                                className="h-full w-full object-cover transition duration-700 group-hover:scale-105"
-                                            />
-                                        ) : (
-                                            <div className="flex h-full items-center justify-center">
-                                                <AcademicCapIcon className="h-20 w-20 text-blue-300 dark:text-purple-300/60" />
-                                            </div>
-                                        )}
-
-                                        <div className="absolute left-4 top-4 rounded-full border border-white/50 bg-white/90 px-4 py-1.5 text-xs font-bold text-blue-900 shadow-sm backdrop-blur dark:border-purple-300/30 dark:bg-[#302044]/90 dark:text-purple-100">
-                                            Caso clínico
-                                        </div>
-                                    </div>
-
-                                    <div className="flex flex-1 flex-col p-6">
-                                        <h3 className="text-xl font-extrabold leading-snug text-slate-900 transition group-hover:text-blue-800 dark:text-purple-100 dark:group-hover:text-purple-300">
-                                            {clinicalCase.title}
-                                        </h3>
-
-                                        <p className="mt-3 line-clamp-3 flex-1 text-sm leading-relaxed text-slate-500 dark:text-purple-300/70">
-                                            {clinicalCase.description}
-                                        </p>
-
-                                        <div className="mt-5">
-                                            <p className="mb-3 text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-purple-300/60">
-                                                Temas relacionados
-                                            </p>
-
-                                            <div className="flex flex-wrap gap-2">
-                                                {clinicalCase.filters.length > 0 ? (
-                                                    clinicalCase.filters
-                                                        .slice(0, 4)
-                                                        .map(filter => (
-                                                            <span
-                                                                key={filter.id}
-                                                                className="rounded-lg bg-blue-50 px-3 py-1.5 text-xs font-semibold text-blue-700 dark:bg-[#493064] dark:text-purple-200"
-                                                            >
-                                                                {filter.name}
-                                                            </span>
-                                                        ))
-                                                ) : (
-                                                    <span className="text-xs text-slate-400 dark:text-purple-300/50">
-                                                        Sin etiquetas
-                                                    </span>
-                                                )}
-
-                                                {clinicalCase.filters.length > 4 && (
-                                                    <span className="rounded-lg bg-slate-100 px-3 py-1.5 text-xs font-semibold text-slate-500 dark:bg-[#392951] dark:text-purple-200">
-                                                        +{clinicalCase.filters.length - 4}
-                                                    </span>
-                                                )}
-                                            </div>
-                                        </div>
-
-                                        <button
-                                            type="button"
-                                            onClick={() => navigate("/auth/login")}
-                                            className="mt-7 flex w-full items-center justify-center gap-2 rounded-xl bg-[#153968] px-5 py-3.5 font-bold text-white transition hover:bg-cyan-700 dark:bg-purple-500 dark:hover:bg-purple-400"
-                                        >
-                                            Iniciar sesión para practicar
-                                            <ArrowRightIcon className="h-5 w-5 transition group-hover:translate-x-1" />
-                                        </button>
-                                    </div>
-                                </article>
-                            );
-                        })}
+                        {filteredCases.map(clinicalCase => (
+                            <CaseCard
+                                key={clinicalCase.id}
+                                id={clinicalCase.id}
+                                title={clinicalCase.title}
+                                description={clinicalCase.description}
+                                previewImage={clinicalCase.previewImage?.toString() || ""}
+                                teacher_id={-1}
+                                filters={clinicalCase.filters}
+                                started={false}
+                                showImage={true}
+                                showStats={false}
+                                showOptions={false}
+                                enablePreview={false}
+                                actionText="Iniciar sesión para practicar"
+                                maxFilters={3}
+                                onAction={() => navigate("/auth/login")}
+                            />
+                        ))}
                     </div>
                 ) : (
                     <div className="rounded-3xl border border-slate-200 bg-white px-6 py-16 text-center dark:border-purple-400/20 dark:bg-[#2b2045]">
                         <BookOpenIcon className="mx-auto h-14 w-14 text-slate-300 dark:text-purple-300/50" />
+
                         <h3 className="mt-5 text-xl font-bold text-slate-800 dark:text-purple-100">
                             No encontramos casos
                         </h3>
+
                         <p className="mt-2 text-slate-500 dark:text-purple-300/70">
                             Prueba con otro término o selecciona otra categoría.
                         </p>
+
                         <button
                             type="button"
                             onClick={() => {
@@ -433,9 +377,11 @@ const CatalogView = () => {
                 <p className="font-bold tracking-widest text-white">
                     CLIRA<span className="text-cyan-300 dark:text-purple-300">.</span>
                 </p>
+
                 <p className="mt-2">
                     Aprender, practicar y mejorar.
                 </p>
+
                 <p className="mt-4 text-xs text-blue-300/60 dark:text-purple-300/50">
                     © {new Date().getFullYear()} CLIRA. Todos los derechos reservados.
                 </p>

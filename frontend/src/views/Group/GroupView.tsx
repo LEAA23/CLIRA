@@ -19,10 +19,9 @@ import EditPostModal from "../../components/posts/EditPostModal";
 import DeletePostModal from "../../components/posts/DeletePostModal";
 
 import { useAppStore } from "../../stores/useAppStore";
-import {
-    getPublicCases,
-    type PublicCase
-} from "../../api/caseApi";
+
+import { getPublicCases } from "../../api/caseApi";
+import type { PublicCase } from "../../types";
 
 type GroupTab = "tablon" | "personas";
 
@@ -174,7 +173,7 @@ const GroupView = () => {
     const isTeacher = user.rol === "teacher";
 
     return (
-        <div className="mx-auto w-full max-w-7xl pb-12">
+        <div className="clira-page clira-page--groups mx-auto min-h-full w-full max-w-7xl px-4 pb-12">
 
             {/* REGRESAR */}
             <div className="mb-6">

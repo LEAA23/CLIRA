@@ -1,7 +1,7 @@
 import { isAxiosError } from "axios"
 import api from "../lib/axios";
 import { CaseSchema, CasesSquema, PublicCasesSchema, laboratoryStudiesSchema, laboratoryStudyResultsSchema, MetricsSquema } from "../schemas";
-import type { Case, Filter } from "../types";
+import type { Case, Filter, PublicCase } from "../types";
 
 export const createCase = async( formData: FormData ) => {
     try {
@@ -27,12 +27,6 @@ export const getCases = async() => {
         }
     }
 }
-
-export type PublicCase = {
-    id: number;
-    title: string;
-    description: string;
-};
 
 export const getPublicCases = async (): Promise<PublicCase[]> => {
     try {

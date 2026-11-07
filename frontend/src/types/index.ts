@@ -1,5 +1,5 @@
 import z from "zod"
-import type { AuthSchema, CaseSchema, ChartOptionSchema, CommentSquema, FilterSchema, GroupResponse, GroupShcema, GroupsSchema, laboratoryStudiesSchema, MembersOptionSchema, PostImageSchema, PostSchema, PostsSchema, SymptomSquema, UserProfileSchema, UserSchema, UserSearchSchema } from "../schemas"
+import type { AuthSchema, CaseSchema, ChartOptionSchema, CommentSquema, FilterSchema, GroupResponse, GroupShcema, GroupsSchema, laboratoryStudiesSchema, MembersOptionSchema, PostImageSchema, PostSchema, PostsSchema, PublicCaseSchema, SymptomSquema, UserProfileSchema, UserSchema, UserSearchSchema } from "../schemas"
 
 /**
  * AUTH TYPES
@@ -63,6 +63,7 @@ export type Filter = z.infer<typeof FilterSchema>;
  * CASES TYPES
  */
 export type Case = z.infer<typeof CaseSchema>;
+export type PublicCase = z.infer<typeof PublicCaseSchema>;
 export type CreateCaseForm = Pick<Case, "title" | "description" | "symptomsAndHistory" | "height" | "weight" | "bloodPreassure" | "previewImage" | "simulationModel" | "images">;
 export type EditCaseForm = Pick<Case, "title" | "description" | "previewImage" | "simulationModel">;
 

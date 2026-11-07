@@ -355,7 +355,7 @@ const SettingsView = () => {
   );
 
   return (
-    <div className="min-h-full bg-slate-50 px-4 py-8 text-slate-800 transition-colors duration-300 dark:bg-slate-950 dark:text-slate-100 md:px-10">
+    <div className="clira-page clira-page--settings min-h-full px-4 py-8 text-slate-800 transition-colors duration-300 dark:text-slate-100 md:px-10">
       <div className="mx-auto max-w-5xl">
         {/* Encabezado */}
         <div className="mb-6">

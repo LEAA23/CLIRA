@@ -46,7 +46,7 @@ const GroupsView = () => {
     );
 
     return (
-        <div className="mx-auto w-full max-w-7xl pb-12">
+        <div className="clira-page clira-page--groups mx-auto min-h-full w-full max-w-7xl px-4 pb-12">
 
             {/* ENCABEZADO */}
             <section className="relative mb-10 overflow-hidden rounded-[2rem] bg-gradient-to-br from-slate-950 via-indigo-950 to-purple-900 px-7 py-10 shadow-xl md:px-10 md:py-12">

@@ -111,7 +111,7 @@ const SimulationView = () => {
     };
 
     return (
-        <>
+        <div className="clira-page clira-page--simulation min-h-full px-4 pb-10">
             {/* Encabezado y botón para abandonar */}
             <div className="relative flex items-center justify-center mt-10 mb-5">
                 <button
@@ -220,7 +220,7 @@ const SimulationView = () => {
                     <p className="text-gray-500 font-semibold">No hay recursos extra disponibles para este caso</p>
                 )}
             </div>
-        </>
+        </div>
     );
 };
 

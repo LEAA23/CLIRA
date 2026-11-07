@@ -16,6 +16,7 @@ import {
 import { Link } from "react-router-dom";
 import { getCases, getCompletedCases } from "../../api/caseApi";
 import type { Case } from "../../types";
+import CaseCard from "../../components/cases/CaseCard";
 
 type Achievement = {
     id: string;
@@ -144,7 +145,7 @@ const ProgressView = () => {
     }, [cases, search]);
 
     return (
-        <div className="min-h-full space-y-8 pb-10 text-slate-800 dark:text-purple-100">
+        <div className="clira-page clira-page--progress min-h-full space-y-8 px-4 pb-10 text-slate-800 dark:text-purple-100">
             {/* ENCABEZADO */}
             <header className="relative mt-8 overflow-hidden rounded-3xl bg-gradient-to-br from-blue-900 via-blue-800 to-cyan-700 p-7 text-white shadow-xl dark:from-[#302044] dark:via-[#382452] dark:to-[#493064] md:p-10">
                 <div className="absolute -right-12 -top-16 h-56 w-56 rounded-full bg-cyan-300/10 blur-2xl" />
@@ -462,52 +463,24 @@ const ProgressView = () => {
                 ) : filteredCases.length > 0 ? (
                     <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
                         {filteredCases.map(clinicalCase => (
-                            <article
+                            <CaseCard
                                 key={clinicalCase.id}
-                                className="flex flex-col rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition hover:-translate-y-1 hover:border-blue-200 hover:shadow-md dark:border-purple-400/20 dark:bg-[#2b2045] dark:hover:border-purple-300/40"
-                            >
-                                <div className="flex items-start gap-3">
-                                    <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-blue-50 text-blue-700 dark:bg-[#493064] dark:text-purple-200">
-                                        <BookOpenIcon className="h-6 w-6" />
-                                    </div>
-
-                                    <div className="min-w-0 flex-1">
-                                        <h3 className="font-extrabold">
-                                            {clinicalCase.title}
-                                        </h3>
-                                        <p className="mt-1 text-xs text-slate-500 dark:text-purple-300/70">
-                                            Caso clínico
-                                        </p>
-                                    </div>
-                                </div>
-
-                                <p className="mt-4 line-clamp-3 flex-1 text-sm leading-relaxed text-slate-500 dark:text-purple-300/70">
-                                    {clinicalCase.description}
-                                </p>
-
-                                {clinicalCase.filters.length > 0 && (
-                                    <div className="mt-4 flex flex-wrap gap-2">
-                                        {clinicalCase.filters
-                                            .slice(0, 3)
-                                            .map(filter => (
-                                                <span
-                                                    key={filter.id}
-                                                    className="rounded-lg bg-blue-50 px-2.5 py-1 text-xs font-semibold text-blue-700 dark:bg-[#493064] dark:text-purple-200"
-                                                >
-                                                    {filter.name}
-                                                </span>
-                                            ))}
-                                    </div>
-                                )}
-
-                                <Link
-                                    to={`/simulation/${clinicalCase.id}`}
-                                    className="mt-5 inline-flex items-center justify-center gap-2 rounded-xl bg-blue-900 px-4 py-3 text-sm font-bold text-white transition hover:bg-blue-800 dark:bg-purple-500 dark:hover:bg-purple-400"
-                                >
-                                    Practicar caso
-                                    <ArrowRightIcon className="h-4 w-4" />
-                                </Link>
-                            </article>
+                                id={clinicalCase.id}
+                                title={clinicalCase.title}
+                                description={clinicalCase.description}
+                                previewImage={
+                                    clinicalCase.previewImage?.toString() || ""
+                                }
+                                teacher_id={clinicalCase.teacher_id}
+                                filters={clinicalCase.filters}
+                                started={false}
+                                showImage={false}
+                                showStats={false}
+                                showOptions={false}
+                                enablePreview={false}
+                                actionText="Practicar caso"
+                                maxFilters={3}
+                            />
                         ))}
                     </div>
                 ) : (

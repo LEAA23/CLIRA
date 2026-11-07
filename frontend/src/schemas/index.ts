@@ -223,7 +223,9 @@ export const CasesSquema = z.array( CaseSchema );
 export const PublicCaseSchema = z.object({
     id: z.number(),
     title: z.string(),
-    description: z.string()
+    description: z.string(),
+    previewImage: z.string().default(""),
+    filters: z.array(FilterSchema).default([])
 });
 
 export const PublicCasesSchema = z.array(PublicCaseSchema);
