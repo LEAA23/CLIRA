@@ -1,11 +1,12 @@
 import type { StateCreator } from "zustand";
 import { createCase, deleteCase, deleteCaseImage, deleteCaseModel, diagnose, getCases, getCorporalMetrics, getLaboratorystudies, getPatientLaboratorystudies, getSimulation, updateCase } from "../api/caseApi";
-import type { Case, DiagnosisDataForm } from "../types";
+import type { Case, DiagnosisDataForm, DiagnosisResults } from "../types";
 import { askPatientSymptomsAndHistory } from "../api/simulationApi";
 
 export type CaseSliceType = {
     cases: Case[];
     case: Case;
+    diagnosisResults: DiagnosisResults;
     createCase: (formData: FormData) => Promise<string | undefined>;
     getCases: () => Promise<void>;
     fetchCase: (caseId: number) => Promise<void>;
@@ -69,6 +70,118 @@ export const createCaseSlice : StateCreator<CaseSliceType> = ((set, get) => ({
         set(() => ({
             cases
         }));
+    },
+    diagnosisResults: {
+        simulationResult: {
+            diagnosis: "",
+            is_correct: false
+        },
+        anamnesisEvaluation: {
+            symptoms: {
+                score: 0,
+                precision: 0,
+                recall: 0,
+                f1Score: 0,
+                expectedCount: 0,
+                identifiedCount: 0,
+                recognizedCount: 0,
+                recognizedSymptoms: [],
+                missedSymptoms: [],
+                incorrectSymptoms: []
+            },
+            history: {
+                score: 0,
+                precision: 0,
+                recall: 0,
+                f1Score: 0,
+                expectedCount: 0,
+                identifiedCount: 0,
+                recognizedCount: 0,
+                recognizedRecords: [],
+                missedRecords: [],
+                incorrectRecords: []
+            },
+            age: {
+                score: 0,
+                precision: 0,
+                recall: 0,
+                f1Score: 0,
+                expectedCount: 0,
+                identifiedCount: 0,
+                recognizedCount: 0,
+                recognizedRecords: [],
+                missedRecords: [],
+                incorrectRecords: []
+            }
+        },
+        bodyEvaluation: {
+            score: 0,
+            height: {
+                expected: 0,
+                identified: 0,
+                difference: 0,
+                tolerance: 0,
+                score: 0,
+                isCorrect: false
+            },
+            weight: {
+                expected: 0,
+                identified: 0,
+                difference: 0,
+                tolerance: 0,
+                score: 0,
+                isCorrect: false
+            },
+            bloodPressure: {
+                systolic: {
+                    expected: 0,
+                    identified: 0,
+                    difference: 0,
+                    tolerance: 0,
+                    score: 0,
+                    isCorrect: false
+                },
+                diastolic: {
+                    expected: 0,
+                    identified: 0,
+                    difference: 0,
+                    tolerance: 0,
+                    score: 0,
+                    isCorrect: false
+                },
+                score: 0,
+                isCorrect: false
+            }
+        },
+        laboratoryEvaluation: {
+            recognition: {
+                totalExpected: 0,
+                totalSelected: 0,
+                correct: 0,
+                incorrect: 0,
+                missing: 0,
+                precision: 0,
+                recall: 0,
+                f1: 0
+            },
+            interpretation: {
+                totalEvaluated: 0,
+                correct: 0,
+                incorrect: 0,
+                score: 0,
+                details: []
+            }
+        },
+        predicciones: [],
+        mejorCoincidencia: {
+            disease_id: 0,
+            code: "",
+            name: "",
+            position: 0,
+            score: 0,
+            similarity: 0
+        },
+        hasMatch: false
     },
     fetchCase: async( caseId: Case["id"] ) => {
         set(() => ({
@@ -145,7 +258,9 @@ export const createCaseSlice : StateCreator<CaseSliceType> = ((set, get) => ({
     },
     diagnose: async( { caseId, diagnoseData } : { caseId: Case["id"] ; diagnoseData: DiagnosisDataForm } ) => {
         const data = await diagnose( { caseId, diagnoseData } );
-        console.log(data);
+        set(() => ({
+            diagnosisResults: data
+        }));
     },
     fetchSimulation: async( caseId: Case["id"] ) => {
         const clinicalCase = await getSimulation( caseId );

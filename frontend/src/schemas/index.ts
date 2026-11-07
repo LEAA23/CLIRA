@@ -307,3 +307,137 @@ export const DiagnoseDataSchema = z.object({
         z.number().nullable()
     )
 });
+
+//SQUEMA DIAGNOSIS RESPONSE
+
+export const PredictionSquema = z.object({
+    posicion: z.number(),
+    diagnostico: z.string(),
+    puntuacion: z.number()
+});
+
+export const DetailSquema = z.object({
+    id: z.number(),
+    name: z.string(),
+    expectedValue: z.number(),
+    studentValue: z.number(),
+    difference: z.number(),
+    isCorrect: z.boolean()
+});
+
+export const DiagnosisResultsSquema = z.object({
+    simulationResult: z.object({
+        diagnosis: z.string(),
+        is_correct: z.boolean()
+    }),
+    anamnesisEvaluation: z.object({
+        symptoms: z.object({
+            score: z.number(),
+            precision: z.number(),
+            recall: z.number(),
+            f1Score: z.number(),
+            expectedCount: z.number(),
+            identifiedCount: z.number(),
+            recognizedCount: z.number(),
+            recognizedSymptoms: z.array( z.string() ),
+            missedSymptoms: z.array( z.string() ),
+            incorrectSymptoms: z.array( z.string() )
+        }),
+        history: z.object({
+            score: z.number(),
+            precision: z.number(),
+            recall: z.number(),
+            f1Score: z.number(),
+            expectedCount: z.number(),
+            identifiedCount: z.number(),
+            recognizedCount: z.number(),
+            recognizedRecords: z.array( z.string() ),
+            missedRecords: z.array( z.string() ),
+            incorrectRecords: z.array( z.string() )
+        }),
+        age: z.object({
+            score: z.number(),
+            precision: z.number(),
+            recall: z.number(),
+            f1Score: z.number(),
+            expectedCount: z.number(),
+            identifiedCount: z.number(),
+            recognizedCount: z.number(),
+            recognizedRecords: z.array( z.string().or( z.null() ) ),
+            missedRecords: z.array( z.string().or( z.null() ) ),
+            incorrectRecords: z.array( z.string().or( z.null() ) )
+        })
+    }),
+    bodyEvaluation: z.object({
+        score: z.number(),
+        height: z.object({
+            expected: z.number(),
+            identified: z.number().or( z.null() ),
+            difference: z.number(),
+            tolerance: z.number(),
+            score: z.number(),
+            isCorrect: z.boolean()
+        }),
+        weight: z.object({
+            expected: z.number(),
+            identified: z.number().or( z.null() ),
+            difference: z.number(),
+            tolerance: z.number(),
+            score: z.number(),
+            isCorrect: z.boolean()
+        }),
+        bloodPressure: z.object({
+            systolic: z.object({
+                expected: z.number(),
+                identified: z.number().or( z.null() ),
+                difference: z.number(),
+                tolerance: z.number(),
+                score: z.number(),
+                isCorrect: z.boolean()
+            }),
+            diastolic: z.object({
+                expected: z.number(),
+                identified: z.number().or( z.null() ),
+                difference: z.number(),
+                tolerance: z.number(),
+                score: z.number(),
+                isCorrect: z.boolean()
+            }),
+            score: z.number(),
+            isCorrect: z.boolean()
+        })
+    }),
+    laboratoryEvaluation: z.object({
+        recognition: z.object({
+            totalExpected: z.number(),
+            totalSelected: z.number(),
+            correct: z.number(),
+            incorrect: z.number(),
+            missing: z.number(),
+            precision: z.number(),
+            recall: z.number(),
+            f1: z.number()
+        }),
+        interpretation: z.object({
+            totalEvaluated: z.number(),
+            correct: z.number(),
+            incorrect: z.number(),
+            score: z.number(),
+            details: z.array(
+                DetailSquema.or( z.null() )
+            )
+        })
+    }),
+    predicciones: z.array(
+        PredictionSquema.or( z.null() )
+    ),
+    mejorCoincidencia: z.object({
+        disease_id: z.number(),
+        code: z.string(),
+        name: z.string(),
+        position: z.number(),
+        score: z.number(),
+        similarity: z.number()
+    }),
+    hasMatch: z.boolean()
+})
