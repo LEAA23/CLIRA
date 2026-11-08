@@ -5,12 +5,23 @@ import { useNavigate } from "react-router-dom";
 import useSideConfetti from "../../hooks/useSideConfetti";
 import { useAppStore } from "../../stores/useAppStore";
 import { CheckCircleIcon, XCircleIcon } from "@heroicons/react/16/solid";
-import DiagnosticAccuracyChart from "../dashboard/charts/DiagnosticAccuracyChart";
 import SimulationDiagnosticAccuracyChart from "./charts/SimulationDiagnosticAccuracyChart";
 import SimulationPredictions from "./charts/SimulationPredictions";
 
 const CaseCompletedModal = () => {
     const showModal = useShowModal("caseCompleted");
+    const diseases = [
+        { code: "9_78650", name: "Dolor torácico" },
+        { code: "9_41401", name: "Enfermedad de las arterias coronarias" },
+        { code: "10_A419", name: "Sepsis, organismo no especificado" },
+        { code: "9_30500", name: "Abuso de alcohol, sin complicaciones" },
+        { code: "9_78659", name: "Otros tipos de dolor torácico" },
+        { code: "9_486", name: "Neumonía, organismo no especificado" },
+        { code: "10_F329", name: "Trastorno depresivo mayor, episodio único, no especificado" },
+        { code: "9_311", name: "Trastorno depresivo" },
+        { code: "10_Z5111", name: "Consulta para quimioterapia antineoplásica" },
+        { code: "10_I214", name: "Infarto agudo de miocardio sin elevación del segmento ST (IAMSEST)" }
+    ];
 
     const diagnosisResults = useAppStore( state => state.diagnosisResults );
 
@@ -22,7 +33,7 @@ const CaseCompletedModal = () => {
     const hasFired = useRef(false);
 
     useEffect(() => {
-        if (showModal && !hasFired.current) {
+        if (showModal && !hasFired.current && diagnosisResults.simulationResult.is_correct) {
             fireSideConfetti();
             hasFired.current = true;
         }
@@ -87,7 +98,10 @@ const CaseCompletedModal = () => {
                                             </div>
                                             <div className="mb-5">
                                                 <p className="text-gray-700 font-bold">Diagn&oacute;stico real</p>
-                                                <p className="text-gray-500 font-semibold">{ diagnosisResults.mejorCoincidencia?.name }</p>
+                                                <p className="text-gray-500 font-semibold">{ diagnosisResults.mejorCoincidencia !== null? 
+                                                diagnosisResults.mejorCoincidencia?.name : diseases.find(
+                                                    disease => disease.code === diagnosisResults.predicciones[0]?.diagnostico
+                                                )?.name ?? diagnosisResults.predicciones[0]?.diagnostico }</p>
                                             </div>
                                             <div className="mb-5">
                                                 <p className="text-gray-700 font-bold">Diagn&oacute;stico del estudiante</p>
@@ -98,9 +112,16 @@ const CaseCompletedModal = () => {
                                         <div>
                                             <p className="text-gray-500 font-bold flex justify-end">Exactitud del diagn&oacute;stico</p>
                                             <div className="mt-2 flex justify-end">
-                                                <SimulationDiagnosticAccuracyChart
-                                                    accuracy={ +( diagnosisResults.mejorCoincidencia?.similarity! * 100).toFixed(2) }
-                                                />
+                                                {diagnosisResults.mejorCoincidencia !== null? (
+                                                    <SimulationDiagnosticAccuracyChart
+                                                        accuracy={ +( diagnosisResults.mejorCoincidencia?.similarity! * 100).toFixed(2) }
+                                                    />
+
+                                                ): (
+                                                    <SimulationDiagnosticAccuracyChart
+                                                        accuracy={ 0 }
+                                                    />
+                                                )}
                                             </div>
                                         </div>
                                     </div>
