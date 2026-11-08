@@ -12,6 +12,8 @@ interface SimulationDiagnosticAccuracyChart {
 const SimulationDiagnosticAccuracyChart = ( { accuracy = 0 } : SimulationDiagnosticAccuracyChart ) => {
     const isPerfect = accuracy === 100;
 
+    
+
     return (
         <div className="flex flex-col items-center text-center">
             <div className="mx-auto aspect-square w-56 shrink-0">
