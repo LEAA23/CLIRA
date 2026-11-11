@@ -12,8 +12,10 @@ import { useForm } from "react-hook-form";
 import ErrorMessage from "../../components/ErrorMessage";
 import type { DiagnosisForm } from "../../types";
 import CaseCompletedModal from "../../components/simulation/CaseCompletedModal";
+import { toast } from "react-toastify";
 
 const SimulationView = () => {
+    
     // Referencia al canvas de la simulación
     const canvasRef = useRef<HTMLCanvasElement>(null);
 
@@ -21,7 +23,6 @@ const SimulationView = () => {
     const navigate = useNavigate();
 
     // Estados del diagnóstico
-    const [diagnosis, setDiagnosis] = useState("");
     const [savingDiagnosis, setSavingDiagnosis] = useState(false);
     const [diagnosisMessage, setDiagnosisMessage] = useState("");
 
@@ -53,44 +54,30 @@ const SimulationView = () => {
         fetchStudies();
     }, [getLaboratorystudies]);
 
+    // Cargamos la información del caso
+    useEffect(() => {
+        if (!Number.isInteger(caseId) || caseId <= 0) return;
+        fetchSimulation(caseId);
+    }, [caseId, fetchSimulation]);
+
     const clinicalCase = useAppStore(
         (state) => state.case
     );
 
     // Inicializamos la simulación cuando el caso esté cargado
     useEffect(() => {
+        //Obtenemos el valor actual de la refenrencia
         const canvas = canvasRef.current;
+        if( !canvas ) return;
 
-        // Esperamos a que exista un caso clínico válido
-        if (!canvas || !clinicalCase.id) return;
-
-        const patientExperience = new Experience(canvas);
-
-        return () => {
-            void patientExperience;
-        };
-
-    }, [clinicalCase.id, clinicalCase.simulationModel]);
-
-
-    // Cargamos la información del caso
-    useEffect(() => {
-        const fetchData = async () => {
-            if (!Number.isInteger(caseId) || caseId <= 0) {
-                return;
-            }
-
-            await fetchSimulation(caseId);
-            await getLaboratorystudies();
-        };
-
-        fetchData();
-    }, [caseId, fetchSimulation]);
+        //Instanciamos la simulacion del paciente
+        const patientExperience = new Experience( canvas );
+    }, []);
 
     // Abandonamos la simulación y regresamos al menú de casos clínicos
     // No se registra el caso como completado.
     const handleAbandonSimulation = () => {
-        navigate("/clinical-cases");
+        window.close();
     };
 
     // Enviamos el diagnóstico y registramos el caso como completado
@@ -143,7 +130,8 @@ const SimulationView = () => {
         }
         try {
             await completeCase(caseId);
-            await diagnose( { caseId, diagnoseData: diagnosisData } );
+            const message = await diagnose( { caseId, diagnoseData: diagnosisData } );
+            toast.info(message);
             navigate( location.pathname + "?caseCompleted=true" );
         } catch (error) {
             setDiagnosisMessage(

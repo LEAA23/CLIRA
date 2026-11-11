@@ -439,5 +439,11 @@ export const DiagnosisResultsSquema = z.object({
         score: z.number(),
         similarity: z.number()
     }).or( z.null() ),
-    hasMatch: z.boolean()
-})
+    hasMatch: z.boolean(),
+    message: z.string()
+});
+
+export const AlreadyCompletedSchema = z.object({
+    alreadyCompleted: z.literal(true),
+    message: z.string()
+});

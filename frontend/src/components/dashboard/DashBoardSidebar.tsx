@@ -2,10 +2,14 @@ import { PresentationChartLineIcon, Cog6ToothIcon, ChevronDoubleLeftIcon, Chevro
 import SideBarLink from "./SideBarLink";
 import { useState } from "react";
 
-const DashBoardSidebar = () => {
+interface DashBoardSidebarProps {
+  show: boolean;
+}
+
+const DashBoardSidebar = ( { show } : DashBoardSidebarProps ) => {
   const [isHidden, setIsHidden] = useState(false);
 
-  return (
+  if(show) return (
     <aside className=
       {`hidden md:block bg-blue-700 transform transition-all duration-500 ease-in-out relative
         ${isHidden? "w-0 p-0" : "w-55 p-7"}`

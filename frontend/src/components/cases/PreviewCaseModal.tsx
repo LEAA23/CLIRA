@@ -89,7 +89,7 @@ const PreviewCaseModal = ({started} : PreviewCaseModalProps) => {
                                                 </div>
 
                                                 <div className="min-w-0">
-                                                    <p className="break-words font-bold text-gray-800 dark:text-white">
+                                                    <p className="wrap-break-word font-bold text-gray-800 dark:text-white">
                                                         {clinicalCase.creator.name}{" "}
                                                         {clinicalCase.creator.lastName}
                                                     </p>
@@ -186,8 +186,10 @@ const PreviewCaseModal = ({started} : PreviewCaseModalProps) => {
                                         className="bg-blue-500 py-2 px-6 w-full block mt-10 text-white font-bold rounded-lg hover:cursor-pointer 
                                         hover:transition-colors hover:bg-blue-600 md:w-auto"
                                         onClick={() => {
-                                            navigate(`/simulation/${ clinicalCase.id }`)
-                                        }}
+                                            window.open(`/simulation/${clinicalCase.id}`, "_blank");                
+                                        }
+
+                                        }
                                     >
                                         
                                         {started? "Continuar" : "Comenzar"}

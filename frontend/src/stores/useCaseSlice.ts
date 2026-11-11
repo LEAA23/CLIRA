@@ -34,7 +34,7 @@ export type CaseSliceType = {
     }[];
     features: Record<string, number | null>;
     };
-    }) => Promise<void>;
+    }) => Promise<string | undefined>;
     updateCase: ({ caseId, formData }: { caseId: number; formData: FormData; }) => Promise<string | undefined>;
     deleteCaseImage: (caseId: number) => Promise<string | undefined>;
     deleteCaseModel: (caseId: number) => Promise<string | undefined>;
@@ -181,9 +181,11 @@ export const createCaseSlice : StateCreator<CaseSliceType> = ((set, get) => ({
             score: 0,
             similarity: 0
         },
-        hasMatch: false
+        hasMatch: false,
+        message: ""
     },
     fetchCase: async( caseId: Case["id"] ) => {
+        console.log(caseId)
         set(() => ({
             case: get().cases.find( clinicalCase => clinicalCase.id === caseId )
         }));
@@ -256,14 +258,20 @@ export const createCaseSlice : StateCreator<CaseSliceType> = ((set, get) => ({
             }
         }))
     },
-    diagnose: async( { caseId, diagnoseData } : { caseId: Case["id"] ; diagnoseData: DiagnosisDataForm } ) => {
-        const data = await diagnose( { caseId, diagnoseData } );
+    diagnose: async ({ caseId, diagnoseData }: { caseId: Case["id"]; diagnoseData: DiagnosisDataForm; }) => {
+        const data = await diagnose({ caseId, diagnoseData });
+
+        if ("alreadyCompleted" in data) {
+            return data.message;
+        }
+
         set(() => ({
             diagnosisResults: data
         }));
     },
     fetchSimulation: async( caseId: Case["id"] ) => {
         const clinicalCase = await getSimulation( caseId );
+        console.log(clinicalCase)
         set(() => ({
             case: clinicalCase
         }));
