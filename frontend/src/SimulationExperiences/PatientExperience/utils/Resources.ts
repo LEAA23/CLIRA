@@ -1,4 +1,4 @@
-import { GLTFLoader, RGBELoader, type GLTF } from "three/examples/jsm/Addons.js";
+import { GLTFLoader, HDRLoader, type GLTF } from "three/examples/jsm/Addons.js";
 import getSources from "../sources";
 import EventEmitter from "./EventEmitter";
 import { DataTexture, Texture, TextureLoader, type TextureEventMap } from "three";
@@ -12,7 +12,7 @@ interface SourceI {
 interface LoadersI {
     gltfLoader: GLTFLoader,
     textureLoader: TextureLoader,
-    hdriLoader: RGBELoader
+    hdriLoader: HDRLoader
 }
 
 //Esta clase se va a encargar de cargar los Modelos 3D que requeramos
@@ -42,7 +42,7 @@ export default class Resources extends EventEmitter {
         this.loaders = {
             gltfLoader : new GLTFLoader(),
             textureLoader : new TextureLoader(),
-            hdriLoader : new RGBELoader()
+            hdriLoader : new HDRLoader()
         }
     }
 

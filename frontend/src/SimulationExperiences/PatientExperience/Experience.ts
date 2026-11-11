@@ -88,4 +88,36 @@ export default class Experience {
         this.camera.update();
         this.renderer.update();
     }
+
+destroy() {
+    // 1. Detener listeners de resize y el tick (requestAnimationFrame)
+    this.sizes.off("resize");
+    this.time.off("tick");
+
+    // 2. Liberar geometrías, materiales y texturas de la escena
+    this.scene.traverse((child: any) => {
+        if (child instanceof THREE.Mesh) {
+            child.geometry.dispose();
+
+            const materials = Array.isArray(child.material)
+                ? child.material
+                : [child.material];
+
+            for (const material of materials) {
+                for (const key in material) {
+                    const value = material[key];
+                    if (value && typeof value.dispose === "function") {
+                        value.dispose(); // texturas, etc.
+                    }
+                }
+                material.dispose();
+            }
+        }
+    });
+
+    // 3. Liberar controles y renderer
+    this.camera.controls?.dispose();
+    this.renderer.instance.dispose();
+    this.renderer.instance.forceContextLoss();
+}
 }

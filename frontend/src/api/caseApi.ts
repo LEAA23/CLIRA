@@ -1,6 +1,6 @@
-import { isAxiosError } from "axios"
+import axios, { isAxiosError } from "axios"
 import api from "../lib/axios";
-import { CaseSchema, CasesSquema, PublicCasesSchema, laboratoryStudiesSchema, laboratoryStudyResultsSchema, MetricsSquema, DiagnosisResultsSquema } from "../schemas";
+import { CaseSchema, CasesSquema, PublicCasesSchema, laboratoryStudiesSchema, laboratoryStudyResultsSchema, MetricsSquema, DiagnosisResultsSquema, AlreadyCompletedSchema } from "../schemas";
 import type { Case, DiagnosisDataForm, Filter } from "../types";
 
 export const createCase = async( formData: FormData ) => {
@@ -173,19 +173,51 @@ export const getCorporalMetrics = async( { caseId, metricsSelected } : { caseId:
     }
 }
 
-export const diagnose = async( { caseId, diagnoseData } : { caseId: Case["id"] ; diagnoseData: DiagnosisDataForm } ) => {
+
+
+export const diagnose = async ({
+    caseId,
+    diagnoseData
+}: {
+    caseId: Case["id"];
+    diagnoseData: DiagnosisDataForm;
+}) => {
+
     try {
-        const { data } = await api.post(`/cases/${caseId}/diagnose`, diagnoseData );
-        const response = DiagnosisResultsSquema.safeParse( data );
-        if( response.data ) {
-            return response.data;
+        const { data } = await api.post(
+            `/cases/${caseId}/diagnose`,
+            diagnoseData
+        );
+
+        const response = DiagnosisResultsSquema.safeParse(data);
+
+        if (!response.success) {
+            console.error("Error validando diagnóstico:", response.error);
+            throw new Error("Respuesta de diagnóstico inválida");
         }
+
+        return response.data;
+
     } catch (error) {
-        if( isAxiosError( error ) && error.response ) {
-            throw new Error( error.response.data.error );
+
+        if (axios.isAxiosError(error)) {
+
+            if (error.response?.status === 400) {
+
+                const response = AlreadyCompletedSchema.safeParse(
+                    error.response.data
+                );
+
+                if (response.data) {
+                    return response.data;
+                }
+            }
         }
+
+        throw error;
     }
-}
+};
+
 
 export const completeCase = async (caseId: number) => {
     try {

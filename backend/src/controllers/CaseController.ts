@@ -421,6 +421,26 @@ export class CaseController {
         const transaction = await db.transaction();
 
         try {
+
+            // Verificar si el usuario ya realizó un diagnóstico para este caso
+            const existingResult = await SimulationResult.findOne({
+                where: {
+                    user_id: req.user.id,
+                    case_id: req.clinicalCase.id
+                },
+                transaction
+            });
+
+            if (existingResult) {
+                await transaction.rollback();
+
+                return res.status(400).json({
+                    alreadyCompleted: true,
+                    message: "Ya has realizado esta simulación."
+                });
+            }
+
+
             interface Prediction {
                 posicion: number;
                 diagnostico: string;
@@ -694,11 +714,7 @@ export class CaseController {
 
             return res.status(200).json({
                 simulationResult: {
-                    // id: simulationResultId.id,
-                    // case_id: req.clinicalCase.id,
-                    // user_id: req.user.id,
                     diagnosis,
-                    // diagnosis_embedding: diagnosisEmbedding,
                     is_correct: isCorrect
                 },
                 anamnesisEvaluation:  {
@@ -709,9 +725,9 @@ export class CaseController {
                 bodyEvaluation,
                 laboratoryEvaluation,
                 predicciones: data.predicciones,
-                // comparaciones: comparisons,
                 mejorCoincidencia: bestMatch,
-                hasMatch
+                hasMatch,
+                message: "Diagnostico realizado"
             });
 
         } catch (error) {

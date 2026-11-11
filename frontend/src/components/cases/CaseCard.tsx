@@ -158,8 +158,7 @@ const CaseCard = ( { id, title, description, previewImage, teacher_id, filters, 
             hover:transition-colors hover:bg-blue-600"
             onClick={(e) => {
                     e.stopPropagation();
-                    navigate(`/simulation/${ id }`);
-                }
+                    window.open(`/simulation/${id}`, "_blank");                }
             }
         >
             {started? "Continuar" : "Comenzar"}

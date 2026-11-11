@@ -7,17 +7,17 @@ interface SimulationPredictionsProps  {
         posicion: number;
         diagnostico: string,
         puntuacion: number
-    },
+    } | null,
     secondPrediction: {
         posicion: number;
         diagnostico: string,
         puntuacion: number
-    }
+    } | null,
     thirdthPrediction: {
         posicion: number;
         diagnostico: string,
         puntuacion: number
-    }
+    } | null
 }
 
 const SimulationPredictions = ( {  firstPrediction, secondPrediction, thirdthPrediction} : SimulationPredictionsProps ) => {
@@ -43,9 +43,9 @@ const SimulationPredictions = ( {  firstPrediction, secondPrediction, thirdthPre
   const data = [
   {
     name: 'Predicciones mas probables hechas por CLIRA AI',
-    aciertos: firstPrediction.puntuacion,
-    errores: secondPrediction.puntuacion,
-    caca: thirdthPrediction.puntuacion,
+    aciertos: firstPrediction?.puntuacion,
+    errores: secondPrediction?.puntuacion,
+    caca: thirdthPrediction?.puntuacion,
     amt: 2400,
   }
 ];
@@ -66,21 +66,21 @@ const SimulationPredictions = ( {  firstPrediction, secondPrediction, thirdthPre
                 <Legend/>
                 <Bar
                     dataKey="aciertos"
-                    name={ getDiseaseName( firstPrediction.diagnostico) }
+                    name={ getDiseaseName( firstPrediction?.diagnostico? firstPrediction?.diagnostico : "") }
                     fill="#8884d8"
                     radius={[10, 10, 0, 0]}
                 />
 
                 <Bar
                     dataKey="errores"
-                    name={ getDiseaseName( secondPrediction.diagnostico)}
+                    name={ getDiseaseName( secondPrediction?.diagnostico? secondPrediction?.diagnostico : "")}
                     fill="#82ca9d"
                     radius={[10, 10, 0, 0]}
                 />
 
                 <Bar
                     dataKey="caca"
-                    name={ getDiseaseName( thirdthPrediction.diagnostico)}
+                    name={ getDiseaseName( thirdthPrediction?.diagnostico? thirdthPrediction?.diagnostico : "")}
                     fill="#ffb700"
                     radius={[10, 10, 0, 0]}
                 />
