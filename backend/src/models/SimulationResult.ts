@@ -19,6 +19,8 @@ export class SimulationResult extends Model< InferAttributes<SimulationResult>, 
     declare resources_eficienty: number;
     declare performance: number;
     declare is_correct: CreationOptional<boolean | null>;
+
+    declare createdAt? : Date;
 }
 
 SimulationResult.init({
