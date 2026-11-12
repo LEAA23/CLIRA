@@ -597,7 +597,7 @@ export class CaseController {
             await SimulationPrediction.bulkCreate(predictions, { transaction });
 
             //Hacemos la comparacion entre la entrada del usuario y lo predicho por el modelo
-            const THRESHOLD = 0.50;
+            const THRESHOLD = 0.85;
 
             /**
              * EVALUACIONES

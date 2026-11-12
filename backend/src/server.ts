@@ -6,6 +6,7 @@ import groupsRoutes from "./routes/groupRoutes";
 import userRoutes from "./routes/userRoutes";
 import caseRoutes from "./routes/caseRoutes";
 import aiRoutes from "./routes/aiRoutes";
+import dashBoardRoutes from "./routes/dashBoardRoutes";
 import {authenticateConection} from "./config/db";
 import { corsOptions } from "./config/cors";
 import { seedFilters, seedFilterCategories } from "./utils/filterSeeder";
@@ -36,6 +37,7 @@ app.use( morgan("dev") );
 app.use( express.json() );
 
 app.use("/api/auth", authRoutes);
+app.use("/api/dashboard", dashBoardRoutes);
 app.use("/api/groups", groupsRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/cases", caseRoutes);
