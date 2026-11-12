@@ -521,6 +521,11 @@ export class CaseController {
                         "user_id",
                         "diagnosis",
                         "diagnosis_embedding",
+                        "diagnosis_accuracy",
+                        "successes",
+                        "errors",
+                        "resources_eficienty",
+                        "performance",
                         "is_correct",
                         "createdAt",
                         "updatedAt"
@@ -530,6 +535,11 @@ export class CaseController {
                         :userId,
                         :diagnosis,
                         CAST(:embedding AS vector),
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
                         NULL,
                         NOW(),
                         NOW()
@@ -638,16 +648,7 @@ export class CaseController {
             const hasMatch = bestMatch !== null;
             const isCorrect = hasMatch;
 
-            await SimulationResult.update({
-                is_correct: isCorrect
-            },
-            {
-                where: {
-                    id: simulationResultId.id
-                },
-                transaction
-            });
-
+            
             // Evaluar información clínica identificada
             const expectedRecords = await CaseRecord.findAll({
                 where: {
@@ -700,7 +701,6 @@ export class CaseController {
             );
 
             // Evaluar estudios seleccionados e interpretación de resultados
-
             const laboratoryEvaluation = evaluateLaboratoryStudies({
                 studentStudies: laboratoryStudies ?? [],
                 expectedStudies: expectedLaboratoryStudies.map(study => ({
@@ -709,6 +709,119 @@ export class CaseController {
                 }))
             });
 
+            // Éxitos de anamnesis
+// Éxitos de anamnesis
+const anamnesisSuccesses =
+    symptomEvaluation.recognizedCount +
+    historyEvaluation.recognizedCount +
+    ageEvaluation.recognizedCount;
+
+// Errores de anamnesis
+const anamnesisErrors =
+    symptomEvaluation.incorrectSymptoms.length +
+    symptomEvaluation.missedSymptoms.length +
+    historyEvaluation.incorrectRecords.length +
+    historyEvaluation.missedRecords.length +
+    ageEvaluation.incorrectRecords.length +
+    ageEvaluation.missedRecords.length;
+
+// Exploración física
+const bodyResults = [
+    bodyEvaluation.height?.isCorrect,
+    bodyEvaluation.weight?.isCorrect,
+    bodyEvaluation.bloodPressure?.systolic.isCorrect,
+    bodyEvaluation.bloodPressure?.diastolic.isCorrect
+].filter((value): value is boolean => value !== undefined);
+
+const bodySuccesses = bodyResults.filter(Boolean).length;
+const bodyErrors = bodyResults.length - bodySuccesses;
+
+// Laboratorios
+const laboratorySuccesses =
+    laboratoryEvaluation.recognition.correct +
+    laboratoryEvaluation.interpretation.correct;
+
+const laboratoryErrors =
+    laboratoryEvaluation.recognition.incorrect +
+    laboratoryEvaluation.recognition.missing +
+    laboratoryEvaluation.interpretation.incorrect;
+
+// Totales
+const successes =
+    anamnesisSuccesses +
+    bodySuccesses +
+    laboratorySuccesses;
+
+const errors =
+    anamnesisErrors +
+    bodyErrors +
+    laboratoryErrors;
+
+
+// ==========================================
+// EFICIENCIA DE RECURSOS
+// ==========================================
+
+const { precision, recall } =
+    laboratoryEvaluation.recognition;
+
+const resourcesEfficiency =
+    precision + recall > 0
+        ? (2 * precision * recall) /
+          (precision + recall) * 100
+        : 0;
+
+
+// ==========================================
+// RENDIMIENTO GENERAL
+// ==========================================
+
+// Anamnesis
+const anamnesisScore =
+    (
+        symptomEvaluation.f1Score +
+        historyEvaluation.f1Score +
+        ageEvaluation.f1Score
+    ) / 3;
+
+// Exploración física
+const physicalScore = bodyEvaluation.score ?? 0;
+
+// Laboratorios
+const laboratoryScore =
+    (
+        laboratoryEvaluation.recognition.f1 * 100 +
+        (laboratoryEvaluation.interpretation.score ?? 0)
+    ) / 2;
+
+// Diagnóstico: utilizar similarity, no score
+const diagnosisScore =
+    (bestMatch?.similarity ?? 0) * 100;
+
+// Rendimiento ponderado
+const performance =
+    anamnesisScore * 0.30 +
+    physicalScore * 0.20 +
+    laboratoryScore * 0.25 +
+    diagnosisScore * 0.25;
+
+
+            await SimulationResult.update({
+                is_correct: isCorrect,
+                diagnosis_accuracy: bestMatch?.similarity,
+                successes,
+                errors,
+                resources_eficienty: resourcesEfficiency,
+                performance
+            },
+            {
+                where: {
+                    id: simulationResultId.id
+                },
+                transaction
+            });
+
+            
             // Confirmar transacción
             await transaction.commit();
 
