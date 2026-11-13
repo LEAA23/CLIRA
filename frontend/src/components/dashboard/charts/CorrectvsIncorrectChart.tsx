@@ -2,52 +2,30 @@
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from "recharts";
 import { RechartsDevtools } from "@recharts/devtools";
 
-const CorrectvsIncorrectChart = () => {
-  //Datos de prueba
-  const data = [
-  {
-    name: 'Sim A',
-    aciertos: 4000,
-    errores: 2400,
-    amt: 2400,
-  },
-  {
-    name: 'Sim B',
-    aciertos: 3000,
-    errores: 1398,
-    amt: 2210,
-  },
-  {
-    name: 'Sim C',
-    aciertos: 2000,
-    errores: 9800,
-    amt: 2290,
-  },
-  {
-    name: 'Sim D',
-    aciertos: 2780,
-    errores: 3908,
-    amt: 2000,
-  },
-  {
-    name: 'Sim E',
-    aciertos: 1890,
-    errores: 4800,
-    amt: 2181,
-  },
-  {
-    name: 'Sim F',
-    aciertos: 2390,
-    errores: 3800,
-    amt: 2500,
-  },
-  {
-    name: 'Sim G',
-    aciertos: 3490,
-    errores: 4300,
-    amt: 2100,
-  },
-];
+interface Simulation {
+  id: number,
+  case_id: number,
+  diagnosis_accuracy: number;
+  successes: number;
+  errors: number;
+  resources_eficienty: number;
+  performance: number
+}
+
+interface CorrectvsIncorrectChartProps {
+  last_simulations: Simulation[]
+}
+
+const CorrectvsIncorrectChart = ( { last_simulations } : CorrectvsIncorrectChartProps ) => {
+
+  const data = last_simulations.map( simulation => {
+    return {
+      name: `Simulación ${simulation.case_id}`,
+      aciertos: simulation.successes,
+      errores: simulation.errors
+    }
+    
+  } )
 
 
   return (
@@ -58,14 +36,17 @@ const CorrectvsIncorrectChart = () => {
             data={data}
             margin={ { top: 5, right: 0, left: 0, bottom: 5 } }
             >
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="name"/>
-                <YAxis width="auto"/>
-                <Tooltip/>
-                <Legend/>
-                <Bar dataKey="aciertos" fill="#8884d8" activeBar={ { fill: "gold", stroke: "blue" } }  radius={[10, 10, 0, 0]}/>
-                <Bar dataKey="errores" fill="#82ca9d" activeBar={ { fill: "pink", stroke: "purple" } }  radius={[10, 10, 0, 0]}/>
-                <RechartsDevtools/>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="name"/>
+              <YAxis width={40} tick={{ fill: "#888888", fontSize: 12 }}
+                axisLine={true}
+                tickLine={true}
+              />                
+              <Tooltip/>
+              <Legend/>
+              <Bar dataKey="aciertos" fill="#8884d8" activeBar={ { fill: "gold", stroke: "blue" } }  radius={[10, 10, 0, 0]}/>
+              <Bar dataKey="errores" fill="#f26a8d" activeBar={ { fill: "pink", stroke: "purple" } }  radius={[10, 10, 0, 0]}/>
+              <RechartsDevtools/>
             </BarChart>
         </div>        
   )
