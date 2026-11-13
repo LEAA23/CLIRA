@@ -1,5 +1,5 @@
 import "react-circular-progressbar/dist/styles.css";
-import { use, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
 import CorrectvsIncorrectChart from "../../components/dashboard/charts/CorrectvsIncorrectChart";
 import DiagnosticAccuracyChart from "../../components/dashboard/charts/DiagnosticAccuracyChart";
@@ -100,7 +100,9 @@ const DashBoardView = () => {
         </h3>
 
         <div className="grid space-y-10 md:grid-cols-2 lg:grid-cols-3 lg:space-y-0 items-center justify-center text-center">
-          <DiagnosticAccuracyChart />
+          <DiagnosticAccuracyChart
+            value={ userMetrics.diagnosis_accuracy } 
+          />
 
           <div className="flex flex-col items-center">
             <ClockIcon className="h-15 text-gray-500" />
@@ -115,7 +117,9 @@ const DashBoardView = () => {
             <p>por simulación clínica.</p>
           </div>
 
-          <CorrectvsIncorrectChart />
+          <CorrectvsIncorrectChart 
+            last_simulations={ userMetrics.last_simulations }
+          />
         </div>
       </div>
 
@@ -126,7 +130,9 @@ const DashBoardView = () => {
             Reducción de errores
           </h3>
 
-          <ErrorReductionChart />
+          <ErrorReductionChart 
+            simulations={ userMetrics.error_reduction.history }
+          />
         </div>
 
         <div className="bg-white p-5 max-w-full rounded-2xl shadow mt-5">
@@ -134,7 +140,9 @@ const DashBoardView = () => {
             Uso eficiente de recursos
           </h3>
 
-          <ResourceEfficiencyChart />
+          <ResourceEfficiencyChart 
+            simulations={ userMetrics.resources_eficienty }
+          />
         </div>
       </div>
 
@@ -143,7 +151,9 @@ const DashBoardView = () => {
           Mejora en rendimiento
         </h3>
 
-        <PerformanceChart />
+        <PerformanceChart 
+          simulations={ userMetrics.performance }
+        />
       </div>
     </>
   );

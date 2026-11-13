@@ -5,8 +5,12 @@ import {
 
 import "react-circular-progressbar/dist/styles.css";
 
-const DiagnosticAccuracyChart = () => {
-    const accuracy: number = 50;
+interface DiagnosticAccuracyChartProps {
+    value: number;
+}
+
+const DiagnosticAccuracyChart = ( { value } : DiagnosticAccuracyChartProps ) => {
+    const accuracy = +( value * 100 ).toFixed(2);
     const isPerfect = accuracy === 100;
 
     return (
