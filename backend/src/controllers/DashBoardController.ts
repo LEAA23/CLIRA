@@ -41,22 +41,21 @@ export class DashBoardController {
         }));
 
         return res.json({
-            metrics: {
-                diagnosis_accuracy: metrics.reduce( (total, simulation) => total + simulation.diagnosis_accuracy , 0 ) / (metrics.length || 1),
-                last_simulations: metrics.sort( (a, b) => new Date(b.createdAt ?? 0).getTime() - new Date(a.createdAt ?? 0).getTime() ).slice(0, 5),
-                error_reduction: {
-                    current: errorReduction.at(-1)?.reduction ?? 0,
-                    history: errorReduction
-                },
-                resources_eficienty: metrics.map(metric =>({
-                    case_id: metric.case_id,
-                    resources_eficienty: metric.resources_eficienty
-                }) ),
-                performance: metrics.map(metric => ({
-                    case_id: metric.case_id,
-                    performance: metric.performance
-                }))
-            }
+            diagnosis_accuracy: metrics.reduce( (total, simulation) => total + simulation.diagnosis_accuracy , 0 ) / (metrics.length || 1),
+            last_simulations: metrics.sort( (a, b) => new Date(b.createdAt ?? 0).getTime() - new Date(a.createdAt ?? 0).getTime() ).slice(0, 5),
+            error_reduction: {
+                current: errorReduction.at(-1)?.reduction ?? 0,
+                history: errorReduction
+            },
+            resources_eficienty: metrics.map(metric =>({
+                case_id: metric.case_id,
+                resources_eficienty: metric.resources_eficienty
+            }) ),
+            performance: metrics.map(metric => ({
+                case_id: metric.case_id,
+                performance: metric.performance
+            }))
         })
+        
     }
 }

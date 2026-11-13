@@ -1,5 +1,5 @@
 import "react-circular-progressbar/dist/styles.css";
-import { useEffect, useState } from "react";
+import { use, useEffect, useState } from "react";
 
 import CorrectvsIncorrectChart from "../../components/dashboard/charts/CorrectvsIncorrectChart";
 import DiagnosticAccuracyChart from "../../components/dashboard/charts/DiagnosticAccuracyChart";
@@ -14,8 +14,13 @@ import {
 } from "@heroicons/react/16/solid";
 
 import { getCases, getCompletedCases } from "../../api/caseApi";
+import { useAppStore } from "../../stores/useAppStore";
 
 const DashBoardView = () => {
+
+  const getMetrics = useAppStore( state => state.getMetrics );
+  const userMetrics = useAppStore( state => state.userMetrics );
+
   const [completedCount, setCompletedCount] = useState<number | null>(null);
   const [pendingCount, setPendingCount] = useState<number | null>(null);
 
@@ -25,6 +30,7 @@ const DashBoardView = () => {
         const [cases, completed] = await Promise.all([
           getCases(),
           getCompletedCases(),
+          getMetrics()
         ]);
 
         if (!cases) {
@@ -48,7 +54,7 @@ const DashBoardView = () => {
   return (
     <>
       <h1 className="text-center font-bold text-5xl my-10 text-blue-500">
-        Dashboard
+        Dashboard 
       </h1>
 
       {/* Métricas principales */}

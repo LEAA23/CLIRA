@@ -447,3 +447,44 @@ export const AlreadyCompletedSchema = z.object({
     alreadyCompleted: z.literal(true),
     message: z.string()
 });
+
+//USER METRICS
+export const DashboardMetricsSquema = z.object({
+    diagnosis_accuracy: z.number(),
+    last_simulations: z.array(
+        z.object({
+            id: z.number(),
+            case_id: z.number(),
+            diagnosis_accuracy: z.number(),
+            successes: z.number(),
+            errors: z.number(),
+            resources_eficienty: z.number(),
+            performance: z.number()
+        })
+    ),
+    error_reduction: z.object({
+        current: z.number(),
+        history: z.array(
+            z.object({
+                simulation: z.number(),
+                case_id: z.number(),
+                errors: z.number(),
+                successes: z.number(),
+                error_rate: z.number(),
+                reduction: z.number()
+            })
+        )
+    }),
+    resources_eficienty: z.array(
+        z.object({
+            case_id: z.number(),
+            resources_eficienty: z.number()
+        })
+    ),
+    performance: z.array(
+        z.object({
+            case_id: z.number(),
+            performance: z.number()
+        })
+    )
+});
