@@ -1,5 +1,5 @@
 import z from "zod"
-import type { AuthSchema, CaseSchema, ChartOptionSchema, CommentSquema, DiagnoseDataSchema, DiagnosisResultsSquema, DiagnosisSchema, FilterSchema, GroupResponse, GroupShcema, GroupsSchema, laboratoryStudiesSchema, MembersOptionSchema, PostImageSchema, PostSchema, PostsSchema, SymptomSquema, UserProfileSchema, UserSchema, UserSearchSchema } from "../schemas"
+import type { AuthSchema, CaseSchema, ChartOptionSchema, CommentSquema, DashboardMetricsSquema, DiagnoseDataSchema, DiagnosisResultsSquema, DiagnosisSchema, FilterSchema, GroupResponse, GroupShcema, GroupsSchema, laboratoryStudiesSchema, MembersOptionSchema, PostImageSchema, PostSchema, PostsSchema, SymptomSquema, UserProfileSchema, UserSchema, UserSearchSchema } from "../schemas"
 
 /**
  * AUTH TYPES
@@ -78,3 +78,6 @@ export type DiagnosisDataForm = z.infer<typeof DiagnoseDataSchema>;
 
 
 export type DiagnosisResults = z.infer<typeof DiagnosisResultsSquema>;
+
+//DASHBOARD
+export type DashboardMetrics = z.infer<typeof DashboardMetricsSquema>;
