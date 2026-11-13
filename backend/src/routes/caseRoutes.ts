@@ -7,6 +7,7 @@ import { uploadFile } from "../middleware/uploadFile";
 import { isUserTeacher } from "../middleware/isUserTeacher";
 import { isValidGLB } from "../middleware/isValidGLB";
 import { caseExists } from "../middleware/caseExists";
+import { userHasAccessToCase } from "../middleware/userHasAccessToCase";
 
 const router =  Router();
 
@@ -86,7 +87,7 @@ router.post("/:caseId/askQuestion",
 
 router.post("/:caseId/corporalMetrics",
     authenticate,
-    caseExists,
+    userHasAccessToCase,
     param( "caseId" ).notEmpty().withMessage("El id del caso es obligatorio"),
     body("metricsSelected.*").isIn(["height", "weight", "bloodPreassure"]).withMessage("Una de las métricas seleccionadas no es válida"),
     body( "metricsSelected" ).isArray().withMessage("Debes seleccionar al menos una metrica"),
@@ -96,7 +97,7 @@ router.post("/:caseId/corporalMetrics",
 
 router.post("/:caseId/laboratoryStudies",
     authenticate,
-    caseExists,
+    userHasAccessToCase,
     param( "caseId" ).notEmpty().withMessage("El id del caso es obligatorio"),
     body( "laboratoryStudies" ).isArray().withMessage("Debes seleccionar al menos un estudio"),
     handleInputErrors,
@@ -105,7 +106,7 @@ router.post("/:caseId/laboratoryStudies",
 
 router.post("/:caseId/diagnose",
     authenticate,
-    caseExists,
+    userHasAccessToCase,
     param( "caseId" ).notEmpty().withMessage("El id del caso es obligatorio"),
     body("diagnosis").trim().notEmpty().withMessage("El diagnostico es obligatorio"),
     body("symptomsAndHistory").isArray().withMessage("Error al obtener los sintomas e historial"),
