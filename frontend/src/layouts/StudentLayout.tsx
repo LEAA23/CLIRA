@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { Outlet } from "react-router-dom";
+import { Outlet, useLocation } from "react-router-dom";
 import DashBoardHeader from "../components/dashboard/DashBoardHeader";
 import DashBoardFooter from "../components/dashboard/DashBoardFooter";
 import DashBoardSidebar from "../components/dashboard/DashBoardSidebar";
@@ -23,11 +23,16 @@ const StudentLayout = () => {
     }
   }, []);
 
+  const location = useLocation()
+  const show = location.pathname.includes("simulation")? false: true;
+
   return (
     <>
       <DashBoardHeader/>
       <main className="flex h-screen">
-        <DashBoardSidebar/>
+        <DashBoardSidebar
+          show={show}
+        />
         <section className="container mx-auto px-10 pb-10 flex flex-col overflow-y-scroll">
           <Outlet/>
         </section>

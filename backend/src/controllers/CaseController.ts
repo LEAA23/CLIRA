@@ -416,11 +416,32 @@ export class CaseController {
             symptomsAndHistory = [],
             laboratoryStudies = [],
             bodyMetrics = [],
-            features = {}
+            features = {},
+            durationSeconds
         } = req.body;
         const transaction = await db.transaction();
 
         try {
+
+            // Verificar si el usuario ya realizó un diagnóstico para este caso
+            const existingResult = await SimulationResult.findOne({
+                where: {
+                    user_id: req.user.id,
+                    case_id: req.clinicalCase.id
+                },
+                transaction
+            });
+
+            if (existingResult) {
+                await transaction.rollback();
+
+                return res.status(400).json({
+                    alreadyCompleted: true,
+                    message: "Ya has realizado esta simulación."
+                });
+            }
+
+
             interface Prediction {
                 posicion: number;
                 diagnostico: string;
@@ -501,6 +522,12 @@ export class CaseController {
                         "user_id",
                         "diagnosis",
                         "diagnosis_embedding",
+                        "diagnosis_accuracy",
+                        "successes",
+                        "errors",
+                        "resources_eficienty",
+                        "performance",
+                        "duration_seconds",
                         "is_correct",
                         "createdAt",
                         "updatedAt"
@@ -510,6 +537,12 @@ export class CaseController {
                         :userId,
                         :diagnosis,
                         CAST(:embedding AS vector),
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        :durationSeconds,
                         NULL,
                         NOW(),
                         NOW()
@@ -521,7 +554,8 @@ export class CaseController {
                         caseId: req.clinicalCase.id,
                         userId: req.user.id,
                         diagnosis,
-                        embedding: embeddingString
+                        embedding: embeddingString,
+                        durationSeconds: Math.max(0, Math.floor(Number(durationSeconds)))
                     },
                     transaction,
                     type: QueryTypes.SELECT
@@ -567,7 +601,7 @@ export class CaseController {
             await SimulationPrediction.bulkCreate(predictions, { transaction });
 
             //Hacemos la comparacion entre la entrada del usuario y lo predicho por el modelo
-            const THRESHOLD = 0.50;
+            const THRESHOLD = 0.85;
 
             /**
              * EVALUACIONES
@@ -618,16 +652,7 @@ export class CaseController {
             const hasMatch = bestMatch !== null;
             const isCorrect = hasMatch;
 
-            await SimulationResult.update({
-                is_correct: isCorrect
-            },
-            {
-                where: {
-                    id: simulationResultId.id
-                },
-                transaction
-            });
-
+            
             // Evaluar información clínica identificada
             const expectedRecords = await CaseRecord.findAll({
                 where: {
@@ -680,7 +705,6 @@ export class CaseController {
             );
 
             // Evaluar estudios seleccionados e interpretación de resultados
-
             const laboratoryEvaluation = evaluateLaboratoryStudies({
                 studentStudies: laboratoryStudies ?? [],
                 expectedStudies: expectedLaboratoryStudies.map(study => ({
@@ -689,16 +713,125 @@ export class CaseController {
                 }))
             });
 
+            // Éxitos de anamnesis
+// Éxitos de anamnesis
+const anamnesisSuccesses =
+    symptomEvaluation.recognizedCount +
+    historyEvaluation.recognizedCount +
+    ageEvaluation.recognizedCount;
+
+// Errores de anamnesis
+const anamnesisErrors =
+    symptomEvaluation.incorrectSymptoms.length +
+    symptomEvaluation.missedSymptoms.length +
+    historyEvaluation.incorrectRecords.length +
+    historyEvaluation.missedRecords.length +
+    ageEvaluation.incorrectRecords.length +
+    ageEvaluation.missedRecords.length;
+
+// Exploración física
+const bodyResults = [
+    bodyEvaluation.height?.isCorrect,
+    bodyEvaluation.weight?.isCorrect,
+    bodyEvaluation.bloodPressure?.systolic.isCorrect,
+    bodyEvaluation.bloodPressure?.diastolic.isCorrect
+].filter((value): value is boolean => value !== undefined);
+
+const bodySuccesses = bodyResults.filter(Boolean).length;
+const bodyErrors = bodyResults.length - bodySuccesses;
+
+// Laboratorios
+const laboratorySuccesses =
+    laboratoryEvaluation.recognition.correct +
+    laboratoryEvaluation.interpretation.correct;
+
+const laboratoryErrors =
+    laboratoryEvaluation.recognition.incorrect +
+    laboratoryEvaluation.recognition.missing +
+    laboratoryEvaluation.interpretation.incorrect;
+
+// Totales
+const successes =
+    anamnesisSuccesses +
+    bodySuccesses +
+    laboratorySuccesses;
+
+const errors =
+    anamnesisErrors +
+    bodyErrors +
+    laboratoryErrors;
+
+
+// ==========================================
+// EFICIENCIA DE RECURSOS
+// ==========================================
+
+const { precision, recall } =
+    laboratoryEvaluation.recognition;
+
+const resourcesEfficiency =
+    precision + recall > 0
+        ? (2 * precision * recall) /
+          (precision + recall) * 100
+        : 0;
+
+
+// ==========================================
+// RENDIMIENTO GENERAL
+// ==========================================
+
+// Anamnesis
+const anamnesisScore =
+    (
+        symptomEvaluation.f1Score +
+        historyEvaluation.f1Score +
+        ageEvaluation.f1Score
+    ) / 3;
+
+// Exploración física
+const physicalScore = bodyEvaluation.score ?? 0;
+
+// Laboratorios
+const laboratoryScore =
+    (
+        laboratoryEvaluation.recognition.f1 * 100 +
+        (laboratoryEvaluation.interpretation.score ?? 0)
+    ) / 2;
+
+// Diagnóstico: utilizar similarity, no score
+const diagnosisScore =
+    (bestMatch?.similarity ?? 0) * 100;
+
+// Rendimiento ponderado
+const performance =
+    anamnesisScore * 0.30 +
+    physicalScore * 0.20 +
+    laboratoryScore * 0.25 +
+    diagnosisScore * 0.25;
+
+
+            await SimulationResult.update({
+                is_correct: isCorrect,
+                diagnosis_accuracy: bestMatch?.similarity,
+                successes,
+                errors,
+                resources_eficienty: resourcesEfficiency,
+                performance
+            },
+            {
+                where: {
+                    id: simulationResultId.id
+                },
+                transaction
+            });
+
+            
             // Confirmar transacción
             await transaction.commit();
 
             return res.status(200).json({
                 simulationResult: {
-                    // id: simulationResultId.id,
-                    // case_id: req.clinicalCase.id,
-                    // user_id: req.user.id,
                     diagnosis,
-                    // diagnosis_embedding: diagnosisEmbedding,
                     is_correct: isCorrect
                 },
                 anamnesisEvaluation:  {
@@ -709,9 +842,9 @@ export class CaseController {
                 bodyEvaluation,
                 laboratoryEvaluation,
                 predicciones: data.predicciones,
-                // comparaciones: comparisons,
                 mejorCoincidencia: bestMatch,
-                hasMatch
+                hasMatch,
+                message: "Diagnostico realizado"
             });
 
         } catch (error) {

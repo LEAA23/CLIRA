@@ -11,16 +11,21 @@ import {
 import { useState } from "react";
 import SideBarLink from "./SideBarLink";
 
-const DashBoardSidebar = () => {
+interface DashBoardSidebarProps {
+  show: boolean;
+}
+
+const DashBoardSidebar = ({ show }: DashBoardSidebarProps) => {
   const [isHidden, setIsHidden] = useState(false);
+
+  if (!show) return null;
 
   return (
     <>
       {/* Menú lateral */}
       <aside
         className={`hidden md:block bg-blue-700 transform transition-all duration-500 ease-in-out relative
-          ${isHidden? "w-0 p-0" : "w-55 p-7"}`
-        }
+          ${isHidden ? "w-0 p-0" : "w-55 p-7"}`}
       >
         {!isHidden && (
           <nav className="relative z-10 mt-5 flex flex-col gap-5">
@@ -72,7 +77,7 @@ const DashBoardSidebar = () => {
         )}
       </aside>
 
-      {/* Botón independiente: siempre visible */}
+      {/* Botón independiente para contraer o expandir */}
       <button
         type="button"
         onClick={() => setIsHidden((previous) => !previous)}

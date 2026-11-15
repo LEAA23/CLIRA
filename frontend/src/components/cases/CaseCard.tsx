@@ -8,6 +8,7 @@ import {
 } from "@heroicons/react/16/solid";
 
 import { useLocation, useNavigate } from "react-router-dom";
+import type { MouseEvent } from "react";
 import type { Filter } from "../../types";
 import { useAppStore } from "../../stores/useAppStore";
 import CaseCardOptions from "./CaseCardOptions";
@@ -74,7 +75,7 @@ const CaseCard = ({
         );
     };
 
-    const handleAction = (e: React.MouseEvent<HTMLButtonElement>) => {
+    const handleAction = (e: MouseEvent<HTMLButtonElement>) => {
         e.stopPropagation();
 
         if (onAction) {
@@ -82,7 +83,11 @@ const CaseCard = ({
             return;
         }
 
-        navigate(`/simulation/${id}`);
+        window.open(
+            `/simulation/${id}`,
+            "_blank",
+            "noopener,noreferrer"
+        );
     };
 
     return (

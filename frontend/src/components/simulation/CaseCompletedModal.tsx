@@ -130,9 +130,9 @@ const CaseCompletedModal = () => {
                                         <h2 className="text-gray-700 font-bold text-2xl mb-5">Predicci&oacute;nes de CLIRA AI</h2>
                                         <div className="w-full">
                                             <SimulationPredictions
-                                            firstPrediction={ diagnosisResults.predicciones[0]! }
-                                            secondPrediction={ diagnosisResults.predicciones[1]!}
-                                            thirdthPrediction={ diagnosisResults.predicciones[2]! }
+                                            firstPrediction={ diagnosisResults.predicciones?.[0] }
+                                            secondPrediction={ diagnosisResults.predicciones?.[1]}
+                                            thirdthPrediction={ diagnosisResults.predicciones?.[2] }
                                             />
                                         </div>
 

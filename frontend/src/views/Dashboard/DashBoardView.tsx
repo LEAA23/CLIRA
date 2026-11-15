@@ -1,4 +1,3 @@
-
 import "react-circular-progressbar/dist/styles.css";
 import { useEffect, useState } from "react";
 
@@ -8,140 +7,238 @@ import ErrorReductionChart from "../../components/dashboard/charts/ErrorReductio
 import ResourceEfficiencyChart from "../../components/dashboard/charts/ResourceEfficiencyChart";
 import PerformanceChart from "../../components/dashboard/charts/PerformanceChart";
 
+import { getRanking } from "../../api/rankingApi";
+
 import {
-  CheckCircleIcon,
-  ClockIcon,
-  TrophyIcon,
+    CheckCircleIcon,
+    ClockIcon,
+    TrophyIcon,
 } from "@heroicons/react/16/solid";
 
 import { getCases, getCompletedCases } from "../../api/caseApi";
+import { useAppStore } from "../../stores/useAppStore";
+
+// Convierte los segundos a un formato legible.
+const formatDuration = (
+    totalSeconds: number | null | undefined
+): string => {
+    if (
+        totalSeconds === null ||
+        totalSeconds === undefined ||
+        !Number.isFinite(totalSeconds) ||
+        totalSeconds <= 0
+    ) {
+        return "Sin datos";
+    }
+
+    const minutes = Math.floor(totalSeconds / 60);
+    const seconds = Math.floor(totalSeconds % 60);
+
+    if (minutes === 0) {
+        return `${seconds} s`;
+    }
+
+    if (seconds === 0) {
+        return `${minutes} min`;
+    }
+
+    return `${minutes} min ${seconds} s`;
+};
 
 const DashBoardView = () => {
-  const [completedCount, setCompletedCount] = useState<number | null>(null);
-  const [pendingCount, setPendingCount] = useState<number | null>(null);
+    const getMetrics = useAppStore(state => state.getMetrics);
+    const userMetrics = useAppStore(state => state.userMetrics);
+    const userId = useAppStore(state => state.user.id);
 
-  useEffect(() => {
-    const loadCaseProgress = async () => {
-      try {
-        const [cases, completed] = await Promise.all([
-          getCases(),
-          getCompletedCases(),
-        ]);
+    const [completedCount, setCompletedCount] = useState<number | null>(null);
+    const [pendingCount, setPendingCount] = useState<number | null>(null);
+    const [rankPosition, setRankPosition] = useState<number | null>(null);
 
-        if (!cases) {
-          throw new Error("No se pudieron consultar los casos disponibles");
-        }
+    // Carga los casos y las métricas del dashboard.
+    useEffect(() => {
+        const loadDashboard = async () => {
+            try {
+                const [cases, completed] = await Promise.all([
+                    getCases(),
+                    getCompletedCases(),
+                    getMetrics()
+                ]);
 
-        const totalCases = cases.length;
+                if (!cases) {
+                    throw new Error(
+                        "No se pudieron consultar los casos disponibles"
+                    );
+                }
 
-        setCompletedCount(completed);
-        setPendingCount(Math.max(0, totalCases - completed));
-      } catch (error) {
-        console.error("Error al cargar el progreso de los casos:", error);
-        setCompletedCount(null);
-        setPendingCount(null);
-      }
-    };
+                const totalCases = cases.length;
 
-    loadCaseProgress();
-  }, []);
+                setCompletedCount(completed);
+                setPendingCount(Math.max(0, totalCases - completed));
+            } catch (error) {
+                console.error("Error al cargar el dashboard:", error);
 
-  return (
-    <>
-      <h1 className="text-center font-bold text-5xl my-10 text-blue-500">
-        Dashboard
-      </h1>
+                setCompletedCount(null);
+                setPendingCount(null);
+            }
+        };
 
-      {/* Métricas principales */}
-      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-x-5 mb-5">
-        <div className="bg-white p-5 max-w-full rounded-2xl shadow mt-5">
-          <h3 className="flex items-center font-bold text-gray-500">
-            <CheckCircleIcon className="h-6 mr-3" />
-            Casos completados
-          </h3>
+        void loadDashboard();
+    }, [getMetrics]);
 
-          <p className="text-7xl font-bold text-center bg-linear-to-r from-blue-500 to-blue-50 bg-clip-text text-transparent">
-            {completedCount ?? "—"}
-          </p>
-        </div>
+    // Obtiene la posición real del usuario en el ranking.
+    useEffect(() => {
+        let active = true;
 
-        <div className="bg-white p-5 max-w-full rounded-2xl shadow mt-5">
-          <h3 className="flex items-center font-bold text-gray-500">
-            <ClockIcon className="h-6 mr-3" />
-            Casos pendientes
-          </h3>
+        const loadUserRanking = async () => {
+            if (userId == null) {
+                setRankPosition(null);
+                return;
+            }
 
-          <p className="text-7xl font-bold text-center bg-linear-to-r from-blue-500 to-blue-50 bg-clip-text text-transparent">
-            {pendingCount ?? "—"}
-          </p>
-        </div>
+            try {
+                const ranking = await getRanking();
 
-        <div className="bg-white p-5 max-w-full rounded-2xl shadow mt-5">
-          <h3 className="flex items-center font-bold text-gray-500">
-            <TrophyIcon className="h-6 mr-3" />
-            Ranking
-          </h3>
+                const currentUser = ranking.find(
+                    entry => Number(entry.id) === Number(userId)
+                );
 
-          <p className="text-7xl font-bold text-center bg-linear-to-r from-blue-500 to-blue-50 bg-clip-text text-transparent">
-            {"4"}
-          </p>
-        </div>
-      </div>
+                if (active) {
+                    setRankPosition(currentUser?.position ?? null);
+                }
+            } catch (error) {
+                console.error(
+                    "Error al obtener la posición del usuario:",
+                    error
+                );
 
-      {/* Rendimiento diagnóstico */}
-      <div className="bg-white p-5 max-w-full mx-auto rounded-2xl shadow w-full">
-        <h3 className="text-2xl font-bold mb-5 text-gray-500">
-          Rendimiento Diagnóstico
-        </h3>
+                if (active) {
+                    setRankPosition(null);
+                }
+            }
+        };
 
-        <div className="grid space-y-10 md:grid-cols-2 lg:grid-cols-3 lg:space-y-0 items-center justify-center text-center">
-          <DiagnosticAccuracyChart />
+        void loadUserRanking();
 
-          <div className="flex flex-col items-center">
-            <ClockIcon className="h-15 text-gray-500" />
+        return () => {
+            active = false;
+        };
+    }, [userId]);
 
-            <h3 className="text-5xl font-bold text-gray-600">
-              <span className="text-7xl bg-linear-to-r from-blue-500 to-blue-200 bg-clip-text text-transparent">
-                {"12"}
-              </span>{" "}
-              minutos
-            </h3>
+    return (
+        <>
+            <h1 className="text-center font-bold text-5xl my-10 text-blue-500">
+                Dashboard
+            </h1>
 
-            <p>por simulación clínica.</p>
-          </div>
+            {/* Métricas principales */}
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-x-5 mb-5">
 
-          <CorrectvsIncorrectChart />
-        </div>
-      </div>
+                {/* Casos completados */}
+                <div className="bg-white p-5 max-w-full rounded-2xl shadow mt-5">
+                    <h3 className="flex items-center font-bold text-gray-500">
+                        <CheckCircleIcon className="h-6 mr-3" />
+                        Casos completados
+                    </h3>
 
-      {/* Métricas de desempeño */}
-      <div className="grid md:grid-cols-2 gap-x-5">
-        <div className="bg-white p-5 max-w-full rounded-2xl shadow mt-5">
-          <h3 className="text-2xl font-bold mb-5 text-gray-500">
-            Reducción de errores
-          </h3>
+                    <p className="text-7xl font-bold text-center bg-linear-to-r from-blue-500 to-blue-50 bg-clip-text text-transparent">
+                        {completedCount ?? "—"}
+                    </p>
+                </div>
 
-          <ErrorReductionChart />
-        </div>
+                {/* Casos pendientes */}
+                <div className="bg-white p-5 max-w-full rounded-2xl shadow mt-5">
+                    <h3 className="flex items-center font-bold text-gray-500">
+                        <ClockIcon className="h-6 mr-3" />
+                        Casos pendientes
+                    </h3>
 
-        <div className="bg-white p-5 max-w-full rounded-2xl shadow mt-5">
-          <h3 className="text-2xl font-bold mb-5 text-gray-500">
-            Uso eficiente de recursos
-          </h3>
+                    <p className="text-7xl font-bold text-center bg-linear-to-r from-blue-500 to-blue-50 bg-clip-text text-transparent">
+                        {pendingCount ?? "—"}
+                    </p>
+                </div>
 
-          <ResourceEfficiencyChart />
-        </div>
-      </div>
+                {/* Ranking real */}
+                <div className="bg-white p-5 max-w-full rounded-2xl shadow mt-5">
+                    <h3 className="flex items-center font-bold text-gray-500">
+                        <TrophyIcon className="h-6 mr-3" />
+                        Ranking
+                    </h3>
 
-      <div className="bg-white p-5 max-w-full rounded-2xl shadow mt-5">
-        <h3 className="text-2xl font-bold mb-5 text-gray-500">
-          Mejora en rendimiento
-        </h3>
+                    <p className="text-7xl font-bold text-center bg-linear-to-r from-blue-500 to-blue-50 bg-clip-text text-transparent">
+                        {rankPosition !== null
+                            ? `#${rankPosition}`
+                            : "—"}
+                    </p>
+                </div>
+            </div>
 
-        <PerformanceChart />
-      </div>
-    </>
-  );
+            {/* Rendimiento diagnóstico */}
+            <div className="bg-white p-5 max-w-full mx-auto rounded-2xl shadow w-full">
+                <h3 className="text-2xl font-bold mb-5 text-gray-500">
+                    Rendimiento Diagnóstico
+                </h3>
+
+                <div className="grid space-y-10 md:grid-cols-2 lg:grid-cols-3 lg:space-y-0 items-center justify-center text-center">
+                    <DiagnosticAccuracyChart
+                        value={userMetrics.diagnosis_accuracy}
+                    />
+
+                    {/* Tiempo promedio por simulación */}
+                    <div className="flex flex-col items-center">
+                        <ClockIcon className="h-15 text-gray-500" />
+
+                        <p className="text-gray-500 font-bold mt-3">
+                            Tiempo por simulación
+                        </p>
+
+                        <h3 className="text-4xl font-bold text-blue-500 mt-2">
+                            {formatDuration(
+                                userMetrics.average_duration_seconds
+                            )}
+                        </h3>
+                    </div>
+
+                    <CorrectvsIncorrectChart
+                        last_simulations={userMetrics.last_simulations}
+                    />
+                </div>
+            </div>
+
+            {/* Métricas de desempeño */}
+            <div className="grid md:grid-cols-2 gap-x-5">
+                <div className="bg-white p-5 max-w-full rounded-2xl shadow mt-5">
+                    <h3 className="text-2xl font-bold mb-5 text-gray-500">
+                        Reducción de errores
+                    </h3>
+
+                    <ErrorReductionChart
+                        simulations={userMetrics.error_reduction.history}
+                    />
+                </div>
+
+                <div className="bg-white p-5 max-w-full rounded-2xl shadow mt-5">
+                    <h3 className="text-2xl font-bold mb-5 text-gray-500">
+                        Uso eficiente de recursos
+                    </h3>
+
+                    <ResourceEfficiencyChart
+                        simulations={userMetrics.resources_eficienty}
+                    />
+                </div>
+            </div>
+
+            {/* Rendimiento */}
+            <div className="bg-white p-5 max-w-full rounded-2xl shadow mt-5">
+                <h3 className="text-2xl font-bold mb-5 text-gray-500">
+                    Mejora en rendimiento
+                </h3>
+
+                <PerformanceChart
+                    simulations={userMetrics.performance}
+                />
+            </div>
+        </>
+    );
 };
 
 export default DashBoardView;

@@ -88,4 +88,47 @@ export default class Experience {
         this.camera.update();
         this.renderer.update();
     }
+
+destroy() {
+    // Detener los eventos de actualización.
+    this.sizes.off("resize");
+    this.time.off("tick");
+
+    // Liberar los recursos de la escena.
+    this.scene.traverse((child) => {
+        if (child instanceof THREE.Mesh) {
+            child.geometry.dispose();
+
+            const materials = Array.isArray(child.material)
+                ? child.material
+                : [child.material];
+
+            materials.forEach((material) => {
+                for (const key in material) {
+                    const value = (material as any)[key];
+
+                    if (value && typeof value.dispose === "function") {
+                        value.dispose();
+                    }
+                }
+
+                material.dispose();
+            });
+        }
+    });
+
+    // Liberar controles y renderer.
+    this.camera.controls?.dispose();
+    this.renderer.instance.dispose();
+
+    // Eliminar la referencia global.
+    if (window.experience === this) {
+        window.experience = undefined as unknown as Experience;
+    }
+
+    // Permitir crear una nueva instancia al abrir otro caso.
+    if (instance === this) {
+        instance = null;
+    }
+}
 }

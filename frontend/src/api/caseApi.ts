@@ -1,5 +1,4 @@
-
-import { isAxiosError } from "axios";
+import axios, { isAxiosError } from "axios";
 import api from "../lib/axios";
 import {
     CaseSchema,
@@ -8,7 +7,8 @@ import {
     laboratoryStudiesSchema,
     laboratoryStudyResultsSchema,
     MetricsSquema,
-    DiagnosisResultsSquema
+    DiagnosisResultsSquema,
+    AlreadyCompletedSchema
 } from "../schemas";
 import type {
     Case,
@@ -17,30 +17,31 @@ import type {
     PublicCase
 } from "../types";
 
-export const createCase = async( formData: FormData ) => {
+export const createCase = async (formData: FormData) => {
     try {
-        const {data} = await api.post<string>("/cases", formData);
+        const { data } = await api.post<string>("/cases", formData);
         return data;
     } catch (error) {
-        if( isAxiosError(error) && error.response ) {
-            throw new Error( error.response.data.error );
+        if (isAxiosError(error) && error.response) {
+            throw new Error(error.response.data.error);
         }
     }
-}
+};
 
-export const getCases = async() => {
+export const getCases = async () => {
     try {
         const { data } = await api("/cases");
-        const response = CasesSquema.safeParse( data.cases );
-        if( response.data ) {
+        const response = CasesSquema.safeParse(data.cases);
+
+        if (response.data) {
             return response.data;
         }
     } catch (error) {
-        if( isAxiosError( error ) && error.response ) {
-            throw new Error( error.response.data.error );
+        if (isAxiosError(error) && error.response) {
+            throw new Error(error.response.data.error);
         }
     }
-}
+};
 
 export const getPublicCases = async (): Promise<PublicCase[]> => {
     try {
@@ -60,7 +61,6 @@ export const getPublicCases = async (): Promise<PublicCase[]> => {
         }
 
         return response.data;
-
     } catch (error) {
         if (isAxiosError(error) && error.response) {
             throw new Error(
@@ -73,69 +73,104 @@ export const getPublicCases = async (): Promise<PublicCase[]> => {
     }
 };
 
-export const updateCase = async( { caseId, formData } : { caseId: Case["id"] ; formData: FormData } ) => {
+export const updateCase = async ({
+    caseId,
+    formData
+}: {
+    caseId: Case["id"];
+    formData: FormData;
+}) => {
     try {
-        const { data } = await api.patch<string>(`/cases/${caseId}`, formData );
+        const { data } = await api.patch<string>(
+            `/cases/${caseId}`,
+            formData
+        );
+
         return data;
     } catch (error) {
-        if( isAxiosError( error ) && error.response ) {
-            throw new Error( error.response.data.error );
+        if (isAxiosError(error) && error.response) {
+            throw new Error(error.response.data.error);
         }
     }
-}
+};
 
-export const deleteCaseImage = async( caseId : Case["id"] ) => {
+export const deleteCaseImage = async (caseId: Case["id"]) => {
     try {
-        const { data } = await api.patch<string>(`/cases/${caseId}/deleteCaseImage`);
+        const { data } = await api.patch<string>(
+            `/cases/${caseId}/deleteCaseImage`
+        );
+
         return data;
     } catch (error) {
-        if( isAxiosError( error ) && error.response ) {
-            throw new Error( error.response.data.error );
+        if (isAxiosError(error) && error.response) {
+            throw new Error(error.response.data.error);
         }
     }
-}
+};
 
-export const deleteCaseModel = async( caseId : Case["id"] ) => {
+export const deleteCaseModel = async (caseId: Case["id"]) => {
     try {
-        const { data } = await api.patch<string>(`/cases/${caseId}/deleteCaseModel`);
+        const { data } = await api.patch<string>(
+            `/cases/${caseId}/deleteCaseModel`
+        );
+
         return data;
     } catch (error) {
-        if( isAxiosError( error ) && error.response ) {
-            throw new Error( error.response.data.error );
+        if (isAxiosError(error) && error.response) {
+            throw new Error(error.response.data.error);
         }
     }
-}
+};
 
-export const deleteCase = async( caseId : Case["id"] ) => {
+export const deleteCase = async (caseId: Case["id"]) => {
     try {
         const { data } = await api.delete<string>(`/cases/${caseId}`);
         return data;
     } catch (error) {
-        if( isAxiosError( error ) && error.response ) {
-            throw new Error( error.response.data.error );
+        if (isAxiosError(error) && error.response) {
+            throw new Error(error.response.data.error);
         }
     }
-}
+};
 
-export const getLaboratorystudies = async() => {
+export const getLaboratorystudies = async () => {
     try {
-        const { data: { laboratoryStudies } } = await api.get("/cases/laboratoryStudies");
-        const response = laboratoryStudiesSchema.safeParse( laboratoryStudies );
-        if( response.data ) {
+        const {
+            data: { laboratoryStudies }
+        } = await api.get("/cases/laboratoryStudies");
+
+        const response = laboratoryStudiesSchema.safeParse(
+            laboratoryStudies
+        );
+
+        if (response.data) {
             return response.data;
         }
     } catch (error) {
-        if( isAxiosError( error ) && error.response ) {
-            throw new Error( error.response.data.error );
+        if (isAxiosError(error) && error.response) {
+            throw new Error(error.response.data.error);
         }
     }
-}
+};
 
-export const getPatientLaboratorystudies = async ({ caseId, patientlaboratoryStudies }: { caseId: Case["id"]; patientlaboratoryStudies: number[]; }) => {
+export const getPatientLaboratorystudies = async ({
+    caseId,
+    patientlaboratoryStudies
+}: {
+    caseId: Case["id"];
+    patientlaboratoryStudies: number[];
+}) => {
     try {
-        const { data: { laboratoryResults } } = await api.post(`/cases/${caseId}/laboratoryStudies`, { laboratoryStudies: patientlaboratoryStudies });
+        const {
+            data: { laboratoryResults }
+        } = await api.post(
+            `/cases/${caseId}/laboratoryStudies`,
+            { laboratoryStudies: patientlaboratoryStudies }
+        );
 
-        const response = laboratoryStudyResultsSchema.safeParse(laboratoryResults);
+        const response = laboratoryStudyResultsSchema.safeParse(
+            laboratoryResults
+        );
 
         if (!response.success) {
             console.error(response.error);
@@ -143,7 +178,6 @@ export const getPatientLaboratorystudies = async ({ caseId, patientlaboratoryStu
         }
 
         return response.data;
-
     } catch (error) {
         if (isAxiosError(error) && error.response) {
             throw new Error(error.response.data.error);
@@ -153,47 +187,98 @@ export const getPatientLaboratorystudies = async ({ caseId, patientlaboratoryStu
     }
 };
 
-export const getSimulation = async( caseId: Case["id"] ) => {
+export const getSimulation = async (caseId: Case["id"]) => {
     try {
-        const { data: { clinicalCase } } = await api.get(`/cases/${caseId}`);
-        const response = CaseSchema.safeParse( clinicalCase );
-        if( response.data ) {
-            return response.data;
-        }
-    } catch (error) {
-        if( isAxiosError( error ) && error.response ) {
-            throw new Error( error.response.data.error );
-        }
-    }
-}
+        const {
+            data: { clinicalCase }
+        } = await api.get(`/cases/${caseId}`);
 
-export const getCorporalMetrics = async( { caseId, metricsSelected } : { caseId: Case["id"] ; metricsSelected: string[] } ) => {
-    try {
-        const { data: { metrics } } = await api.post(`/cases/${caseId}/corporalMetrics`, { caseId, metricsSelected } );
-        const response = MetricsSquema.safeParse( metrics );
-        if( response.data ) {
-            return response.data;
-        }
-    } catch (error) {
-        if( isAxiosError( error ) && error.response ) {
-            throw new Error( error.response.data.error );
-        }
-    }
-}
+        const response = CaseSchema.safeParse(clinicalCase);
 
-export const diagnose = async( { caseId, diagnoseData } : { caseId: Case["id"] ; diagnoseData: DiagnosisDataForm } ) => {
-    try {
-        const { data } = await api.post(`/cases/${caseId}/diagnose`, diagnoseData );
-        const response = DiagnosisResultsSquema.safeParse( data );
-        if( response.data ) {
+        if (response.data) {
             return response.data;
         }
     } catch (error) {
-        if( isAxiosError( error ) && error.response ) {
-            throw new Error( error.response.data.error );
+        if (isAxiosError(error) && error.response) {
+            throw new Error(error.response.data.error);
         }
     }
-}
+};
+
+export const getCorporalMetrics = async ({
+    caseId,
+    metricsSelected
+}: {
+    caseId: Case["id"];
+    metricsSelected: string[];
+}) => {
+    try {
+        const {
+            data: { metrics }
+        } = await api.post(
+            `/cases/${caseId}/corporalMetrics`,
+            { caseId, metricsSelected }
+        );
+
+        const response = MetricsSquema.safeParse(metrics);
+
+        if (response.data) {
+            return response.data;
+        }
+    } catch (error) {
+        if (isAxiosError(error) && error.response) {
+            throw new Error(error.response.data.error);
+        }
+    }
+};
+
+// Ahora también envía la duración de cada intento de simulación.
+export const diagnose = async ({
+    caseId,
+    diagnoseData,
+    durationSeconds
+}: {
+    caseId: Case["id"];
+    diagnoseData: DiagnosisDataForm;
+    durationSeconds: number;
+}) => {
+    try {
+        const { data } = await api.post(
+            `/cases/${caseId}/diagnose`,
+            {
+                ...diagnoseData,
+                durationSeconds
+            }
+        );
+
+        const response = DiagnosisResultsSquema.safeParse(data);
+
+        if (!response.success) {
+            console.error(
+                "Error validando diagnóstico:",
+                response.error
+            );
+
+            throw new Error("Respuesta de diagnóstico inválida");
+        }
+
+        return response.data;
+    } catch (error) {
+        if (axios.isAxiosError(error)) {
+            if (error.response?.status === 400) {
+                const response = AlreadyCompletedSchema.safeParse(
+                    error.response.data
+                );
+
+                if (response.success) {
+                    return response.data;
+                }
+            }
+        }
+
+        throw error;
+    }
+};
 
 export const completeCase = async (caseId: number) => {
     try {
@@ -205,7 +290,8 @@ export const completeCase = async (caseId: number) => {
     } catch (error) {
         if (isAxiosError(error) && error.response) {
             throw new Error(
-                error.response.data.error || "No se pudo completar el caso"
+                error.response.data.error ||
+                "No se pudo completar el caso"
             );
         }
 
@@ -230,7 +316,7 @@ export const getCompletedCases = async (): Promise<number> => {
 
         throw error;
     }
-}
+};
 
 export type FilterCategory = {
     id: number;
