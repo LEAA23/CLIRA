@@ -176,10 +176,11 @@ const GroupView = () => {
         <div className="clira-page clira-page--groups mx-auto min-h-full w-full max-w-7xl px-4 pb-12">
 
             {/* REGRESAR */}
-            <div className="mb-6">
+            <div className="my-6">
                 <Link
                     to="/groups"
-                    className="inline-flex items-center gap-2 font-semibold text-blue-600 transition hover:text-blue-800"
+                    className="inline-flex items-center gap-2 py-2 px-4 font-bold rounded-lg text-white transition 
+                    bg-red-400 hover:bg-red-500"
                 >
                     <ArrowLeftIcon className="h-5 w-5" />
                     Mis grupos
@@ -212,19 +213,14 @@ const GroupView = () => {
 
                 <div className="relative z-10 flex min-h-[300px] flex-col justify-end p-7 text-white md:min-h-[360px] md:p-10">
 
-                    <div className="mb-5 flex w-fit items-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 py-2 text-sm font-semibold text-white shadow-lg backdrop-blur-md">
-                        <AcademicCapIcon className="h-5 w-5 text-cyan-300" />
-                        Aula virtual CLIRA
-                    </div>
-
                     <h1 className="max-w-3xl text-3xl font-black tracking-tight drop-shadow-lg md:text-5xl">
                         {group.name}
                     </h1>
 
                     <div className="mt-6 flex flex-wrap items-center gap-3">
 
-                        <div className="flex items-center gap-3 rounded-xl border border-white/15 bg-white/10 px-4 py-3 backdrop-blur-md">
-                            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-cyan-400/20">
+                        <div className="flex items-center gap-3 rounded-lg border border-white/15 bg-white/10 px-4 py-3 backdrop-blur-md">
+                            <div className="flex h-10 w-10 items-center justify-center">
                                 <AcademicCapIcon className="h-6 w-6 text-cyan-200" />
                             </div>
 
@@ -236,8 +232,8 @@ const GroupView = () => {
                             </div>
                         </div>
 
-                        <div className="flex items-center gap-3 rounded-xl border border-white/15 bg-white/10 px-4 py-3 backdrop-blur-md">
-                            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-purple-400/20">
+                        <div className="flex items-center gap-3 rounded-lg border border-white/15 bg-white/10 px-4 py-3 backdrop-blur-md">
+                            <div className="flex h-10 w-10 items-center justify-center">
                                 <UsersIcon className="h-6 w-6 text-purple-200" />
                             </div>
 
@@ -259,7 +255,7 @@ const GroupView = () => {
                 <button
                     type="button"
                     onClick={() => setActiveTab("tablon")}
-                    className={`flex items-center gap-2 border-b-2 px-6 py-4 font-bold transition ${
+                    className={`flex items-center gap-2 border-b-2 px-6 py-4 font-bold transition duration-400 ease-in-out cursor-pointer ${
                         activeTab === "tablon"
                             ? "border-blue-600 text-blue-600"
                             : "border-transparent text-gray-500 hover:text-blue-500"
@@ -272,7 +268,7 @@ const GroupView = () => {
                 <button
                     type="button"
                     onClick={() => setActiveTab("personas")}
-                    className={`flex items-center gap-2 border-b-2 px-6 py-4 font-bold transition ${
+                    className={`flex items-center gap-2 border-b-2 px-6 py-4 font-bold transition duration-400 ease-in-out cursor-pointer ${
                         activeTab === "personas"
                             ? "border-blue-600 text-blue-600"
                             : "border-transparent text-gray-500 hover:text-blue-500"
@@ -294,7 +290,7 @@ const GroupView = () => {
                     <div className="mb-7 flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
 
                         <div>
-                            <h2 className="text-2xl font-extrabold text-gray-800 dark:text-purple-100">
+                            <h2 className="text-2xl font-extrabold text-blue-500 dark:text-purple-100">
                                 Tablón del grupo
                             </h2>
                             <p className="mt-1 text-gray-500 dark:text-purple-300">

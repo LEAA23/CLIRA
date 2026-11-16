@@ -1,7 +1,6 @@
 import { CreationOptional, DataTypes, InferAttributes, InferCreationAttributes, Model } from "sequelize";
 import db from "../config/db";
 
-
 export class Filters extends Model< InferAttributes<Filters>, InferCreationAttributes<Filters> > {
     declare id: CreationOptional<number>;
     declare name: string;

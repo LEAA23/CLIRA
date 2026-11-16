@@ -13,11 +13,11 @@ const DashBoardHeader = () => {
 
   return (
     <header className="bg-blue-600 p-7">
-      <div className="relative z-10 flex w-full items-center justify-between gap-4">
+      <div className="flex flex-col items-center space-y-5 space-x-2 justify-between md:flex-row md:space-y-0 md:space-x-0">
         <button
           type="button"
           onClick={() => navigate("/")}
-          className="flex shrink-0 items-center gap-3 text-3xl font-extrabold tracking-wider text-white transition hover:scale-[1.02] dark:text-cyan-300 md:text-4xl"
+          className="text-white font-bold text-4xl text-center uppercase cursor-pointer"
         >
           CLIRA
         </button>
@@ -30,7 +30,7 @@ const DashBoardHeader = () => {
           <button
             type="button"
             onClick={handleLogout}
-            className="hidden rounded-xl border border-sky-200 bg-white/90 px-5 py-2.5 font-semibold text-sky-800 shadow-sm transition hover:-translate-y-0.5 hover:bg-sky-50 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-sky-400 dark:border-cyan-800 dark:bg-slate-900/80 dark:text-cyan-200 dark:hover:bg-slate-800 md:block"
+            className="hidden md:block bg-white hover:bg-gray-100 text-blue-500 hover:text-blue-600 font-bold py-2 px-6 rounded-lg text-center w-full md:w-auto cursor-pointer"
           >
             Cerrar sesión
           </button>
