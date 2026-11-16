@@ -151,7 +151,7 @@ const RankingView = () => {
     );
 
     return (
-        <>
+        <div className="clira-page clira-page--ranking min-h-full px-4 pb-10">
             <h1 className="my-8 text-center text-4xl font-bold text-blue-500 sm:text-5xl">
                 Ranking
             </h1>
@@ -436,7 +436,7 @@ const RankingView = () => {
                     </div>
                 </>
             )}
-        </>
+        </div>
     );
 };
 

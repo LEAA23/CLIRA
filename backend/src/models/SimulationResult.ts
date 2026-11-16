@@ -19,7 +19,7 @@ export class SimulationResult extends Model< InferAttributes<SimulationResult>, 
     declare resources_eficienty: number;
     declare performance: number;
     declare is_correct: CreationOptional<boolean | null>;
-
+    declare duration_seconds: number | null;
     declare createdAt? : Date;
 }
 
@@ -77,7 +77,12 @@ SimulationResult.init({
         type: DataTypes.BOOLEAN,
         allowNull: true,
         defaultValue: null
-    }
+    },
+    duration_seconds: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+        defaultValue: null
+    },  
 }, {
     sequelize: db,
     modelName: "SimulationResult"

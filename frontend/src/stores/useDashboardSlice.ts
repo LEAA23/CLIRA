@@ -10,6 +10,7 @@ export type  DashboardSliceType = {
 export const createDashboardSlice : StateCreator< DashboardSliceType > = ((set) => ({
     userMetrics: {
         diagnosis_accuracy: 0,
+        average_duration_seconds: 0,
         last_simulations: [],
         error_reduction: {
             current: 0,

@@ -190,7 +190,7 @@ const RegisterView = () => {
                 />
             </form>
 
-            <div className="bg-[url(/register.png)] dark:bg-[url(/register.png)] bg-cover bg-no-repeat bg-center"></div>
+            <div className="bg-[url(/register.png)] dark:bg-[url(/register.png] bg-cover bg-no-repeat bg-center"></div>
         </div>
     </>
   )

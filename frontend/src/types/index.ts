@@ -1,26 +1,53 @@
-import z from "zod"
-import type { AuthSchema, CaseSchema, ChartOptionSchema, CommentSquema, DashboardMetricsSquema, DiagnoseDataSchema, DiagnosisResultsSquema, DiagnosisSchema, FilterSchema, GroupResponse, GroupShcema, GroupsSchema, laboratoryStudiesSchema, MembersOptionSchema, PostImageSchema, PostSchema, PostsSchema, SymptomSquema, UserProfileSchema, UserSchema, UserSearchSchema } from "../schemas"
+import z from "zod";
+
+import type {
+  AuthSchema,
+  CaseSchema,
+  ChartOptionSchema,
+  CommentSquema,
+  DashboardMetricsSquema,
+  DiagnoseDataSchema,
+  DiagnosisResultsSquema,
+  DiagnosisSchema,
+  FilterSchema,
+  GroupResponse,
+  GroupShcema,
+  GroupsSchema,
+  laboratoryStudiesSchema,
+  MembersOptionSchema,
+  PostImageSchema,
+  PostSchema,
+  PostsSchema,
+  PublicCaseSchema,
+  SymptomSquema,
+  UserProfileSchema,
+  UserSchema,
+  UserSearchSchema,
+} from "../schemas";
 
 /**
  * AUTH TYPES
  */
 export type AuthSchema = z.infer<typeof AuthSchema>;
-export type UserRegistrationForm = Pick<AuthSchema, "name" | "lastName" | "rol" | "phoneNumber" | "email" | "password" | "repeatPassword">;
+export type UserRegistrationForm = Pick<
+  AuthSchema,
+  "name" | "lastName" | "rol" | "phoneNumber" | "email" | "password" | "repeatPassword"
+>;
 export type ConfirmToken = Pick<AuthSchema, "token">;
-export type UserLoginForm = Pick<AuthSchema,  "email" | "password">;
+export type UserLoginForm = Pick<AuthSchema, "email" | "password">;
 export type UserForgotPasswordForm = Pick<AuthSchema, "email">;
 export type UserNewPasswordForm = Pick<AuthSchema, "password" | "repeatPassword">;
 export type UserUpdatePassword = Pick<AuthSchema, "password" | "repeatPassword" | "token">;
 export type UserValidateToken = Pick<AuthSchema, "token">;
-export type UserAuthenticate = z.infer< typeof UserSchema >;
+export type UserAuthenticate = z.infer<typeof UserSchema>;
 export type AddMemberForm = Pick<AuthSchema, "email">;
-export type RemoveMemberForm  = Pick<AuthSchema, "email">;
+export type RemoveMemberForm = Pick<AuthSchema, "email">;
 
 /**
  * GROUP TYPES
  */
-export type Group = z.infer< typeof GroupShcema >;
-export type Groups = z.infer<typeof GroupsSchema  >;
+export type Group = z.infer<typeof GroupShcema>;
+export type Groups = z.infer<typeof GroupsSchema>;
 export type GroupRegistrationForm = Pick<Group, "name" | "bgImage">;
 export type CurrentGroup = z.infer<typeof GroupResponse>;
 export type UserSearchForm = Pick<UserAuthenticate, "email">;
@@ -29,11 +56,11 @@ export type UserSearched = z.infer<typeof UserSearchSchema>;
 /**
  * POST TYPES
  */
-export type Post = z.infer<typeof PostSchema >;
+export type Post = z.infer<typeof PostSchema>;
 export type PostRegistationForm = Pick<Post, "title" | "content" | "images">;
 export type PostEditForm = Pick<Post, "title" | "content">;
 export type Posts = z.infer<typeof PostsSchema>;
-export type PostImage= z.infer<typeof PostImageSchema>;
+export type PostImage = z.infer<typeof PostImageSchema>;
 export type Comment = z.infer<typeof CommentSquema>;
 export type CommentForm = Pick<Comment, "content">;
 export type Comments = Comment[];
@@ -42,7 +69,6 @@ export type Comments = Comment[];
  * USER TYPES
  */
 export type UserProfile = z.infer<typeof UserProfileSchema>;
-
 
 /**
  * CHART OPTION TYPE
@@ -63,8 +89,25 @@ export type Filter = z.infer<typeof FilterSchema>;
  * CASES TYPES
  */
 export type Case = z.infer<typeof CaseSchema>;
-export type CreateCaseForm = Pick<Case, "title" | "description" | "symptomsAndHistory" | "height" | "weight" | "bloodPreassure" | "previewImage" | "simulationModel" | "images">;
-export type EditCaseForm = Pick<Case, "title" | "description" | "previewImage" | "simulationModel">;
+export type PublicCase = z.infer<typeof PublicCaseSchema>;
+
+export type CreateCaseForm = Pick<
+  Case,
+  | "title"
+  | "description"
+  | "symptomsAndHistory"
+  | "height"
+  | "weight"
+  | "bloodPreassure"
+  | "previewImage"
+  | "simulationModel"
+  | "images"
+>;
+
+export type EditCaseForm = Pick<
+  Case,
+  "title" | "description" | "previewImage" | "simulationModel"
+>;
 
 /**
  * Symptoms
@@ -76,8 +119,9 @@ export type LaboratoryStudies = z.infer<typeof laboratoryStudiesSchema>;
 export type DiagnosisForm = z.infer<typeof DiagnosisSchema>;
 export type DiagnosisDataForm = z.infer<typeof DiagnoseDataSchema>;
 
-
 export type DiagnosisResults = z.infer<typeof DiagnosisResultsSquema>;
 
-//DASHBOARD
+/**
+ * DASHBOARD
+ */
 export type DashboardMetrics = z.infer<typeof DashboardMetricsSquema>;

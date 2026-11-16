@@ -416,7 +416,8 @@ export class CaseController {
             symptomsAndHistory = [],
             laboratoryStudies = [],
             bodyMetrics = [],
-            features = {}
+            features = {},
+            durationSeconds
         } = req.body;
         const transaction = await db.transaction();
 
@@ -526,6 +527,7 @@ export class CaseController {
                         "errors",
                         "resources_eficienty",
                         "performance",
+                        "duration_seconds",
                         "is_correct",
                         "createdAt",
                         "updatedAt"
@@ -540,6 +542,7 @@ export class CaseController {
                         0,
                         0,
                         0,
+                        :durationSeconds,
                         NULL,
                         NOW(),
                         NOW()
@@ -551,7 +554,8 @@ export class CaseController {
                         caseId: req.clinicalCase.id,
                         userId: req.user.id,
                         diagnosis,
-                        embedding: embeddingString
+                        embedding: embeddingString,
+                        durationSeconds: Math.max(0, Math.floor(Number(durationSeconds)))
                     },
                     transaction,
                     type: QueryTypes.SELECT

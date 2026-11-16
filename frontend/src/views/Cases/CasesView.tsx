@@ -165,7 +165,7 @@ const CasesView = () => {
     }, [cases, search, selectedFilters, categories]);
 
     return (
-        <>
+        <div className="clira-page clira-page--simulation min-h-full px-4 pb-10">
             <h1 className="my-10 text-center text-5xl font-bold text-blue-500">
                 Casos Clínicos
             </h1>
@@ -269,7 +269,7 @@ const CasesView = () => {
 
             <EditCaseModal />
             <DeleteCaseModal />
-        </>
+        </div>
     );
 };
 

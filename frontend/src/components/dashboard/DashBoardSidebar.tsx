@@ -1,72 +1,98 @@
-import { PresentationChartLineIcon, Cog6ToothIcon, ChevronDoubleLeftIcon, ChevronDoubleRightIcon, HeartIcon, RocketLaunchIcon, RectangleGroupIcon, TrophyIcon } from "@heroicons/react/16/solid";
-import SideBarLink from "./SideBarLink";
+import {
+  PresentationChartLineIcon,
+  Cog6ToothIcon,
+  ChevronDoubleLeftIcon,
+  ChevronDoubleRightIcon,
+  HeartIcon,
+  RocketLaunchIcon,
+  RectangleGroupIcon,
+  TrophyIcon,
+} from "@heroicons/react/16/solid";
 import { useState } from "react";
+import SideBarLink from "./SideBarLink";
 
 interface DashBoardSidebarProps {
   show: boolean;
 }
 
-const DashBoardSidebar = ( { show } : DashBoardSidebarProps ) => {
+const DashBoardSidebar = ({ show }: DashBoardSidebarProps) => {
   const [isHidden, setIsHidden] = useState(false);
 
-  if(show) return (
-    <aside className=
-      {`hidden md:block bg-blue-700 transform transition-all duration-500 ease-in-out relative
-        ${isHidden? "w-0 p-0" : "w-55 p-7"}`
-      }
-    >
-        <nav className="flex flex-col space-y-8 mt-5 mb-35">
+  if (!show) return null;
 
-          <button
-            type="button"
-            onClick={() => setIsHidden( prevValue => !prevValue )}
-            className={`bg-blue-800 hover:bg-blue-900 cursor-pointer h-9 w-9 p-1 rounded-4xl absolute top-2 -right-4 transform transition-all duration-500 ease-in-out
-                ${isHidden? "translate-x-11 bg-gray-300 hover:bg-gray-400" : ""}
-              `} 
-          >
-            {isHidden? (
-              <ChevronDoubleRightIcon className="text-white"/>
-            ) : (
-              
-              <ChevronDoubleLeftIcon className="text-white" />
-            )}
-          </button>
-            
-          <SideBarLink
-            url="/"
-            text="DashBoard"
-            icon={PresentationChartLineIcon}
-          />
-            
-          <SideBarLink
-            url="/clinical-cases"
-            text="Casos Clinicos"
-            icon={HeartIcon}
-          />
-          <SideBarLink
-            url="/progress"
-            text="Mi Progreso"
-            icon={RocketLaunchIcon}
-          />
-          <SideBarLink
-            url="/groups"
-            text="Mis Grupos"
-            icon={RectangleGroupIcon}
-          />
-          <SideBarLink
-            url="/ranking"
-            text="Ranking"
-            icon={TrophyIcon}
-          />
-          <SideBarLink
-            url="/settings"
-            text="Configuración"
-            icon={Cog6ToothIcon}
-          />
+  return (
+    <>
+      {/* Menú lateral */}
+      <aside
+        className={`hidden md:block bg-blue-700 transform transition-all duration-500 ease-in-out relative
+          ${isHidden ? "w-0 p-0" : "w-55 p-7"}`}
+      >
+        {!isHidden && (
+          <nav className="relative z-10 mt-5 flex flex-col gap-5">
+            <div className="mb-2 border-b border-sky-200/80 pb-5 dark:border-cyan-900">
+              <p className="text-xs font-bold uppercase tracking-[0.2em] text-white dark:text-cyan-400">
+                Área académica
+              </p>
+              <h2 className="mt-2 text-xl font-bold text-white dark:text-slate-100">
+                Mi espacio
+              </h2>
+            </div>
 
-        </nav>
-    </aside>
-  )
-}
+            <SideBarLink
+              url="/"
+              text="Dashboard"
+              icon={PresentationChartLineIcon}
+            />
 
-export default DashBoardSidebar
+            <SideBarLink
+              url="/clinical-cases"
+              text="Casos Clínicos"
+              icon={HeartIcon}
+            />
+
+            <SideBarLink
+              url="/progress"
+              text="Mi Progreso"
+              icon={RocketLaunchIcon}
+            />
+
+            <SideBarLink
+              url="/groups"
+              text="Mis Grupos"
+              icon={RectangleGroupIcon}
+            />
+
+            <SideBarLink
+              url="/ranking"
+              text="Ranking"
+              icon={TrophyIcon}
+            />
+
+            <SideBarLink
+              url="/settings"
+              text="Configuración"
+              icon={Cog6ToothIcon}
+            />
+          </nav>
+        )}
+      </aside>
+
+      {/* Botón independiente para contraer o expandir */}
+      <button
+        type="button"
+        onClick={() => setIsHidden((previous) => !previous)}
+        aria-label={isHidden ? "Mostrar menú" : "Ocultar menú"}
+        title={isHidden ? "Mostrar menú" : "Ocultar menú"}
+        className="fixed bottom-6 left-4 z-50 hidden h-11 w-11 items-center justify-center rounded-full border border-sky-200 bg-white text-sky-700 shadow-lg transition-all duration-300 hover:scale-110 hover:bg-sky-50 dark:border-cyan-800 dark:bg-slate-800 dark:text-cyan-300 dark:hover:bg-slate-700 md:flex"
+      >
+        {isHidden ? (
+          <ChevronDoubleRightIcon className="h-5 w-5" />
+        ) : (
+          <ChevronDoubleLeftIcon className="h-5 w-5" />
+        )}
+      </button>
+    </>
+  );
+};
+
+export default DashBoardSidebar;

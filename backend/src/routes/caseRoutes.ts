@@ -113,6 +113,7 @@ router.post("/:caseId/diagnose",
     body("bodyMetrics").isArray().withMessage("Error al obtener las metricas corporales"),
     body("laboratoryStudies").isArray().withMessage("Error al obtener las metricas corporales"),
     body("features").isObject().withMessage("Error al obtener las metricas de diagnostico"),
+    body("durationSeconds").isInt({ min: 0 }).withMessage("El tiempo de simulación no es válido"),
     handleInputErrors,
     CaseController.diagnose
 );

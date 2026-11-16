@@ -13,26 +13,28 @@ const DashBoardHeader = () => {
 
   return (
     <header className="bg-blue-600 p-7">
-      <div className="flex flex-col items-center justify-between space-y-5 md:flex-row md:space-y-0">
+      <div className="relative z-10 flex w-full items-center justify-between gap-4">
         <button
           type="button"
           onClick={() => navigate("/")}
-          className="text-center text-4xl font-bold uppercase text-white"
+          className="flex shrink-0 items-center gap-3 text-3xl font-extrabold tracking-wider text-white transition hover:scale-[1.02] dark:text-cyan-300 md:text-4xl"
         >
-          Clira
+          CLIRA
         </button>
 
-        <div className="md:hidden">
-          <MenuResponsive dahsboardOptions={true} />
+        <div className="flex items-center gap-3">
+          <div className="md:hidden">
+            <MenuResponsive dahsboardOptions={true} />
+          </div>
+
+          <button
+            type="button"
+            onClick={handleLogout}
+            className="hidden rounded-xl border border-sky-200 bg-white/90 px-5 py-2.5 font-semibold text-sky-800 shadow-sm transition hover:-translate-y-0.5 hover:bg-sky-50 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-sky-400 dark:border-cyan-800 dark:bg-slate-900/80 dark:text-cyan-200 dark:hover:bg-slate-800 md:block"
+          >
+            Cerrar sesión
+          </button>
         </div>
-
-        <button
-          type="button"
-          onClick={handleLogout}
-          className="hidden w-full rounded-lg border border-white bg-white px-6 py-2 font-bold text-blue-700 transition-colors hover:bg-blue-50 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-blue-600 dark:border-slate-500 dark:bg-slate-900 dark:text-white dark:hover:bg-slate-700 md:block md:w-auto"
-        >
-          Cerrar sesión
-        </button>
       </div>
     </header>
   );

@@ -90,12 +90,12 @@ export default class Experience {
     }
 
 destroy() {
-    // 1. Detener listeners de resize y el tick (requestAnimationFrame)
+    // Detener los eventos de actualización.
     this.sizes.off("resize");
     this.time.off("tick");
 
-    // 2. Liberar geometrías, materiales y texturas de la escena
-    this.scene.traverse((child: any) => {
+    // Liberar los recursos de la escena.
+    this.scene.traverse((child) => {
         if (child instanceof THREE.Mesh) {
             child.geometry.dispose();
 
@@ -103,21 +103,32 @@ destroy() {
                 ? child.material
                 : [child.material];
 
-            for (const material of materials) {
+            materials.forEach((material) => {
                 for (const key in material) {
-                    const value = material[key];
+                    const value = (material as any)[key];
+
                     if (value && typeof value.dispose === "function") {
-                        value.dispose(); // texturas, etc.
+                        value.dispose();
                     }
                 }
+
                 material.dispose();
-            }
+            });
         }
     });
 
-    // 3. Liberar controles y renderer
+    // Liberar controles y renderer.
     this.camera.controls?.dispose();
     this.renderer.instance.dispose();
-    this.renderer.instance.forceContextLoss();
+
+    // Eliminar la referencia global.
+    if (window.experience === this) {
+        window.experience = undefined as unknown as Experience;
+    }
+
+    // Permitir crear una nueva instancia al abrir otro caso.
+    if (instance === this) {
+        instance = null;
+    }
 }
 }
