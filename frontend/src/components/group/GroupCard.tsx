@@ -70,13 +70,13 @@ const GroupCard = ({
 
                 {user.rol !== "teacher" && (
                     <div className="mb-4 flex items-center gap-3">
-                        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-indigo-50 text-indigo-600 dark:bg-indigo-500/10 dark:text-indigo-300">
+                        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl text-indigo-600 dark:bg-indigo-500/10 dark:text-indigo-300">
                             <AcademicCapIcon className="h-5 w-5" />
                         </div>
 
                         <div className="min-w-0">
                             <p className="text-xs font-medium text-gray-400">
-                                Profesor responsable
+                                Profesor/Doctor
                             </p>
                             <p className="truncate text-sm font-semibold text-gray-800 dark:text-gray-100">
                                 {teacher}
@@ -88,16 +88,16 @@ const GroupCard = ({
                 <div className="flex items-center justify-between border-t border-gray-100 pt-4 dark:border-gray-700">
 
                     <div className="flex items-center gap-2 text-gray-500 dark:text-gray-300">
-                        <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-purple-50 text-purple-600 dark:bg-purple-500/10 dark:text-purple-300">
+                        <div className="flex h-9 w-9 items-center justify-center rounded-xl  text-purple-600 dark:bg-purple-500/10 dark:text-purple-300">
                             <UsersIcon className="h-5 w-5" />
                         </div>
 
                         <div>
-                            <p className="text-lg font-bold leading-none text-gray-800 dark:text-white">
-                                {memberCount}
-                            </p>
                             <p className="mt-1 text-xs text-gray-400">
                                 Integrantes
+                            </p>
+                            <p className="text-lg font-bold leading-none text-gray-800 dark:text-white">
+                                {memberCount}
                             </p>
                         </div>
                     </div>

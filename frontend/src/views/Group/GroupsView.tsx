@@ -85,31 +85,26 @@ const GroupsView = () => {
                 <div className="relative z-10 mt-9 grid grid-cols-1 gap-3 border-t border-white/15 pt-6 sm:grid-cols-2">
 
                     <div className="flex items-center gap-3 rounded-lg border border-white/10 bg-white/10 p-4 backdrop-blur-sm">
-                        <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-white/15 text-white">
+                        <div className="flex h-11 w-11 items-center justify-center rounded-xl text-white">
                             <AcademicCapIcon className="h-6 w-6" />
                         </div>
                         <div>
                             <p className="text-2xl font-extrabold text-white">
-                                {groups.length}
-                            </p>
-                            <p className="text-sm text-indigo-100/70">
-                                {user.rol === "teacher"
-                                    ? "Grupos creados"
-                                    : "Grupos disponibles"}
+                                {groups.length} {""}
+                                <span className="text-sm font-normal text-indigo-100/70">
+                                    {user.rol === "teacher" ? "Grupos creados" : "Grupos disponibles"}
+                                </span>
                             </p>
                         </div>
                     </div>
 
                     <div className="flex items-center gap-3 rounded-lg border border-white/10 bg-white/10 p-4 backdrop-blur-sm">
-                        <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-white/15 text-white">
+                        <div className="flex h-11 w-11 items-center justify-center rounded-xl text-white">
                             <UserGroupIcon className="h-6 w-6" />
                         </div>
                         <div>
                             <p className="text-2xl font-extrabold text-white">
-                                {totalMembers}
-                            </p>
-                            <p className="text-sm text-indigo-100/70">
-                                Integrantes en tus grupos
+                                {totalMembers} <span className="text-sm font-normal text-indigo-100/70">Integrantes en tus grupos</span>
                             </p>
                         </div>
                     </div>

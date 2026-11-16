@@ -97,7 +97,7 @@ const PostCard = ({
                     font-semibold text-blue-500 mb-2">
                         {clinicalCaseId
                             ? "Caso clínico asignado"
-                            : "Publicación del grupo"}
+                            : "Publicación"}
                     </p>
 
                     <h3 className="text-xl font-bold text-gray-800
